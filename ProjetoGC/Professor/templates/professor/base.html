@@ -1,0 +1,70 @@
+<!-- Professor/templates/professor/base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Professor Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'professor/css/style.css' %}">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            <img src="{% static 'professor/img/senai_logo.png' %}" alt="SENAI Logo">
+        </div>
+        <div class="user-info">
+            <div class="search-bar">
+                <input type="text" placeholder="Pesquisar...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <div class="user-details">
+                Bem-vindo, Professor {{ user.first_name|default:"JOHN DOE" }}
+            </div>
+            <div class="user-avatar">
+                {{ user.first_name.0|default:"J" }}{{ user.last_name.0|default:"D" }}
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <aside class="sidebar">
+            <nav>
+                <ul>
+                    <li class="{% if request.resolver_match.view_name == 'professor_home' %}active{% endif %}">
+                        <a href="{% url 'professor_home' %}"><i class="fas fa-home"></i> Início</a>
+                    </li>
+                    <li class="{% if request.resolver_match.view_name == 'professor_agenda' %}active{% endif %}">
+                        <a href="#"><i class="fas fa-calendar-alt"></i> Agenda</a>
+                    </li>
+                    <li class="{% if request.resolver_match.view_name == 'professor_minhas_turmas' %}active{% endif %}">
+                        <a href="#">
+                            <i class="fas fa-users"></i> Minhas Turmas
+                            <i class="fas fa-chevron-down" style="margin-left: auto;"></i>
+                        </a>
+                        <!-- Sub-menu for Minhas Turmas if needed -->
+                    </li>
+                    <li class="{% if request.resolver_match.view_name == 'professor_diario' %}active{% endif %}">
+                        <a href="#"><i class="fas fa-book"></i> Diário</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="settings">
+                <ul>
+                    <li class="{% if request.resolver_match.view_name == 'professor_settings' %}active{% endif %}">
+                        <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            {% block content %}
+            <!-- Content from child templates will go here -->
+            {% endblock %}
+        </main>
+    </div>
+</body>
+</html>

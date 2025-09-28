@@ -1,0 +1,221 @@
+/* Professor/static/professor/css/style.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f4f7f6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.navbar .logo img {
+    height: 40px; /* Adjust as needed */
+    vertical-align: middle;
+}
+
+.navbar .user-info {
+    display: flex;
+    align-items: center;
+}
+
+.navbar .search-bar {
+    margin-right: 20px;
+    position: relative;
+}
+
+.navbar .search-bar input {
+    border: 1px solid #ccc;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    width: 200px;
+}
+
+.navbar .search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #555;
+    cursor: pointer;
+}
+
+
+.navbar .user-details {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.navbar .user-avatar {
+    width: 35px;
+    height: 35px;
+    background-color: #007bff; /* Example color */
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.container {
+    display: flex;
+    flex: 1; /* Allows container to take remaining height */
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #ffffff;
+    padding: 20px 0;
+    border-right: 1px solid #e0e0e0;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes settings to the bottom */
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 5px;
+}
+
+.sidebar ul li a {
+    display: flex;
+    align-items: center;
+    padding: 12px 25px;
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li.active a {
+    background-color: #e6f0ff; /* Light blue background for active/hover */
+    color: #007bff; /* Blue text for active/hover */
+    border-right: 4px solid #007bff; /* Blue line for active */
+}
+
+.sidebar ul li a i {
+    margin-right: 15px;
+    font-size: 18px;
+}
+
+.sidebar .settings {
+    margin-top: auto; /* Pushes it to the bottom */
+}
+
+.sidebar .settings a {
+    color: #777;
+    font-weight: normal;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 30px;
+    background-color: #f4f7f6;
+}
+
+.welcome-message {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.dashboard-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    padding: 25px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    color: #333;
+    font-weight: bold;
+    font-size: 18px;
+    transition: transform 0.2s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Optional: Font Awesome for icons */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css");
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 0;
+    }
+    .sidebar ul {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+    }
+    .sidebar ul li {
+        margin-bottom: 0;
+    }
+    .sidebar ul li a {
+        padding: 10px 15px;
+        border-right: none;
+        border-bottom: 4px solid transparent;
+    }
+    .sidebar ul li.active a {
+        border-right: none;
+        border-bottom: 4px solid #007bff;
+    }
+    .sidebar .settings {
+        display: none; /* Hide settings on smaller screens or move to a dropdown */
+    }
+    .navbar {
+        flex-wrap: wrap;
+        padding: 10px 15px;
+    }
+    .navbar .search-bar {
+        order: 3; /* Move search below logo/user */
+        width: 100%;
+        margin-top: 10px;
+    }
+    .navbar .search-bar input {
+        width: calc(100% - 20px);
+    }
+    .main-content {
+        padding: 20px;
+    }
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}

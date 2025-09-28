@@ -1,0 +1,18 @@
+<!-- Professor/templates/professor/home.html -->
+{% extends 'professor/base.html' %}
+{% load static %}
+
+{% block title %}Professor - Início{% endblock %}
+
+{% block content %}
+    <div class="welcome-message">
+        Bem-vindo, Professor {{ user.first_name|default:"John Doe" }}
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="dashboard-card">Agenda</div>
+        <div class="dashboard-card">Turmas</div>
+        <div class="dashboard-card">Diário</div>
+        <div class="dashboard-card">Relatórios</div>
+    </div>
+{% endblock %}
