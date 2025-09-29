@@ -1,0 +1,22 @@
+App: Login /autenticação
+Models: Usuario, Aluno, Professor, Secretaria
+# O sistema de autenticação
+
+
+App: Professor
+Models: Aula, Frequencia
+# Faltas e Presenças e lançamento de atividades
+
+App: atividades
+Models: Atividade, AtividadeEntregue
+# Templates de conexão do get_object_or_404
+
+App: Aluno
+# Entregas de aividades
+
+
+App: Secretaria
+Models: Solicitação
+
+App: cursos
+Models: Curso, Disciplina, Turma, Matricula
