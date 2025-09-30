@@ -15,6 +15,8 @@ class Usuario(AbstractUser):
     cpf = models.CharField(max_length=14, unique=True)
     endereco = models.TextField('Endereço')
     tipo = models.CharField(max_length=10, choices=TIPO_USUARIO)
+
+    REQUIRED_FIELDS = ['email', 'first_name', 'last_name', 'data_nascimento', 'contato', 'cpf', 'endereco', 'tipo']
     
     class Meta:
         db_table = 'Usuario'

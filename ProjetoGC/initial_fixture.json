@@ -1,0 +1,21 @@
+[
+  {
+    "model": "Login.Usuario",
+    "pk": 1,
+    "fields": {
+      "username": "admin",
+      "password": "1234",
+      "first_name": "João",
+      "last_name": "Silva",
+      "email": "admin@admin.com",
+      "data_nascimento": "2005-03-15",
+      "contato": "11999999999",
+      "cpf": "123.456.789-01",
+      "endereco": "Rua das Flores, 123 - São Paulo",
+      "tipo": "secretaria",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true
+    }
+  }
+]
