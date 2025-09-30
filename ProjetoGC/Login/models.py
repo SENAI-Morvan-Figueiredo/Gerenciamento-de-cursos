@@ -1,6 +1,7 @@
 # models.py
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from Cursos.models import Turma
 
 class Usuario(AbstractUser):
     TIPO_USUARIO = [
@@ -24,6 +25,7 @@ class Aluno(models.Model):
     aluno_id = models.AutoField(primary_key=True)
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
     data_ingresso = models.DateField('Data de Ingresso')
+   
     
     class Meta:
         db_table = 'Aluno'
@@ -33,6 +35,7 @@ class Professor(models.Model):
     professor_id = models.AutoField(primary_key=True)
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
     salario = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.BooleanField(null=False, blank=False)
     
     class Meta:
         db_table = 'Professor'
