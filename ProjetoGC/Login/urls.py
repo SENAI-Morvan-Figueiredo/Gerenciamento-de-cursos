@@ -2,5 +2,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('cadastro/', views.cadastro, name='cadastro'),  # Placeholder view
+    path('login/', views.login_view, name='login'),  # Placeholder view
 ]

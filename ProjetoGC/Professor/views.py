@@ -1,6 +1,10 @@
-from django.shortcuts import render, HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 
-# Create your views here.
+# Import do decorator específico do app login
+from Login.decorators import professor_required
 
-def index(request):
-    return HttpResponse("Página inicial do app Professor")
+@login_required
+@professor_required
+def dashboard_professor(request):
+    return render(request, "templates/Professor.html")

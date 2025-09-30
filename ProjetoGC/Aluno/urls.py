@@ -1,6 +1,7 @@
+# aluno/urls.py
 from django.urls import path
-from . import views  # importa views da própria app
+from .views import dashboard_aluno
 
 urlpatterns = [
-    path("", views.index, name="index"),  # exemplo de rota
+    path('dashboard/', dashboard_aluno, name='dashboard_aluno'),
 ]
