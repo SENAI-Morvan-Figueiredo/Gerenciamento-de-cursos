@@ -19,3 +19,86 @@
     }
   }
 ]
+
+
+[
+  {
+    "model": "Login.Usuario",
+    "pk": 1,
+    "fields": {
+      "username": "admin",
+      "password": "1234",
+      "first_name": "João",
+      "last_name": "Silva",
+      "email": "admin@admin.com",
+      "data_nascimento": "2005-03-15",
+      "contato": "11999999999",
+      "cpf": "123.456.789-01",
+      "endereco": "Rua das Flores, 123 - São Paulo",
+      "tipo_usuario": "secretaria",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": true
+    }
+  },
+  {
+    "model": "Login.Usuario",
+    "pk": 2,
+    "fields": {
+      "username": "aluno01",
+      "password": "1234",
+      "first_name": "Ana",
+      "last_name": "Costa",
+      "email": "ana.costa@email.com",
+      "data_nascimento": "2008-07-21",
+      "contato": "11988888888",
+      "cpf": "234.567.890-12",
+      "endereco": "Av. Brasil, 456 - São Paulo",
+      "tipo_usuario": "aluno",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false
+    }
+  },
+  {
+    "model": "Login.Usuario",
+    "pk": 3,
+    "fields": {
+      "username": "professor01",
+      "password": "1234",
+      "first_name": "Carlos",
+      "last_name": "Pereira",
+      "email": "carlos.pereira@email.com",
+      "data_nascimento": "1980-02-10",
+      "contato": "11977777777",
+      "cpf": "345.678.901-23",
+      "endereco": "Rua da Paz, 789 - São Paulo",
+      "tipo_usuario": "professor",
+      "is_active": true,
+      "is_staff": false,
+      "is_superuser": false
+    }
+  },
+  {
+    "model": "Login.Usuario",
+    "pk": 4,
+    "fields": {
+      "username": "secretaria01",
+      "password": "1234",
+      "first_name": "Mariana",
+      "last_name": "Almeida",
+      "email": "mariana.almeida@email.com",
+      "data_nascimento": "1990-12-05",
+      "contato": "11966666666",
+      "cpf": "456.789.012-34",
+      "endereco": "Av. das Nações, 321 - São Paulo",
+      "tipo_usuario": "secretaria",
+      "is_active": true,
+      "is_staff": true,
+      "is_superuser": false
+    }
+  }
+]
+
+
+
