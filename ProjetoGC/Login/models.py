@@ -10,16 +10,17 @@ class Usuario(AbstractUser):
     ]
     
     usuario_id = models.AutoField(primary_key=True)
-    data_nascimento = models.DateField('Data de Nascimento')
-    contato = models.CharField(max_length=20, unique=True)
-    cpf = models.CharField(max_length=14, unique=True)
-    endereco = models.TextField('Endereço')
-    tipo = models.CharField(max_length=10, choices=TIPO_USUARIO)
+    nome = models.CharField('Nome', max_length=100, blank=True, null=True)  
+    sobrenome = models.CharField('Sobrenome', max_length=100, blank=True, null=True)  
+    email = models.EmailField('E-mail', unique=True, blank=True, null=True)  
+    data_nascimento = models.DateField('Data de Nascimento', blank=True, null=True)  
+    contato = models.CharField(max_length=20, unique=True, blank=True, null=True)  
+    cpf = models.CharField(max_length=14, unique=True, blank=True, null=True)  
+    endereco = models.TextField('Endereço', blank=True, null=True)  
+    tipo = models.CharField(max_length=10, choices=TIPO_USUARIO) 
 
-    REQUIRED_FIELDS = ['email', 'first_name', 'last_name', 'data_nascimento', 'contato', 'cpf', 'endereco', 'tipo']
-    
-    class Meta:
-        db_table = 'Usuario'
+    USERNAME_FIELD = 'email' 
+    REQUIRED_FIELDS = ['nome', 'sobrenome', 'data_nascimento', 'contato', 'cpf', 'endereco', 'tipo', 'username']
 
 
 class Aluno(models.Model):

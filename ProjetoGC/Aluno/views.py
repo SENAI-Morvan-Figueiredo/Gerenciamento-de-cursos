@@ -6,4 +6,4 @@ from Login.decorators import aluno_required
 @login_required
 @aluno_required
 def dashboard_aluno(request):
-    return render(request, "aluno/Aluno.html")
+    return render(request, "Aluno/Aluno.html")

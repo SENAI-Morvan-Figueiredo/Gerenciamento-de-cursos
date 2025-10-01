@@ -9,16 +9,16 @@ def login_view(request):
         password = request.POST.get("password")
 
         # autentica pelo email
-        user = authenticate(request, email=email, password=password)
+        user = authenticate(request, username=email, password=password)
         if user is not None:
             login(request, user)  # <-- aqui só é chamado se user existe
             # redireciona conforme tipo
             if user.tipo == "aluno":
-                return redirect("dashboard_aluno")
+                return redirect('aluno:dashboard_aluno')
             elif user.tipo == "professor":
-                return redirect("dashboard_professor")
+                return redirect('aluno:dashboard_professor')
             elif user.tipo == "secretaria":
-                return redirect("dashboard_secretaria")
+                return redirect('secretaria:dashboard_secretaria')
             else:
                 return redirect("home")
         else:

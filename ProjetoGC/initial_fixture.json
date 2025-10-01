@@ -17,11 +17,7 @@
       "is_staff": true,
       "is_superuser": true
     }
-  }
-]
-
-
-[
+  },
   {
     "model": "Login.Usuario",
     "pk": 1,
@@ -35,7 +31,7 @@
       "contato": "11999999999",
       "cpf": "123.456.789-01",
       "endereco": "Rua das Flores, 123 - São Paulo",
-      "tipo_usuario": "secretaria",
+      "tipo": "secretaria",
       "is_active": true,
       "is_staff": true,
       "is_superuser": true
@@ -54,7 +50,7 @@
       "contato": "11988888888",
       "cpf": "234.567.890-12",
       "endereco": "Av. Brasil, 456 - São Paulo",
-      "tipo_usuario": "aluno",
+      "tipo": "aluno",
       "is_active": true,
       "is_staff": false,
       "is_superuser": false
@@ -73,7 +69,7 @@
       "contato": "11977777777",
       "cpf": "345.678.901-23",
       "endereco": "Rua da Paz, 789 - São Paulo",
-      "tipo_usuario": "professor",
+      "tipo": "professor",
       "is_active": true,
       "is_staff": false,
       "is_superuser": false
@@ -92,13 +88,16 @@
       "contato": "11966666666",
       "cpf": "456.789.012-34",
       "endereco": "Av. das Nações, 321 - São Paulo",
-      "tipo_usuario": "secretaria",
+      "tipo": "secretaria",
       "is_active": true,
       "is_staff": true,
       "is_superuser": false
     }
   }
 ]
+
+
+
 
 
 

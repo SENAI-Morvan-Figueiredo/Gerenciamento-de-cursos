@@ -6,5 +6,5 @@ from Login.decorators import secretaria_required
 
 @login_required
 @secretaria_required
-def dashboard_professor(request):
-    return render(request, "templates/Professor.html")
+def dashboard_secretaria(request):
+    return render(request, "Secretaria/Secretaria.html")
