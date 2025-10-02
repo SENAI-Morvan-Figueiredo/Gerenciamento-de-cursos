@@ -1,0 +1,28 @@
+{% extends "secretaria/turmaList.html" %}
+
+{% block header_title %} Lista de Professores {% endblock %}
+
+{% block content %}
+    <h2>Lista de Professores</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for professor in professores %}
+                <tr>
+                    <td>{{ professor.id }}</td>
+                    <td>{{ professor.nome }}</td>
+                    <td>
+                        <a href="{% url 'secretaria:profEdit' professor.id %}">Editar</a>
+                        <a href="{% url 'secretaria:profDelete' professor.id %}">Excluir</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

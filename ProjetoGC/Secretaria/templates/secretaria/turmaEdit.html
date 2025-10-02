@@ -1,0 +1,12 @@
+{% extends "secretaria/turmaList.html" %}
+
+{% block header_title %} Editar Turma {% endblock %}
+
+{% block content %}
+    <h2>Turma: {{ turma.nome }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Salvar</button>
+    </form>
+{% endblock %}
