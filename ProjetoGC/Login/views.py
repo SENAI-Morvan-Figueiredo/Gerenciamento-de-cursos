@@ -16,7 +16,7 @@ def login_view(request):
             if user.tipo == "aluno":
                 return redirect('aluno:dashboard_aluno')
             elif user.tipo == "professor":
-                return redirect('aluno:dashboard_professor')
+                return redirect('professor:dashboard_professor')
             elif user.tipo == "secretaria":
                 return redirect('secretaria:dashboard_secretaria')
             else:
