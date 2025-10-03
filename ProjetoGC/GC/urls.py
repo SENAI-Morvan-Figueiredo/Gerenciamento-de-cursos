@@ -21,7 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path('', include('Login.urls')),
     # path('', include('Professor.urls')),
-    # path('', include('Secretaria.urls')),
+    path('', include('Secretaria.urls',  namespace='secretaria')),
     # path('', include('Aluno.urls')),
     
 ]

@@ -1,3 +1,4 @@
+<!-- Secretaria/templates/secretaria/turmaList.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,16 +8,16 @@
 </head>
 <body>
     <header>
-        <!-- <img src="{% static 'img/logo.png' %}" alt="Logo"> -->
+        <!-- space for logo -->
         <h1>{% block header_title %} Gerenciamento de Turmas {% endblock %}</h1>
     </header>
     {% block navbar %}
     <nav>
         <ul> 
             <li><a href="{% url 'secretaria:turmaList' %}"> <button type="button" autofocus>Turmas</button> </a></li>
-            <li><a href="{% url 'secretaria:profList' %}"> <button type="button">Disciplinas</button> </a></li>
-            <li><a href="{% url 'secretaria:alunoList' %}"> <button type="button">Home</button > </a></li>
-            <li><a href="{% url 'secretaria:config:' %}"> <button type="button">Logout</button> </a></li>
+            <li><a href="{% url 'secretaria:profList' %}"> <button type="button">Professores</button> </a></li>
+            <li><a href="{% url 'secretaria:alunoList' %}"> <button type="button">Alunos</button > </a></li>
+            <!-- space for secretaria:config -->
         </ul>
     </nav>
     {% endblock navbar %}

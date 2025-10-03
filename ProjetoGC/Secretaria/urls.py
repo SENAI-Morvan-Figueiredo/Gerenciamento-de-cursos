@@ -5,6 +5,8 @@ from .views import (
     ProfessorListView, ProfessorCreateView, ProfessorUpdateView, ProfessorDetailView,
 )
 
+app_name = 'secretaria'
+
 urlpatterns = [
     path('turmas/', TurmaListView.as_view(), name='turmaList'),
     path('turmas/add/', TurmaCreateView.as_view(), name='turmaAdd'),
@@ -20,4 +22,6 @@ urlpatterns = [
     path('professores/add/', ProfessorCreateView.as_view(), name='profAdd'),
     path('professores/<int:pk>/update/', ProfessorUpdateView.as_view(), name='profUpdate'),
     # path('professores/<int:pk>/detail/', ProfessorDetailView.as_view(), name='profDetail'),
+
+    
 ]

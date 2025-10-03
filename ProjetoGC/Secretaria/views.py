@@ -14,11 +14,16 @@ class TurmaListView(ListView):
     template_name = "secretaria/turmaList.html"
     context_object_name = "turmas"
 
+class TurmaDetailView(DetailView):
+    model = Turma
+    template_name = "secretaria/turmaDetail.html"
+    context_object_name = "turma"
+
 class TurmaCreateView(CreateView):
     model = Turma
     form_class = TurmaForm
     template_name = "secretaria/turmaAdd.html"
-    success_url = reverse_lazy("turmaLista")
+    success_url = reverse_lazy("secretaria:turmaLista")
 
     def form_valid(self, form):
         turma = form.save(commit=False)
@@ -31,7 +36,7 @@ class TurmaUpdateView(UpdateView):
     model = Turma
     form_class = TurmaForm
     template_name = "secretaria/turmaEdit.html"
-    success_url = reverse_lazy("turmaLista")
+    success_url = reverse_lazy("secretaria:turmaLista")
 
     def form_valid(self, form):
         turma = form.save(commit=False)
@@ -56,13 +61,13 @@ class AlunoCreateView(CreateView):
     model = Aluno
     form_class = AlunoUsuarioForm
     template_name = "secretaria/alunoAdd.html"
-    success_url = reverse_lazy("alunoList")
+    success_url = reverse_lazy("secretaria:alunoList")
     
 class AlunoUpdateView(UpdateView):
     model = Aluno
     form_class = AlunoUsuarioForm  
     template_name = "secretaria/alunoEdit.html"
-    success_url = reverse_lazy("alunoList")
+    success_url = reverse_lazy("secretaria:alunoList")
 
 
 #   <----------------- Professores ----------------->
@@ -80,13 +85,16 @@ class ProfessorCreateView(CreateView):
     model = Professor
     form_class = ProfessorUsuarioForm
     template_name = "secretaria/profAdd.html"
-    success_url = reverse_lazy("porfList")
+    success_url = reverse_lazy("secretaria:profList")
 
 class ProfessorUpdateView(UpdateView):
     model = Professor
     form_class = ProfessorUsuarioForm
     template_name = "secretaria/profEdit.html"
-    success_url = reverse_lazy("profList")  
+    success_url = reverse_lazy("secretaria:profList")  
+
+
+#   <----------------- Configuração ----------------->
 
 
 #   <----------------- Funcionários Secretaria ----------------->
