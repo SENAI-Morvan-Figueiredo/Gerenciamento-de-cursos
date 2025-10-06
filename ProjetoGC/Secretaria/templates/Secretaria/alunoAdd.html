@@ -1,0 +1,12 @@
+<!-- Secretaria/templates/secretaria/alunoAdd.html -->
+{% extends "secretaria/turmaList.html" %}
+
+{% block header_title %} Adicionar Aluno {% endblock %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Salvar</button>
+    </form>
+{% endblock %}
