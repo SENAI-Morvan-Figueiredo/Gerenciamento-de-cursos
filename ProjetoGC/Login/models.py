@@ -36,6 +36,7 @@ class Professor(models.Model):
     professor_id = models.AutoField(primary_key=True)
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
     salario = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.BooleanField(default=True)
     
     class Meta:
         db_table = 'Professor'
