@@ -17,10 +17,10 @@
             {% for professor in professores %}
                 <tr>
                     <td>{{ professor.id }}</td>
-                    <td>{{ professor.nome }}</td>
+                    <td>{{ professor.usuario.nome }}</td>
                     <td>
                         <a href="{% url 'secretaria:profEdit' professor.id %}">Editar</a>
-                        <a href="{% url 'secretaria:profDelete' professor.id %}">Excluir</a>
+                        
                     </td>
                 </tr>
             {% endfor %}

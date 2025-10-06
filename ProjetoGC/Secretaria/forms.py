@@ -3,7 +3,6 @@ from Login.models import Usuario, Aluno, Professor
 from Cursos.models import Matricula, Turma, Curso
 
 
-
 class AlunoUsuarioForm(forms.ModelForm):
     # Campos do Usuario (relacionado)
     nome = forms.CharField(max_length=150, required=True)
@@ -63,7 +62,6 @@ class AlunoUsuarioForm(forms.ModelForm):
 
         return aluno
 
-    
 class ProfessorUsuarioForm(forms.ModelForm):
     # Campos do Usuario
     nome = forms.CharField(max_length=150, required=True)
@@ -134,3 +132,15 @@ class TurmaForm(forms.ModelForm):
     class Meta:
         model = Turma
         fields = ["curso", "professor"]
+
+
+class PesquisarForm(forms.Form):
+    query = forms.CharField(
+        label="",
+        max_length=100, 
+        widget=forms.TextInput(attrs={
+            "placeholder" : "Procurar Turma",
+            "autocomplete": "off",
+            "type": "search",
+            "class": "form-control"})
+    )

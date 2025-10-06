@@ -14,34 +14,55 @@
     {% block navbar %}
     <nav>
         <ul> 
-            <li><a href="{% url 'secretaria:turmaList' %}"> <button type="button" autofocus>Turmas</button> </a></li>
-            <li><a href="{% url 'secretaria:profList' %}"> <button type="button">Professores</button> </a></li>
-            <li><a href="{% url 'secretaria:alunoList' %}"> <button type="button">Alunos</button > </a></li>
+            <li><a href="{% url 'secretaria:turmaList' %}"> <button type="button" class="menu-button">Turmas</button> </a></li>
+            <li><a href="{% url 'secretaria:profList' %}"> <button type="button" class="menu-button">Professores</button> </a></li>
+            <li><a href="{% url 'secretaria:alunoList' %}"> <button type="button" class="menu-button">Alunos</button > </a></li>
             <!-- space for secretaria:config -->
         </ul>
     </nav>
     {% endblock navbar %}
     <main>
         {% block content %}
-        <div class="turma-card new-turma">
+        <div id="form-search">
+            <form method="get">
+                <input type="text" 
+                   name="q" 
+                   value="{{ query }}"
+                   placeholder="Pesquisar por ID, curso ou professor..." 
+                   class="form-control">
+                <button type="submit" class="btn btn-primary">Pesquisar</button>
+                {% if query %}
+                <a href="{% url 'secretaria:turmaList' %}">Limpar</a>
+                {% endif %}
+            </form>
+        </div>
+
+        <div class="turma-card new-turma"> <!-- Criador de turmas -->
             <h2> Cadastrar Nova Turma</h2>
             <div id="add-turma">
                 <a href="{% url 'secretaria:turmaAdd' %}">+</a>
             </div>
             
         </div>
+
         {% for turma in turmas %}
             <div class="turma-card">
-                <h2>{{ turma.nome }}</h2>
-                <p>Curso: {{ turma.curso.nome }}</p>
-                <p>Professor: {{ turma.professor.usuario.first_name }}</p>
-                <p>Tipo: {{ turma.tipo }}</p>
-                <!-- <a href="{% url 'secretaria:turmaDetail' turma.id %}">Ver detalhes</a> -->
+                <h2>{{ turma.curso.nome }} - Turma {{ turma.id }}</h2>
+                <p><strong>Curso:</strong> {{ turma.curso.nome }}</p>
+                <p><strong>Professor:</strong> {{ turma.professor.usuario.first_name }}</p>
+                {% if turma.tipo %}
+                    <p><strong>Tipo:</strong> {{ turma.tipo }}</p>
+                {% endif %}   
             </div>
+
         {% empty %}
-            <p>Nenhuma turma disponível.</p>
+            <div class="turma-card" style="text-align: center;">
+                <p>Nenhuma turma disponível.</p>
+            </div>
         {% endfor %}
+
         {% endblock content %}
+
     </main>
     
 </body>

@@ -1,7 +1,9 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.urls import reverse_lazy
+from django.shortcuts import render
+from django.db.models import Q
 
-from .forms import AlunoUsuarioForm, ProfessorUsuarioForm, TurmaForm
+from .forms import AlunoUsuarioForm, ProfessorUsuarioForm, TurmaForm, PesquisarForm
 
 from .models import  Solicitacao
 from Login.models import Secretaria, Aluno, Professor
@@ -14,6 +16,28 @@ class TurmaListView(ListView):
     template_name = "secretaria/turmaList.html"
     context_object_name = "turmas"
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+    
+        query = self.request.GET.get("q")
+        if query:
+            queryset = queryset.filter(
+                Q(curso__nome__icontains=query) |
+                Q(professor__usuario__nome__icontains=query)
+            )
+        queryset = queryset.order_by('curso__nome')
+        return queryset
+        
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        query = self.request.GET.get('q', '')
+        
+        context["form"] = PesquisarForm(initial={'q': query})
+        context["query"] = query
+        context["total_resultados"] = context["turmas"].count()
+        return context
+
 class TurmaDetailView(DetailView):
     model = Turma
     template_name = "secretaria/turmaDetail.html"
@@ -23,7 +47,7 @@ class TurmaCreateView(CreateView):
     model = Turma
     form_class = TurmaForm
     template_name = "secretaria/turmaAdd.html"
-    success_url = reverse_lazy("secretaria:turmaLista")
+    success_url = reverse_lazy("secretaria:turmaList")
 
     def form_valid(self, form):
         turma = form.save(commit=False)
@@ -36,7 +60,7 @@ class TurmaUpdateView(UpdateView):
     model = Turma
     form_class = TurmaForm
     template_name = "secretaria/turmaEdit.html"
-    success_url = reverse_lazy("secretaria:turmaLista")
+    success_url = reverse_lazy("secretaria:turmaList")
 
     def form_valid(self, form):
         turma = form.save(commit=False)
@@ -93,8 +117,6 @@ class ProfessorUpdateView(UpdateView):
     template_name = "secretaria/profEdit.html"
     success_url = reverse_lazy("secretaria:profList")  
 
-
-#   <----------------- Configuração ----------------->
 
 
 #   <----------------- Funcionários Secretaria ----------------->
