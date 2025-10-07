@@ -12,7 +12,7 @@ class Usuario(AbstractUser):
     usuario_id = models.AutoField(primary_key=True)
     nome = models.CharField('Nome', max_length=100, blank=True, null=True)  
     sobrenome = models.CharField('Sobrenome', max_length=100, blank=True, null=True)  
-    email = models.EmailField('E-mail', unique=True, blank=True, null=True)  
+    email = models.EmailField('E-mail', unique=True, default=None)  
     data_nascimento = models.DateField('Data de Nascimento', blank=True, null=True)  
     contato = models.CharField(max_length=20, unique=True, blank=True, null=True)  
     cpf = models.CharField(max_length=14, unique=True, blank=True, null=True)  
@@ -20,7 +20,12 @@ class Usuario(AbstractUser):
     tipo = models.CharField(max_length=10, choices=TIPO_USUARIO) 
 
     USERNAME_FIELD = 'email' 
-    REQUIRED_FIELDS = ['nome', 'sobrenome', 'data_nascimento', 'contato', 'cpf', 'endereco', 'tipo', 'username']
+    REQUIRED_FIELDS = ['nome','sobrenome','cpf', 'tipo', 'username' ]
+    def __str__(self):
+        return self.email
+    
+    class Meta:
+        db_table = 'Usuario'
 
 
 class Aluno(models.Model):
