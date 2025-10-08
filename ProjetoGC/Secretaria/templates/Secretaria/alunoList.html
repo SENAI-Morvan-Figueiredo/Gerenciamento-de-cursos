@@ -16,11 +16,11 @@
         <tbody>
             {% for aluno in alunos %}
                 <tr>
-                    <td>{{ aluno.id }}</td>
-                    <td>{{ aluno.nome }}</td>
+                    <td>{{ aluno.aluno_id }}</td>
+                    <td>{{ aluno.usuario.nome }}</td>
                     <td>
-                        <a href="{% url 'secretaria:alunoEdit' aluno.id %}">Editar</a>
-                        <a href="{% url 'secretaria:alunoDelete' aluno.id %}">Excluir</a>
+                        <a href="{% url 'secretaria:alunoUpdate' aluno.aluno_id %}">Editar</a>
+                        
                     </td>
                 </tr>
             {% endfor %}
