@@ -1,48 +1,29 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.urls import reverse_lazy
-from django.shortcuts import render
-from django.db.models import Q
+from django.utils.decorators import method_decorator
 
-from .forms import AlunoUsuarioForm, ProfessorUsuarioForm, TurmaForm, PesquisarForm
-
-from .models import  Solicitacao
+from .forms import AlunoUsuarioForm, ProfessorUsuarioForm, TurmaForm
+from .models import Solicitacao
 from Login.models import Secretaria, Aluno, Professor
 from Cursos.models import Turma
 
+from Login.decorators import secretaria_required
 
 #   <----------------- Turmas ----------------->
+
+@method_decorator(secretaria_required, name='dispatch')
 class TurmaListView(ListView):
     model = Turma
     template_name = "secretaria/turmaList.html"
     context_object_name = "turmas"
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-    
-        query = self.request.GET.get("q")
-        if query:
-            queryset = queryset.filter(
-                Q(curso__nome__icontains=query) |
-                Q(professor__usuario__nome__icontains=query)
-            )
-        queryset = queryset.order_by('curso__nome')
-        return queryset
-        
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        query = self.request.GET.get('q', '')
-        
-        context["form"] = PesquisarForm(initial={'q': query})
-        context["query"] = query
-        context["total_resultados"] = context["turmas"].count()
-        return context
-
+@method_decorator(secretaria_required, name='dispatch')
 class TurmaDetailView(DetailView):
     model = Turma
     template_name = "secretaria/turmaDetail.html"
     context_object_name = "turma"
 
+@method_decorator(secretaria_required, name='dispatch')
 class TurmaCreateView(CreateView):
     model = Turma
     form_class = TurmaForm
@@ -51,11 +32,11 @@ class TurmaCreateView(CreateView):
 
     def form_valid(self, form):
         turma = form.save(commit=False)
-        # atribui o professor selecionado no form
         turma.professor = form.cleaned_data["professor"]
         turma.save()
         return super().form_valid(form)
 
+@method_decorator(secretaria_required, name='dispatch')
 class TurmaUpdateView(UpdateView):
     model = Turma
     form_class = TurmaForm
@@ -64,109 +45,60 @@ class TurmaUpdateView(UpdateView):
 
     def form_valid(self, form):
         turma = form.save(commit=False)
-        # atribui o professor selecionado no form
         turma.professor = form.cleaned_data["professor"]
         turma.save()
         return super().form_valid(form)
-    
 
 #   <----------------- Alunos ----------------->
+@method_decorator(secretaria_required, name='dispatch')
 class AlunoListView(ListView):
     model = Aluno
     template_name = "secretaria/alunoList.html"
     context_object_name = "alunos"
-    
+
+@method_decorator(secretaria_required, name='dispatch')
 class AlunoDetailView(DetailView):
     model = Aluno
     template_name = "secretaria/alunoDetail.html"
     context_object_name = "aluno"
-    
+
+@method_decorator(secretaria_required, name='dispatch')
 class AlunoCreateView(CreateView):
     model = Aluno
     form_class = AlunoUsuarioForm
     template_name = "secretaria/alunoAdd.html"
     success_url = reverse_lazy("secretaria:alunoList")
-    
+
+@method_decorator(secretaria_required, name='dispatch')
 class AlunoUpdateView(UpdateView):
     model = Aluno
     form_class = AlunoUsuarioForm  
     template_name = "secretaria/alunoEdit.html"
     success_url = reverse_lazy("secretaria:alunoList")
 
-
 #   <----------------- Professores ----------------->
+@method_decorator(secretaria_required, name='dispatch')
 class ProfessorListView(ListView):
     model = Professor
     template_name = "secretaria/profList.html"
     context_object_name = "professores"
-    
+
+@method_decorator(secretaria_required, name='dispatch')
 class ProfessorDetailView(DetailView):
     model = Professor
     template_name = "secretaria/profDetail.html"
     context_object_name = "professor"
-    
+
+@method_decorator(secretaria_required, name='dispatch')
 class ProfessorCreateView(CreateView):
     model = Professor
     form_class = ProfessorUsuarioForm
     template_name = "secretaria/profAdd.html"
     success_url = reverse_lazy("secretaria:profList")
 
+@method_decorator(secretaria_required, name='dispatch')
 class ProfessorUpdateView(UpdateView):
     model = Professor
     form_class = ProfessorUsuarioForm
     template_name = "secretaria/profEdit.html"
-    success_url = reverse_lazy("secretaria:profList")  
-
-
-
-#   <----------------- Funcionários Secretaria ----------------->
-# class SecretariaListView(ListView):
-#     model = Secretaria
-#     template_name = "secretaria/lista.html"
-#     context_object_name = "secretarias"
-    
-# class SecretariaDetailView(DetailView):
-#     model = Secretaria
-#     template_name = "secretaria/detalhe.html"
-#     context_object_name = "secretaria"
-    
-# class SecretariaCreateView(CreateView):
-#     model = Secretaria
-#     fields = ["usuario", "salario"]
-#     template_name = "secretaria/form.html"
-#     success_url = reverse_lazy("secretaria_lista")
-    
-# class SecretariaUpdateView(UpdateView):
-#     model = Secretaria
-#     fields = ["usuario", "salario"]
-#     template_name = "secretaria/form.html"
-#     success_url = reverse_lazy("secretaria_lista")
-    
-# class SecretariaDeleteView(DeleteView):
-#     model = Secretaria
-#     template_name = "secretaria/confrimar_exclusao.html"
-#     success_url = reverse_lazy("secretaria_lista")
-
-
-#   <----------------- Solicitação ----------------->
-# class SolicitacaoListView(ListView):
-#     model = Solicitacao
-#     template_name = "secretaria/lista.html"
-#     context_object_name = "solicitacoes"
-
-# class SolicitacaoDetailView(DetailView):
-#     model = Solicitacao
-#     template_name = "secretaria/detalhe.html"
-#     context_object_name = "solicitacao"
-    
-# class SolicitacaoCreateView(CreateView):
-#     model = Solicitacao
-#     fields = ["secretaria", "usuario", "tipo"]
-#     template_name = "secretaria/form.html"
-#     success_url = reverse_lazy("solicitacao_lista")
-    
-# class SolicitacaoUpdateView(UpdateView):
-#     model = Solicitacao
-#     fields = ["secretaria", "usuario", "tipo"]
-#     template_name = "secretaria/form.html"
-#     success_url = reverse_lazy("solicitacao_lista")
+    success_url = reverse_lazy("secretaria:profList")

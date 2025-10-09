@@ -36,6 +36,7 @@ class Turma(models.Model):
     ]
     
     turma_id = models.AutoField(primary_key=True)
+    nome = models.CharField(max_length=100, null=True, blank=True)
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     professor = models.ForeignKey('Login.Professor', on_delete=models.CASCADE)
     dias_semana = models.CharField(max_length=50)  # ou usar ArrayField se usar PostgreSQL
