@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block main_title %}Sistema de Gerenciamento de Cursos{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <h1>{% if view.object %}Editar Disciplina{% else %}Cadastrar Nova Disciplina{% endif %}</h1>
+    </header>
+
+    {% block navbar %}
+    <nav>
+        <ul>
+            <li><a href="{% url 'curso_list' %}"><button type="button">Cursos</button></a></li>
+            <li><a href="{% url 'disciplina_list' curso_id|default:0 %}"><button type="button">Disciplinas</button></a></li>
+            <li><a href="{% url 'secretaria:turmaList' %}"><button type="button">Turmas</button></a></li>
+            <li><a href="{% url 'secretaria:profList' %}"><button type="button">Professores</button></a></li>
+            <li><a href="{% url 'secretaria:alunoList' %}"><button type="button">Alunos</button></a></li>
+        </ul>
+    </nav>
+    {% endblock navbar %}
+
+    <main>
+        {% block content %}
+        <h2>Disciplinas</h2>
+            <a href="{% url 'disciplina_create_global' %}">+ Nova Disciplina (sem curso)</a>
+            <ul>
+            {% for disciplina in disciplinas %}
+            <li>
+                {{ disciplina.nome }} — {{ disciplina.carga_horaria }}h
+                <a href="{% url 'disciplina_update' disciplina.pk %}">Editar</a>
+                <a href="{% url 'disciplina_delete' disciplina.pk %}">Excluir</a>
+            </li>
+            {% endfor %}
+            </ul>
+        {% endblock content %}
+    </main>
+</body>
+</html>

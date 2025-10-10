@@ -1,0 +1,56 @@
+{% block title %}
+  {% if view.object %}Editar Curso{% else %}Novo Curso{% endif %}
+{% endblock %}
+
+{% block content %}
+<h2>
+  {% if view.object %}Editar Curso{% else %}Novo Curso{% endif %}
+</h2>
+
+<a href="{% url 'curso_list' %}">Voltar para a lista de cursos</a>
+
+{% if messages %}
+  {% for message in messages %}
+    <p>{{ message }}</p>
+  {% endfor %}
+{% endif %}
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+
+  <div>
+    {{ form.nome.label_tag }}<br>
+    {{ form.nome }}
+    {{ form.nome.errors }}
+  </div>
+
+  <div>
+    {{ form.descricao.label_tag }}<br>
+    {{ form.descricao }}
+    {{ form.descricao.errors }}
+  </div>
+
+  <div>
+    {{ form.carga_horaria.label_tag }}<br>
+    {{ form.carga_horaria }}
+    {{ form.carga_horaria.errors }}
+  </div>
+
+  <div>
+    {{ form.ativo.label_tag }}<br>
+    {{ form.ativo }}
+    {{ form.ativo.errors }}
+  </div>
+
+  <div>
+    {{ form.disciplinas.label_tag }}<br>
+    {{ form.disciplinas }}
+    {{ form.disciplinas.errors }}
+  </div>
+
+  <button type="submit">
+    {% if view.object %}Atualizar Curso{% else %}Criar Curso{% endif %}
+  </button>
+</form>
+{% endblock %}

@@ -1,0 +1,17 @@
+
+{% extends "Cursos/curso_list.html" %}
+
+{% block header_title %} Editar Curso {% endblock %}
+
+{% block content %}
+    <h2>Curso: {{ form.instance.nome }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Salvar</button>
+    </form>
+    <form method="post" action="{% url 'curso_delete' pk=form.instance.pk %}" style="margin-top: 1em;">
+        {% csrf_token %}
+        <button type="submit" onclick="return confirm('Deseja realmente deletar este curso?');">Deletar Curso</button>
+    </form>
+{% endblock %}
