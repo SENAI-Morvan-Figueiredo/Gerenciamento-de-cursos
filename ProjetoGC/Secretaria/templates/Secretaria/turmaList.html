@@ -14,9 +14,11 @@
     {% block navbar %}
     <nav>
         <ul> 
-            <li><a href="{% url 'secretaria:turmaList' %}"> <button type="button" autofocus>Turmas</button> </a></li>
-            <li><a href="{% url 'secretaria:profList' %}"> <button type="button">Professores</button> </a></li>
-            <li><a href="{% url 'secretaria:alunoList' %}"> <button type="button">Alunos</button > </a></li>
+            <li><a href="{% url 'curso_list' %}"><button type="button">Cursos</button></a></li>
+            <li><a href="{% url 'disciplina_list' curso_id|default:0 %}"><button type="button">Disciplinas</button></a></li>
+            <li><a href="{% url 'secretaria:turmaList' %}"><button type="button">Turmas</button></a></li>
+            <li><a href="{% url 'secretaria:profList' %}"><button type="button">Professores</button></a></li>
+            <li><a href="{% url 'secretaria:alunoList' %}"><button type="button">Alunos</button></a></li>
             <!-- space for secretaria:config -->
         </ul>
     </nav>

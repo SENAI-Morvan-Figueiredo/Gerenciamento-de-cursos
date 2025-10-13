@@ -1,0 +1,46 @@
+
+
+{% block title %}
+  {% if view.object %}Editar Disciplina{% else %}Nova Disciplina{% endif %}
+{% endblock %}
+
+{% block content %}
+<h2>
+  {% if view.object %}Editar Disciplina{% else %}Nova Disciplina{% endif %}
+</h2>
+
+<a href="{% if curso_id %}{% url 'disciplina_list' curso_id %}{% else %}{% url 'curso_list' %}{% endif %}">Voltar para a lista de disciplinas</a>
+
+{% if messages %}
+  {% for message in messages %}
+    <p>{{ message }}</p>
+  {% endfor %}
+{% endif %}
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+
+  <div>
+    {{ form.nome.label_tag }}<br>
+    {{ form.nome }}
+    {{ form.nome.errors }}
+  </div>
+
+  <div>
+    {{ form.descricao.label_tag }}<br>
+    {{ form.descricao }}
+    {{ form.descricao.errors }}
+  </div>
+
+  <div>
+    {{ form.carga_horaria.label_tag }}<br>
+    {{ form.carga_horaria }}
+    {{ form.carga_horaria.errors }}
+  </div>
+
+  <button type="submit">
+    {% if view.object %}Atualizar Disciplina{% else %}Criar Disciplina{% endif %}
+  </button>
+</form>
+{% endblock %}
