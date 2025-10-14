@@ -19,6 +19,8 @@
             <li><a href="{% url 'secretaria:turmaList' %}"><button type="button">Turmas</button></a></li>
             <li><a href="{% url 'secretaria:profList' %}"><button type="button">Professores</button></a></li>
             <li><a href="{% url 'secretaria:alunoList' %}"><button type="button">Alunos</button></a></li>
+            <li><a href="{% url 'solicitacao:solicitacaoList' %}"><button type="button">Solicitacoes</button></a></li>
+
             <!-- space for secretaria:config -->
         </ul>
     </nav>
@@ -38,7 +40,7 @@
                 <p>Curso: {{ turma.curso.nome }}</p>
                 <p>Professor: {{ turma.professor.usuario.first_name }}</p>
                 <p>Tipo: {{ turma.tipo }}</p>
-                <!-- <a href="{% url 'secretaria:turmaDetail' turma.id %}">Ver detalhes</a> -->
+                <a href="{% url 'secretaria:turmaDetail' turma.turma_id %}">Ver detalhes</a>
             </div>
         {% empty %}
             <p>Nenhuma turma disponível.</p>

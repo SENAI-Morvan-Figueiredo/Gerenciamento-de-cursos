@@ -3,7 +3,6 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 
 from .forms import AlunoUsuarioForm, ProfessorUsuarioForm, TurmaForm
-from .models import Solicitacao
 from Login.models import Secretaria, Aluno, Professor
 from Cursos.models import Turma
 

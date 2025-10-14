@@ -46,12 +46,15 @@ class Turma(models.Model):
     dias_semana = models.CharField(max_length=50)
     horarios = models.CharField(max_length=100)
     data_inicio = models.DateField()
-    duracao = models.DurationField()
+    duracao = models.IntegerField()
     tipo = models.CharField(max_length=10, choices=TIPO_AULA)
     status = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'Turma'
+
+    def __str__(self):
+        return self.nome
 
 class Matricula(models.Model):
     matricula_id = models.AutoField(primary_key=True)

@@ -1,0 +1,28 @@
+{% extends "ecretaria/secretaria/turmaList.html" %}
+
+{% block header_title %} Lista de Solicitações {% endblock %}
+
+{% block content %}
+    <h2>Lista de Solicitações</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for professor in professores %}
+                <tr>
+                    <td>{{ professor.professor_id }}</td>
+                    <td>{{ professor.usuario.nome }}</td>
+                    <td>
+                        <a href="{% url 'secretaria:profUpdate' professor.professor_id %}">Editar</a>
+                        
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

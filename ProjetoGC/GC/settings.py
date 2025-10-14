@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "Login",
     "Professor",
     "Secretaria",
+    "Solicitacao",
     "Aluno",
     "Cursos",
     "Atividades",

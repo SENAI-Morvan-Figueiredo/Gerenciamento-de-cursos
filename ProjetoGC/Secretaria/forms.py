@@ -3,6 +3,7 @@ from Login.models import Usuario, Aluno, Professor
 from Cursos.models import Matricula, Turma, Curso
 from django.utils.text import slugify
 
+
 class AlunoUsuarioForm(forms.ModelForm):
     # Campos do Usuario
     nome = forms.CharField(max_length=150, required=True)
@@ -601,4 +602,9 @@ class TurmaForm(forms.ModelForm):
             "tipo",
             "status",
         ]
+
+
+
+
+
 
