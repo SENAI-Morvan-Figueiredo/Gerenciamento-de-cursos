@@ -9,7 +9,8 @@ class Solicitacao(models.Model):
 
     STATUS_BASE = [
         ('pendente', 'Pendente'),
-        ('concluido', 'Concluído'),
+        ('aceito', 'Aceito'),
+        ('negado', 'Negado'),
     ]
     
     solicitacao_id = models.AutoField(primary_key=True)
@@ -19,6 +20,24 @@ class Solicitacao(models.Model):
     data_solicitacao = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_BASE, default='pendente')
     justificativa = models.TextField(blank=True, null=True)
+    turma_origem = models.ForeignKey(
+        'Cursos.Turma', 
+        on_delete=models.CASCADE, 
+        null=True, 
+        blank=True,
+        related_name='solicitacoes_origem'
+    )
+    
+    turma_destino = models.ForeignKey(
+        'Cursos.Turma', 
+        on_delete=models.CASCADE, 
+        null=True, 
+        blank=True,
+        related_name='solicitacoes_destino'
+    )
+    
+    def __str__(self):
+        return f'Solicitação {self.solicitacao_id} - {self.tipo} - {self.status}'
     
     class Meta:
         db_table = 'Solicitacao'

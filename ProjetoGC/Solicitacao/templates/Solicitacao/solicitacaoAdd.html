@@ -1,0 +1,59 @@
+{% extends "secretaria/turmaList.html" %}
+
+{% block header_title %} Pedir Solicitação {% endblock %}
+
+{% block content %}
+    <!-- solicitacaoAdd.html -->
+<form method="post" id="solicitacaoForm">
+    {% csrf_token %}
+    
+    <div class="form-group">
+        <label for="id_tipo">{{ form.tipo.label }}</label>
+        {{ form.tipo }}
+    </div>
+
+    <!-- Campos condicionais -->
+    <div id="justificativa-field" style="display: none;">
+        <div class="form-group">
+            <label for="id_justificativa">{{ form.justificativa.label }}</label>
+            {{ form.justificativa }}
+        </div>
+    </div>
+
+    <div id="realocacao-fields" style="display: none;">
+        <div class="form-group">
+            <label for="id_turma_origem">{{ form.turma_origem.label }}</label>
+            {{ form.turma_origem }}
+        </div>
+        <div class="form-group">
+            <label for="id_turma_destino">{{ form.turma_destino.label }}</label>
+            {{ form.turma_destino }}
+            <small class="form-text text-muted">
+                ⚡ Apenas turmas do mesmo curso estão disponíveis
+            </small>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enviar Solicitação</button>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipoSelect = document.getElementById('id_tipo');
+        const justificativaDiv = document.getElementById('justificativa-field');
+        const realocacaoDiv = document.getElementById('realocacao-fields');
+
+        function toggleFields() {
+            const tipo = tipoSelect.value;
+            
+            justificativaDiv.style.display = tipo === 'trancamento' ? 'block' : 'none';
+            realocacaoDiv.style.display = tipo === 'realocacao' ? 'block' : 'none';
+        }
+
+        tipoSelect.addEventListener('change', toggleFields);
+        
+        // Inicializar
+        toggleFields();
+    });
+</script>
+{% endblock %}
