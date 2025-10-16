@@ -1,69 +1,41 @@
-<!-- Secretaria/templates/secretaria/turmaList.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block main_title %} Sistema de Gerenciamento de Cursos {% endblock %}</title>
-</head>
-<body>
-    <header>
-        <!-- space for logo -->
-        <h1>{% block header_title %} Gerenciamento de Turmas {% endblock %}</h1>
-    </header>
-    {% block navbar %}
-    <nav>
-        <ul> 
-            <li><a href="{% url 'secretaria:turmaList' %}"> <button type="button" class="menu-button">Turmas</button> </a></li>
-            <li><a href="{% url 'secretaria:profList' %}"> <button type="button" class="menu-button">Professores</button> </a></li>
-            <li><a href="{% url 'secretaria:alunoList' %}"> <button type="button" class="menu-button">Alunos</button > </a></li>
-            <!-- space for secretaria:config -->
-        </ul>
-    </nav>
-    {% endblock navbar %}
-    <main>
-        {% block content %}
-        <div id="form-search">
-            <form method="get">
-                <input type="text" 
-                   name="q" 
-                   value="{{ query }}"
-                   placeholder="Pesquisar por ID, curso ou professor..." 
-                   class="form-control">
-                <button type="submit" class="btn btn-primary">Pesquisar</button>
-                {% if query %}
-                <a href="{% url 'secretaria:turmaList' %}">Limpar</a>
-                {% endif %}
-            </form>
-        </div>
+{% extends 'secretaria/Abase.html' %}
+{% load static %}
 
-        <div class="turma-card new-turma"> <!-- Criador de turmas -->
-            <h2> Cadastrar Nova Turma</h2>
-            <div id="add-turma">
-                <a href="{% url 'secretaria:turmaAdd' %}">+</a>
-            </div>
-            
-        </div>
+{% block title %}Gerenciamento de Turmas{% endblock %}
+{% block header_title %}Gerenciamento de Turmas{% endblock %}
 
-        {% for turma in turmas %}
-            <div class="turma-card">
-                <h2>{{ turma.curso.nome }} - Turma {{ turma.id }}</h2>
-                <p><strong>Curso:</strong> {{ turma.curso.nome }}</p>
-                <p><strong>Professor:</strong> {{ turma.professor.usuario.first_name }}</p>
-                {% if turma.tipo %}
-                    <p><strong>Tipo:</strong> {{ turma.tipo }}</p>
-                {% endif %}   
-            </div>
-
-        {% empty %}
-            <div class="turma-card" style="text-align: center;">
-                <p>Nenhuma turma disponível.</p>
-            </div>
-        {% endfor %}
-
-        {% endblock content %}
-
-    </main>
+{% block content %}
+<div class="turma-search">
+    <form method="get" class="search-bar">
+        <input type="text" name="q" placeholder="Pesquisar turma, curso ou professor..." value="{{ query }}">
+        <button type="submit"><i data-lucide="search"></i></button>
+        {% if query %}
+            <a href="{% url 'secretaria:turmaList' %}" class="clear-btn">Limpar</a>
+        {% endif %}
+    </form>
     
-</body>
-</html>
+</div>
+
+<div class="cards-container">
+    <a href="{% url 'secretaria:turmaAdd' %}" class="urls">
+        <div class="card btn-add">
+            <h3>Nova Turma</h3>
+            <i data-lucide="plus"></i>
+        </div>
+    </a>
+    
+    {% for turma in turmas %}
+        <div class="card card-turma">
+            <h2>{{ turma.curso.nome }}</h2>
+            <p><strong>Professor:</strong> {{ turma.professor.usuario.nome }}</p>
+            <p><strong>Tipo:</strong> {{ turma.tipo|title }}</p>
+            <div class="card-actions">
+                <a href="{% url 'secretaria:turmaDetail' turma.id %}" class="btn-detail">Ver</a>
+                <a href="{% url 'secretaria:turmaEdit' turma.id %}" class="btn-edit">Editar</a>
+            </div>
+        </div>
+    {% empty %}
+        <div class="no-data">Nenhuma turma cadastrada.</div>
+    {% endfor %}
+</div>
+{% endblock %}
