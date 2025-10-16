@@ -10,11 +10,19 @@ class Usuario(AbstractUser):
     ]
     
     usuario_id = models.AutoField(primary_key=True)
-    data_nascimento = models.DateField('Data de Nascimento')
-    contato = models.CharField(max_length=20, unique=True)
-    cpf = models.CharField(max_length=14, unique=True)
-    endereco = models.TextField('Endereço')
-    tipo = models.CharField(max_length=10, choices=TIPO_USUARIO)
+    nome = models.CharField('Nome', max_length=100, blank=True, null=True)  
+    sobrenome = models.CharField('Sobrenome', max_length=100, blank=True, null=True)  
+    email = models.EmailField('E-mail', unique=True, default=None)  
+    data_nascimento = models.DateField('Data de Nascimento', blank=True, null=True)  
+    contato = models.CharField(max_length=20, unique=True, blank=True, null=True)  
+    cpf = models.CharField(max_length=14, unique=True, blank=True, null=True)  
+    endereco = models.TextField('Endereço', blank=True, null=True)  
+    tipo = models.CharField(max_length=10, choices=TIPO_USUARIO) 
+
+    USERNAME_FIELD = 'email' 
+    REQUIRED_FIELDS = ['nome','sobrenome','cpf', 'tipo', 'username' ]
+    def __str__(self):
+        return self.email
     
     class Meta:
         db_table = 'Usuario'
@@ -33,6 +41,7 @@ class Professor(models.Model):
     professor_id = models.AutoField(primary_key=True)
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
     salario = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.BooleanField(default=True)
     
     class Meta:
         db_table = 'Professor'

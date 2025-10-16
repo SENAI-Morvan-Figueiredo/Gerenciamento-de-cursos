@@ -1,0 +1,10 @@
+{% block header_title %} Deletar Curso {% endblock %}
+
+{% block content %}
+    <h2>Deseja realmente deletar o curso "{{ object.nome }}"?</h2>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Confirmar Exclusão</button>
+        <a href="{% url 'curso_list' %}">Cancelar</a>
+    </form>
+{% endblock %}

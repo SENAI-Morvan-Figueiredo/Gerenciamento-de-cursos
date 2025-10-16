@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block main_title %}Sistema de Gerenciamento de Cursos{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <h1>{% if view.object %}Editar Curso{% else %}Cadastrar Novo Curso{% endif %}</h1>
+    </header>
+
+    {% block navbar %}
+    <nav>
+        <ul>
+            <li><a href="{% url 'curso_list' %}"><button type="button">Cursos</button></a></li>
+            <li><a href="{% url 'disciplina_list' 0 %}"><button type="button">Disciplinas</button></a></li>
+            <li><a href="{% url 'secretaria:turmaList' %}"><button type="button">Turmas</button></a></li>
+            <li><a href="{% url 'secretaria:profList' %}"><button type="button">Professores</button></a></li>
+            <li><a href="{% url 'secretaria:alunoList' %}"><button type="button">Alunos</button></a></li>
+            <li><a href="{% url 'solicitacao:solicitacaoList' %}"><button type="button">Solicitações</button></a></li>
+        </ul>
+    </nav>
+    {% endblock navbar %}
+
+    <main>
+        {% block content %}
+        <h2>Cursos</h2>
+            <a href="{% url 'curso_create' %}">+ Novo Curso</a>
+            <ul>
+            {% for curso in cursos %}
+            <li>
+                {{ curso.nome }} — {{ curso.carga_horaria }}h
+                <a href="{% url 'curso_update' curso.pk %}">Editar</a>
+                <a href="{% url 'curso_delete' curso.pk %}">Excluir</a>
+                <a href="{% url 'disciplina_list' curso.pk %}">Disciplinas</a>
+            </li>
+            {% endfor %}
+            </ul>
+        {% endblock content %}
+    </main>
+</body>
+</html>

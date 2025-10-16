@@ -1,32 +1,36 @@
-# models.py
 from django.db import models
 
 class Curso(models.Model):
-    curso_id = models.AutoField(primary_key=True)
-    nome = models.CharField(max_length=100)
-    descricao = models.TextField()
-    duracao = models.DurationField()  # ou DateField dependendo da necessidade
-    
+    nome = models.CharField(max_length=150, unique=True, verbose_name="Nome do Curso", default="Sem Nome")
+    descricao = models.TextField(blank=True, verbose_name="Descrição")
+    carga_horaria = models.PositiveIntegerField(verbose_name="Carga Horária (h)", default=40)
+    ativo = models.BooleanField(default=True, verbose_name="Ativo")
+    disciplinas = models.ManyToManyField('Disciplina', blank=True, related_name='cursos')  # NOVO
+
     class Meta:
-        db_table = 'Curso'
+        verbose_name = "Curso"
+        verbose_name_plural = "Cursos"
+        ordering = ["nome"]
+
+    def __str__(self):
+        return self.nome
 
 class Disciplina(models.Model):
-    disciplina_id = models.AutoField(primary_key=True)
-    materia = models.CharField(max_length=100)
-    descricao = models.TextField()
-    
-    class Meta:
-        db_table = 'Disciplina'
+    nome = models.CharField(max_length=150, verbose_name="Nome da Disciplina", default="Sem Nome")
+    descricao = models.TextField(blank=True, verbose_name="Descrição")
+    carga_horaria = models.PositiveIntegerField(verbose_name="Carga Horária (h)", default=40)
+    # Remova o campo curso
+
+    def __str__(self):
+        return self.nome
 
 class GradeCurricular(models.Model):
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE)
-    
+
     class Meta:
         db_table = 'GradeCurricular'
         unique_together = ['curso', 'disciplina']
-
-
 
 class Turma(models.Model):
     TIPO_AULA = [
@@ -34,19 +38,23 @@ class Turma(models.Model):
         ('semi', 'Semi-presencial'),
         ('ead', 'EAD'),
     ]
-    
+
     turma_id = models.AutoField(primary_key=True)
+    nome = models.CharField(max_length=100, null=True, blank=True)
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     professor = models.ForeignKey('Login.Professor', on_delete=models.CASCADE)
-    dias_semana = models.CharField(max_length=50)  # ou usar ArrayField se usar PostgreSQL
+    dias_semana = models.CharField(max_length=50)
     horarios = models.CharField(max_length=100)
     data_inicio = models.DateField()
-    duracao = models.DurationField()
+    duracao = models.IntegerField()
     tipo = models.CharField(max_length=10, choices=TIPO_AULA)
     status = models.BooleanField(default=True)
-    
+
     class Meta:
         db_table = 'Turma'
+
+    def __str__(self):
+        return self.nome
 
 class Matricula(models.Model):
     matricula_id = models.AutoField(primary_key=True)
@@ -54,7 +62,7 @@ class Matricula(models.Model):
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     data_ingresso = models.DateField(auto_now_add=True)
     status_matricula = models.BooleanField(default=True)
-    
+
     class Meta:
         db_table = 'Matricula'
         unique_together = ['aluno', 'turma']

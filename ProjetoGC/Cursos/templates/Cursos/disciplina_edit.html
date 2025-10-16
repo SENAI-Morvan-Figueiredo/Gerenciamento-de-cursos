@@ -1,0 +1,17 @@
+
+{% extends "Cursos/disciplina_list.html" %}
+
+{% block header_title %} Editar Disciplina {% endblock %}
+
+{% block content %}
+    <h2>Disciplina: {{ form.instance.nome }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Salvar</button>
+    </form>
+    <form method="post" action="{% url 'disciplina_delete' pk=form.instance.pk %}" style="margin-top: 1em;">
+        {% csrf_token %}
+        <button type="submit" onclick="return confirm('Deseja realmente deletar esta disciplina?');">Deletar Disciplina</button>
+    </form>
+{% endblock %}

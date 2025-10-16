@@ -1,0 +1,49 @@
+{% extends "secretaria/turmaList.html" %}
+
+{% block header_title %} Lista de Solicitações {% endblock %}
+
+{% block content %}
+
+    {% if tipo_usuario == 'secretaria' %}
+        <h2>Todas as Solicitações</h2>
+    {% else %}
+        <h2>Minhas Solicitações</h2>
+    {% endif %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Tipo</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for solicitacao in solicitacoes %}
+                <tr>
+                    <td>{{ solicitacao.solicitacao_id }}</td>
+                    <td>{{ solicitacao.usuario.nome }}</td>
+                    <td>{{ solicitacao.tipo }}</td>
+                    <td>{{ solicitacao.status }}</td>
+                    
+                    {% if solicitacao.tipo == 'realocacao' and solicitacao.turma_origem and solicitacao.turma_destino %}
+                        <td>
+                            {{ solicitacao.turma_origem.nome }} - {{ solicitacao.turma_origem.curso.nome }}
+                        </td>
+
+                        <td>
+                            {{ solicitacao.turma_destino.nome }} - {{ solicitacao.turma_destino.curso.nome }}
+                        </td>
+                    {% endif %}
+    
+                    <td>
+                        {% if tipo_usuario == 'secretaria' and solicitacao.status == 'pendente' %}
+                            <a href="{% url 'solicitacao:solicitacaoStatus' solicitacao.solicitacao_id 'aceitar' %}">Aceitar</a>
+                            <a href="{% url 'solicitacao:solicitacaoStatus' solicitacao.solicitacao_id 'negar' %}">Negar</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
