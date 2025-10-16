@@ -306,18 +306,6 @@ class TurmaForm(forms.ModelForm):
             "status",
         ]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # adiciona classes Bootstrap ou personalizadas
-        self.fields['curso'].widget.attrs.update({'class': 'form-control'})
-        self.fields['professor'].widget.attrs.update({'class': 'form-control'})
-        self.fields['horario'].widget.attrs.update({'class': 'form-control', 'type': 'time'})
-        self.fields['data_inicio'].widget.attrs.update({'class': 'form-control', 'type': 'date'})
-        self.fields['duracao'].widget.attrs.update({'class': 'form-control'})
-        self.fields['tipo'].widget.attrs.update({'class': 'form-control'})
-        self.fields['status'].widget.attrs.update({'class': 'form-control'})
-
-
         # widgets = {
         #     "curso": forms.Select(attrs={"class": "form-input"}),
         #     "professor": forms.Select(attrs={"class": "form-input"}),
@@ -327,3 +315,18 @@ class TurmaForm(forms.ModelForm):
         #     "tipo": forms.Select(attrs={"class": "form-input"}),
         #     "status": forms.Select(attrs={"class": "form-input"}),
         # }
+
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     # adiciona classes Bootstrap ou personalizadas
+    #     self.fields['curso'].widget.attrs.update({'class': 'form-control'})
+    #     self.fields['professor'].widget.attrs.update({'class': 'form-control'})
+    #     self.fields['horario'].widget.attrs.update({'class': 'form-control', 'type': 'time'})
+    #     self.fields['data_inicio'].widget.attrs.update({'class': 'form-control', 'type': 'date'})
+    #     self.fields['duracao'].widget.attrs.update({'class': 'form-control'})
+    #     self.fields['tipo'].widget.attrs.update({'class': 'form-control'})
+    #     self.fields['status'].widget.attrs.update({'class': 'form-control'})
+
+
+        
