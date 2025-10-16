@@ -112,8 +112,8 @@ class AlunoUsuarioForm(forms.ModelForm):
             return aluno
 
 
-# <--------------- PROFESSOR ---------------->
 
+# <--------------- PROFESSOR ---------------->
 
 class ProfessorUsuarioForm(forms.ModelForm):
     # Campos do Usuario
@@ -232,8 +232,8 @@ class ProfessorUsuarioForm(forms.ModelForm):
             return professor
 
 
-# <--------------- TURMA ---------------->
 
+# <--------------- TURMA ---------------->
 
 DIA_SEMANA_CHOICES = [
     ('segunda', 'Segunda-feira'),
@@ -305,3 +305,25 @@ class TurmaForm(forms.ModelForm):
             "tipo",
             "status",
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # adiciona classes Bootstrap ou personalizadas
+        self.fields['curso'].widget.attrs.update({'class': 'form-control'})
+        self.fields['professor'].widget.attrs.update({'class': 'form-control'})
+        self.fields['horario'].widget.attrs.update({'class': 'form-control', 'type': 'time'})
+        self.fields['data_inicio'].widget.attrs.update({'class': 'form-control', 'type': 'date'})
+        self.fields['duracao'].widget.attrs.update({'class': 'form-control'})
+        self.fields['tipo'].widget.attrs.update({'class': 'form-control'})
+        self.fields['status'].widget.attrs.update({'class': 'form-control'})
+
+
+        # widgets = {
+        #     "curso": forms.Select(attrs={"class": "form-input"}),
+        #     "professor": forms.Select(attrs={"class": "form-input"}),
+        #     "horario": forms.TimeInput(attrs={"class": "form-input", "type": "time"}),
+        #     "data_inicio": forms.DateInput(attrs={"class": "form-input", "type": "date"}),
+        #     "duracao": forms.NumberInput(attrs={"class": "form-input"}),
+        #     "tipo": forms.Select(attrs={"class": "form-input"}),
+        #     "status": forms.Select(attrs={"class": "form-input"}),
+        # }

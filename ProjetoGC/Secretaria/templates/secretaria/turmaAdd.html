@@ -4,9 +4,11 @@
 {% block header_title %} Adicionar Turma {% endblock %}
 
 {% block content %}
+<div class="content-border">
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Salvar</button>
     </form>
+</div>
 {% endblock %}
