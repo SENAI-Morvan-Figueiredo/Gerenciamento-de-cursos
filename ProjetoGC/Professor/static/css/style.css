@@ -1,0 +1,49 @@
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background-color: #f3f3f3;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    border-bottom: 2px solid #004c97;
+    padding: 10px 30px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.senai-logo {
+    height: 40px;
+}
+
+.welcome-text {
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #333;
+}
+
+.weekday, .date {
+    font-size: 14px;
+}
+
+.icons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+}

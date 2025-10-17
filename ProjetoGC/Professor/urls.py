@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import dashboard_professor  
+from . import views
 
-app_name = 'professor'  
+app_name = 'professor'  # importante para usar namespaced URLs
 
 urlpatterns = [
-    path('dashboard/', dashboard_professor, name='dashboard_professor'),
+    path('', views.home, name='home'),
 ]
