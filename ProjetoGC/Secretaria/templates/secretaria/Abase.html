@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Secretaria - Sistema{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="https://unpkg.com/lucide@latest"></script> <!-- ícones -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     {% include 'partials/header.html' %}
@@ -14,22 +14,21 @@
     <div class="layout">
         <!-- MENU LATERAL -->
         <aside class="sidebar">
-
             <nav class="sidebar-menu">
-                <a href="{% url 'secretaria:turmaList' %}" class="menu-item">
+                <a href="{% url 'secretaria:turmaList' %}" class="menu-item {% if request.resolver_match.url_name == 'turmaList' %}active{% endif %}">
                     <i data-lucide="layers"></i>
                     <span>Turmas</span>
                 </a>
-                <a href="{% url 'secretaria:profList' %}" class="menu-item">
+                <a href="{% url 'secretaria:profList' %}" class="menu-item {% if 'prof' in request.resolver_match.url_name %}active{% endif %}">
                     <i data-lucide="users"></i>
                     <span>Professores</span>
                 </a>
-                <a href="{% url 'secretaria:alunoList' %}" class="menu-item">
+                <a href="{% url 'secretaria:alunoList' %}" class="menu-item {% if 'aluno' in request.resolver_match.url_name %}active{% endif %}">
                     <i data-lucide="user"></i>
                     <span>Alunos</span>
                 </a>
                 <a href="#" class="menu-item">
-                    <i data-lucide="file-text"></i>
+                    <i data-lucide="settings"></i>
                     <span>Configurações</span>
                 </a>
             </nav>
@@ -43,9 +42,20 @@
         </div>
     </div>
 
-    <!-- <script src="{% static 'js/script.js' %}"></script> -->
     <script>
         lucide.createIcons();
+        
+        // Atualizar menu ativo baseado na URL atual
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const menuItems = document.querySelectorAll('.menu-item');
+            
+            menuItems.forEach(item => {
+                if (item.href && currentPath.includes(item.getAttribute('href'))) {
+                    item.classList.add('active');
+                }
+            });
+        });
     </script>
 </body>
 </html>

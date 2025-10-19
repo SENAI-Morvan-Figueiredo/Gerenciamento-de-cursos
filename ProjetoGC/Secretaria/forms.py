@@ -113,6 +113,8 @@ class AlunoUsuarioForm(forms.ModelForm):
 
 
 
+
+
 # <--------------- PROFESSOR ---------------->
 
 class ProfessorUsuarioForm(forms.ModelForm):
@@ -233,100 +235,116 @@ class ProfessorUsuarioForm(forms.ModelForm):
 
 
 
+
+
 # <--------------- TURMA ---------------->
 
-DIA_SEMANA_CHOICES = [
-    ('segunda', 'Segunda-feira'),
-    ('terca', 'Terça-feira'),
-    ('quarta', 'Quarta-feira'),
-    ('quinta', 'Quinta-feira'),
-    ('sexta', 'Sexta-feira'),
-    ('sabado', 'Sábado'),
-    ('domingo', 'Domingo'),
-]
-
-TIPO_CHOICES = [
-    ('presencial', 'Presencial'),
-    ('online', 'Online'),
-    ('hibrido', 'Híbrido'),
-]
-
-STATUS_CHOICES = [
-    (True, 'Ativo'),
-    (False, 'Inativo'),
-]
-
 class TurmaForm(forms.ModelForm):
-    curso = forms.ModelChoiceField(queryset=Curso.objects.all(), required=True)
-    professor = forms.ModelChoiceField(queryset=Professor.objects.all(), required=True)
-    
-    dias_semana = forms.MultipleChoiceField(
-        choices=DIA_SEMANA_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
-        required=True,
-        label="Dias da Semana"
-    )
-
-    horario = forms.TimeField(
-        widget=forms.TimeInput(attrs={'type': 'time'}),
-        required=True
-    )
-
-    data_inicio = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date'}),
-        required=True
-    )
-
-    duracao = forms.IntegerField(
-        min_value=1,
-        required=True,
-        label="Duração (em horas)"
-    )
-
-    tipo = forms.ChoiceField(
-        choices=TIPO_CHOICES,
-        required=True
-    )
-
-    status = forms.ChoiceField(
-        choices=STATUS_CHOICES,
-        required=True
-    )
-
     class Meta:
         model = Turma
         fields = [
-            "curso",
-            "professor",
-            "dias_semana",
-            "horario",
-            "data_inicio",
-            "duracao",
-            "tipo",
-            "status",
+            "nome",
+            "curso", "professor",
+            "duracao", "tipo",
+            "horarios", "data_inicio", 
+            "status", "dias_semana"
         ]
 
-        # widgets = {
-        #     "curso": forms.Select(attrs={"class": "form-input"}),
-        #     "professor": forms.Select(attrs={"class": "form-input"}),
-        #     "horario": forms.TimeInput(attrs={"class": "form-input", "type": "time"}),
-        #     "data_inicio": forms.DateInput(attrs={"class": "form-input", "type": "date"}),
-        #     "duracao": forms.NumberInput(attrs={"class": "form-input"}),
-        #     "tipo": forms.Select(attrs={"class": "form-input"}),
-        #     "status": forms.Select(attrs={"class": "form-input"}),
-        # }
+    DIA_SEMANA_CHOICES = [
+        ('segunda', 'Segunda-feira'),
+        ('terca', 'Terça-feira'),
+        ('quarta', 'Quarta-feira'),
+        ('quinta', 'Quinta-feira'),
+        ('sexta', 'Sexta-feira'),
+        ('sabado', 'Sábado'),
+        ('domingo', 'Domingo'),
+    ]
 
+    TIPO_CHOICES = [
+        ('presencial', 'Presencial'),
+        ('online', 'Online'),
+        ('hibrido', 'Híbrido'),
+    ]
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     # adiciona classes Bootstrap ou personalizadas
-    #     self.fields['curso'].widget.attrs.update({'class': 'form-control'})
-    #     self.fields['professor'].widget.attrs.update({'class': 'form-control'})
-    #     self.fields['horario'].widget.attrs.update({'class': 'form-control', 'type': 'time'})
-    #     self.fields['data_inicio'].widget.attrs.update({'class': 'form-control', 'type': 'date'})
-    #     self.fields['duracao'].widget.attrs.update({'class': 'form-control'})
-    #     self.fields['tipo'].widget.attrs.update({'class': 'form-control'})
-    #     self.fields['status'].widget.attrs.update({'class': 'form-control'})
+    STATUS_CHOICES = [
+        (True, 'Ativo'),
+        (False, 'Inativo'),
+    ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # feito para facil modificação dos campos de forma manual,
+        # posteriormente mudar para algo mais automatizado.
+
+        # 🔹 Campos do tipo ModelChoiceField, NÃO MECHA!
+        self.fields['curso'].queryset = Curso.objects.all()
+        self.fields['professor'].queryset = Professor.objects.all()
+
+        # 🔹 Campos simples configurados diretamente, Colocações das class, id, labels e outros...
+        self.fields['curso'].widget.attrs.update({'class': 'form-control','required': True})
+        self.fields['professor'].widget.attrs.update({'class': 'form-control','required': True})
+        
+        self.fields['nome'].widget.attrs.update({'class': 'form-control', 'required': True, 'placeholder': 'Nome da Turma'})
+        
+        self.fields['tipo'] = forms.ChoiceField(
+            choices=self.TIPO_CHOICES,
+            widget=forms.Select(attrs={'class': 'form-control', 'required': True})
+        )
+        self.fields['duracao'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Duração (em horas)',
+            'min': '1',
+            'type': 'number',
+            'required': True
+        })
+
+        self.fields['horarios'].widget = forms.TimeInput(
+            attrs={'class': 'form-control', 'type': 'time', 'required': True}
+        )
+        self.fields['data_inicio'].widget = forms.DateInput(
+            attrs={'class': 'form-control', 'type': 'date', 'required': True}
+        )
+        
+        self.fields['dias_semana'] = forms.MultipleChoiceField(
+            choices=self.DIA_SEMANA_CHOICES,
+            required=True,
+            label="Dias da Semana",
+            widget=forms.CheckboxSelectMultiple(
+                attrs={'class': 'form-check-input', 'data-group': 'dias-semana'}
+            )
+        )
+        self.fields['status'] = forms.ChoiceField(
+            choices=self.STATUS_CHOICES,
+            initial=True,
+            widget=forms.Select(attrs={'class': 'form-control'})
+        )
+        
+        # Se estiver editando, preencher os valores iniciais para dias_semana
+        if self.instance and self.instance.pk:
+            # Converter a string de dias_semana para lista
+            if self.instance.dias_semana:
+                dias_lista = self.instance.dias_semana.split(',')
+                self.fields['dias_semana'].initial = [dia.strip() for dia in dias_lista]
+
+    def clean_dias_semana(self):
+        dias_semana = self.cleaned_data.get('dias_semana')
+        if dias_semana:
+            # Converter lista para string separada por vírgulas
+            return ','.join(dias_semana)
+        return ''
+
+    def save(self, commit=True):
+        turma = super().save(commit=False)
+        
+        # Garantir que dias_semana seja salvo como string
+        if 'dias_semana' in self.cleaned_data:
+            turma.dias_semana = self.cleaned_data['dias_semana']
+        
+        if commit:
+            turma.save()
+        
+        return turma
+       
 
 
         

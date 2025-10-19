@@ -5,11 +5,38 @@
 {% block header_title %} Adicionar Turma {% endblock %}
 
 {% block content %}
-<div class="content-border">
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Salvar</button>
-    </form>
+<div class="form-container">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    
+    <div class="form-group">
+      {% for field in form %}
+        {% if field.name == "dias_semana" %}
+          <fieldset class="checkbox-group">
+            <legend>{{ field.label }}</legend>
+            {% for checkbox in field %}
+              <label class="checkbox-item">
+                {{ checkbox.tag }}
+                {{ checkbox.choice_label }}
+              </label>
+            {% endfor %}
+            {% if field.errors %}
+              <ul class="errorlist">{{ field.errors }}</ul>
+            {% endif %}
+          </fieldset>
+        {% else %}
+          <div class="form-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <ul class="errorlist">{{ field.errors }}</ul>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <button type="submit">Salvar</button>
+  </form>
 </div>
 {% endblock %}
