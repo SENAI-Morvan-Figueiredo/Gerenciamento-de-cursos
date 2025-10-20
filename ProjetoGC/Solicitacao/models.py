@@ -20,6 +20,7 @@ class Solicitacao(models.Model):
     data_solicitacao = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_BASE, default='pendente')
     justificativa = models.TextField(blank=True, null=True)
+    
     turma_origem = models.ForeignKey(
         'Cursos.Turma', 
         on_delete=models.CASCADE, 

@@ -66,3 +66,6 @@ class Matricula(models.Model):
     class Meta:
         db_table = 'Matricula'
         unique_together = ['aluno', 'turma']
+
+    def __str__(self):
+        return f'{self.aluno} - {self.turma}'

@@ -4,6 +4,7 @@ from Login.models import Aluno, Professor
 from Cursos.models import Matricula, Turma  # ajuste o caminho do import conforme sua estrutura
 
 class SolicitacaoForm(forms.ModelForm):
+
     class Meta:
         model = Solicitacao
         fields = ['tipo', 'justificativa']
@@ -28,28 +29,14 @@ class SolicitacaoForm(forms.ModelForm):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
-        # Esconde campos por padrão
-        self.fields['justificativa'].widget = forms.HiddenInput()
-        self.fields['turma_origem'].widget = forms.HiddenInput()
-        self.fields['turma_destino'].widget = forms.HiddenInput()
-
-        tipo = self.data.get('tipo') or self.initial.get('tipo')
-
-        # 🔹 Mostrar justificativa se for trancamento
-        if tipo == 'trancamento':
-            self.fields['justificativa'].widget = forms.Textarea()
-
-        # 🔹 Mostrar turmas se for realocação
-        elif tipo == 'realocacao' and user:
-            self.fields['turma_origem'].widget = forms.Select()
-            self.fields['turma_destino'].widget = forms.Select()
-
+        # 🔹 Carrega as turmas do usuário logo no GET
+        if user:
             if user.tipo == 'aluno':
                 try:
                     aluno = Aluno.objects.get(usuario=user)
                     # Turmas onde o aluno está matriculado e ativo
                     matriculas_ativas = Matricula.objects.filter(
-                        aluno=aluno, 
+                        aluno=aluno,
                         status_matricula=True
                     )
                     turmas_origem = Turma.objects.filter(
@@ -57,23 +44,18 @@ class SolicitacaoForm(forms.ModelForm):
                         status=True
                     )
                     self.fields['turma_origem'].queryset = turmas_origem
-                    
-                    # 🔥 CARREGAR TODAS AS TURMAS DE DESTINO POSSÍVEIS
-                    # Para cada turma de origem, carregamos as turmas do mesmo curso
+
+                    # 🔥 Carregar todas as turmas possíveis de destino (mesmo curso)
                     if turmas_origem.exists():
-                        # Pega todos os cursos das turmas de origem
                         cursos_ids = turmas_origem.values_list('curso_id', flat=True).distinct()
-                        
-                        # Todas as turmas ativas dos mesmos cursos (exceto as de origem)
                         turmas_destino = Turma.objects.filter(
                             curso_id__in=cursos_ids,
                             status=True
                         ).exclude(
                             pk__in=turmas_origem.values_list('pk', flat=True)
                         )
-                        
                         self.fields['turma_destino'].queryset = turmas_destino
-                    
+
                 except Aluno.DoesNotExist:
                     self.fields['turma_origem'].queryset = Turma.objects.none()
                     self.fields['turma_destino'].queryset = Turma.objects.none()
@@ -81,26 +63,22 @@ class SolicitacaoForm(forms.ModelForm):
             elif user.tipo == 'professor':
                 try:
                     prof = Professor.objects.get(usuario=user)
-                    # Turmas onde o professor leciona e estão ativas
                     turmas_origem = Turma.objects.filter(
-                        professor=prof, 
+                        professor=prof,
                         status=True
                     )
                     self.fields['turma_origem'].queryset = turmas_origem
-                    
-                    # 🔥 CARREGAR TODAS AS TURMAS DE DESTINO POSSÍVEIS
+
                     if turmas_origem.exists():
                         cursos_ids = turmas_origem.values_list('curso_id', flat=True).distinct()
-                        
                         turmas_destino = Turma.objects.filter(
                             curso_id__in=cursos_ids,
                             status=True
                         ).exclude(
                             pk__in=turmas_origem.values_list('pk', flat=True)
                         )
-                        
                         self.fields['turma_destino'].queryset = turmas_destino
-                        
+
                 except Professor.DoesNotExist:
                     self.fields['turma_origem'].queryset = Turma.objects.none()
                     self.fields['turma_destino'].queryset = Turma.objects.none()

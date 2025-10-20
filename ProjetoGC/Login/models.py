@@ -36,6 +36,9 @@ class Aluno(models.Model):
     class Meta:
         db_table = 'Aluno'
 
+    def __str__(self):
+        return self.usuario.email
+
 
 class Professor(models.Model):
     professor_id = models.AutoField(primary_key=True)
@@ -45,6 +48,8 @@ class Professor(models.Model):
     
     class Meta:
         db_table = 'Professor'
+    def __str__(self):
+        return self.usuario.email
 
 
 class Secretaria(models.Model):
@@ -54,3 +59,6 @@ class Secretaria(models.Model):
     
     class Meta:
         db_table = 'Secretaria'
+    
+    def __str__(self):
+        return self.usuario.email

@@ -19,13 +19,13 @@ class SolicitacaoListView(ListView):
     def get_queryset(self):
         user = self.request.user
 
-        # Se for secretaria → vê todas
+        
         if user.tipo == 'secretaria':
             return Solicitacao.objects.all().select_related(
                 'turma_origem', 'turma_destino', 'turma_origem__curso', 'turma_destino__curso'
             )
 
-        # Se for aluno ou professor → vê apenas as próprias
+    
         return Solicitacao.objects.filter(usuario=user).select_related(
             'turma_origem', 'turma_destino', 'turma_origem__curso', 'turma_destino__curso'
         )
@@ -49,7 +49,7 @@ class SolicitacaoCreateView(CreateView):
         elif user.tipo == 'aluno':
             return reverse_lazy('aluno:dashboard_aluno')
 
-    # 🔥 NOVO: Passar o user para o form
+     # Passa o user para o form
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
@@ -60,7 +60,7 @@ class SolicitacaoCreateView(CreateView):
         user = self.request.user
         solicitacao.usuario = user
 
-        # 🔥 CAPTURAR AS TURMAS SE FOR REALOCAÇÃO
+        #  CAPTURA AS TURMAS SE FOR REALOCAÇÃO
         if form.cleaned_data.get('tipo') == 'realocacao':
             solicitacao.turma_origem = form.cleaned_data.get('turma_origem')
             solicitacao.turma_destino = form.cleaned_data.get('turma_destino')
