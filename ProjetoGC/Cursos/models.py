@@ -10,6 +10,9 @@ class Curso(models.Model):
     class Meta:
         db_table = 'Curso'
 
+    def __str__(self):
+        return self.nome
+
 class Disciplina(models.Model):
     disciplina_id = models.AutoField(primary_key=True)
     materia = models.CharField(max_length=100)
@@ -17,6 +20,9 @@ class Disciplina(models.Model):
     
     class Meta:
         db_table = 'Disciplina'
+
+    def __str__(self):
+        return self.materia
 
 class GradeCurricular(models.Model):
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
@@ -48,6 +54,9 @@ class Turma(models.Model):
     
     class Meta:
         db_table = 'Turma'
+    
+    def __str__(self):
+        return self.nome
 
 class Matricula(models.Model):
     matricula_id = models.AutoField(primary_key=True)

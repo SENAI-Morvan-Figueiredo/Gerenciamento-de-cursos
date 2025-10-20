@@ -29,8 +29,8 @@
     <!-- Card de Adição -->
     <a href="{% url 'secretaria:turmaAdd' %}" class="urls">
         <div class="card btn-add">
-            <i data-lucide="plus-circle" style="width: 32px; height: 32px;"></i>
             <h3>Nova Turma</h3>
+            <i data-lucide="plus-circle" style="width: 32px; height: 32px;"></i>
         </div>
     </a>
     
@@ -58,11 +58,11 @@
             </p>
             
             <div class="card-actions">
-                <a href="{% url 'secretaria:turmaDetail' turma.id %}" class="btn-detail">
+                <a href="{% url 'secretaria:turmaDetail' turma.turma_id %}" class="btn-detail">
                     <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
                     Detalhes
                 </a>
-                <a href="{% url 'secretaria:turmaEdit' turma.id %}" class="btn-edit">
+                <a href="{% url 'secretaria:turmaUpdate' turma.turma_id %}" class="btn-edit">
                     <i data-lucide="edit-3" style="width: 16px; height: 16px;"></i>
                     Editar
                 </a>

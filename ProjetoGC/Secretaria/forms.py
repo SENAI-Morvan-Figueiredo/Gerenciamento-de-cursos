@@ -244,10 +244,14 @@ class TurmaForm(forms.ModelForm):
         model = Turma
         fields = [
             "nome",
-            "curso", "professor",
-            "duracao", "tipo",
-            "horarios", "data_inicio", 
-            "status", "dias_semana"
+            "curso",
+            "professor",
+            "duracao",
+            "tipo",
+            "horarios",
+            "data_inicio", 
+            "status", 
+            "dias_semana"
         ]
 
     DIA_SEMANA_CHOICES = [
@@ -310,9 +314,10 @@ class TurmaForm(forms.ModelForm):
             required=True,
             label="Dias da Semana",
             widget=forms.CheckboxSelectMultiple(
-                attrs={'class': 'form-check-input', 'data-group': 'dias-semana'}
+                attrs={'class': 'form-check-input', 'data-group': 'dias-semana', 'required': True}
             )
         )
+        
         self.fields['status'] = forms.ChoiceField(
             choices=self.STATUS_CHOICES,
             initial=True,
