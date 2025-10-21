@@ -20,8 +20,18 @@
             <li><a href="{% url 'secretaria:profList' %}"><button type="button">Professores</button></a></li>
             <li><a href="{% url 'secretaria:alunoList' %}"><button type="button">Alunos</button></a></li>
             <li><a href="{% url 'solicitacao:solicitacaoList' %}"><button type="button">Solicitacoes</button></a></li>
-
+            <li>
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background-color: #d9534f; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer;">
+                        Sair
+                    </button>
+                </form>
+            </li>
             <!-- space for secretaria:config -->
+            
+            
+        
         </ul>
     </nav>
     {% endblock navbar %}

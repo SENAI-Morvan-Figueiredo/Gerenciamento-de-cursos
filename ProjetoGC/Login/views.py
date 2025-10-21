@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
@@ -45,3 +45,8 @@ def login_view(request):
             messages.error(request, "E-mail ou senha incorretos.")
 
     return render(request, "login.html")
+
+def logout_view(request):
+    logout(request)
+    messages.info(request, "Você saiu da sua conta com sucesso.")
+    return redirect("login")  # Redireciona para a página de login
