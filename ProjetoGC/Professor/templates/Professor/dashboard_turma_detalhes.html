@@ -1,0 +1,11 @@
+{% block content %}
+<div class="container">
+    <h2>Dashboard — {{ turma.nome }}</h2>
+
+    <p><strong>Total de alunos:</strong> {{ total_alunos }}</p>
+    <p><strong>Média das notas:</strong> {{ media_notas }}</p>
+    <p><strong>Frequência média:</strong> {{ frequencia }}%</p>
+
+    <a href="{% url 'professor:home' %}">⬅ Voltar às turmas</a>
+</div>
+{% endblock %}

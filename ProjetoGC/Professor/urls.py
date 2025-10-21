@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import dashboard_professor  
+from . import views
 
-app_name = 'professor'  
+app_name = 'professor'
 
 urlpatterns = [
-    path('dashboard/', dashboard_professor, name='dashboard_professor'),
+    path('home/', views.home, name='home'),
+    path('dashboard/turma/<int:turma_id>/', views.dashboard_turma_detalhes, name='dashboard_turma_detalhes'),
 ]
