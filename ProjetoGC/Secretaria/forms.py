@@ -106,10 +106,18 @@ class AlunoUsuarioForm(forms.ModelForm):
             aluno = Aluno.objects.create(
                 usuario=usuario,
                 data_ingresso=self.cleaned_data["data_ingresso"],
-                turma=self.cleaned_data["turma"]
+            )
+            
+
+            Matricula.objects.create(
+                aluno=aluno,
+                turma=self.cleaned_data["turma"],
+                data_ingresso=self.cleaned_data["data_ingresso"]
             )
             
             return aluno
+        
+
 
 class ProfessorUsuarioForm(forms.ModelForm):
     # Campos do Usuario

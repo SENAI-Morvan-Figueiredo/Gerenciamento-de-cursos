@@ -28,11 +28,11 @@
                     
                     {% if solicitacao.tipo == 'realocacao' and solicitacao.turma_origem and solicitacao.turma_destino %}
                         <td>
-                            {{ solicitacao.turma_origem.nome }} - {{ solicitacao.turma_origem.curso.nome }}
+                            {{ solicitacao.turma_origem.nome }} 
                         </td>
 
                         <td>
-                            {{ solicitacao.turma_destino.nome }} - {{ solicitacao.turma_destino.curso.nome }}
+                            {{ solicitacao.turma_destino.nome }} 
                         </td>
                     {% endif %}
     

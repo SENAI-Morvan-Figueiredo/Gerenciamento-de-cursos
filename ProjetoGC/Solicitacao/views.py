@@ -22,12 +22,12 @@ class SolicitacaoListView(ListView):
         
         if user.tipo == 'secretaria':
             return Solicitacao.objects.all().select_related(
-                'turma_origem', 'turma_destino', 'turma_origem__curso', 'turma_destino__curso'
+                'turma_origem', 'turma_destino', 
             )
 
     
         return Solicitacao.objects.filter(usuario=user).select_related(
-            'turma_origem', 'turma_destino', 'turma_origem__curso', 'turma_destino__curso'
+            'turma_origem', 'turma_destino',
         )
 
     def get_context_data(self, **kwargs):
