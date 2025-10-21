@@ -21,11 +21,12 @@ class Usuario(AbstractUser):
 
     USERNAME_FIELD = 'email' 
     REQUIRED_FIELDS = ['nome','sobrenome','cpf', 'tipo', 'username' ]
-    def __str__(self):
-        return self.email
     
     class Meta:
         db_table = 'Usuario'
+    
+    def __str__(self):
+        return self.email
 
 
 class Aluno(models.Model):
@@ -48,8 +49,14 @@ class Professor(models.Model):
     
     class Meta:
         db_table = 'Professor'
+<<<<<<< HEAD
     def __str__(self):
         return self.usuario.email
+=======
+    
+    def __str__(self):
+        return self.usuario.nome
+>>>>>>> origin/secretaria
 
 
 class Secretaria(models.Model):

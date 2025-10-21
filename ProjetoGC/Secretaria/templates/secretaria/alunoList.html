@@ -16,10 +16,10 @@
         <tbody>
             {% for aluno in alunos %}
                 <tr>
-                    <td>{{ aluno.aluno_id }}</td>
+                    <td>{{ aluno.id }}</td>
                     <td>{{ aluno.usuario.nome }}</td>
                     <td>
-                        <a href="{% url 'secretaria:alunoUpdate' aluno.aluno_id %}">Editar</a>
+                        <a href="{% url 'secretaria:alunoUpdate' aluno.id %}">Editar</a>
                         
                     </td>
                 </tr>
