@@ -49,14 +49,12 @@ class Professor(models.Model):
     
     class Meta:
         db_table = 'Professor'
-<<<<<<< HEAD
+
     def __str__(self):
         return self.usuario.email
-=======
+
     
-    def __str__(self):
-        return self.usuario.nome
->>>>>>> origin/secretaria
+
 
 
 class Secretaria(models.Model):

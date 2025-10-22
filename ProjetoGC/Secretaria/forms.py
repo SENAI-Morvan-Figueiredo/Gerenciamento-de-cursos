@@ -263,9 +263,6 @@ class TurmaForm(forms.ModelForm):
             "dias_semana"
         ]
 
-<<<<<<< HEAD
-
-=======
     DIA_SEMANA_CHOICES = [
         ('segunda', 'Segunda-feira'),
         ('terca', 'Terça-feira'),
@@ -361,8 +358,3 @@ class TurmaForm(forms.ModelForm):
             turma.save()
         
         return turma
-       
-
-
-        
->>>>>>> origin/secretaria
