@@ -13,7 +13,7 @@ from Login.decorators import professor_required
 def dashboard_turma_detalhes(request, turma_id):
     professor = get_object_or_404(Professor, usuario=request.user)
     turma = get_object_or_404(Turma, turma_id=turma_id, professor=professor)
-
+#a
 
     # Quantidade de alunos
     total_alunos = Matricula.objects.filter(turma=turma).count()
