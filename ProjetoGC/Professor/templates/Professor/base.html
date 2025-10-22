@@ -27,9 +27,101 @@
     </header>
 
     <main>
-        {% block content %}
-        {% endblock %}
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <button class="sidebar-toggle" id="sidebarToggle">‹</button>
+            
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#minhas-turmas">
+                        <i>👥</i>
+                        <span>Minhas Turmas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#calendario">
+                        <i>📅</i>
+                        <span>Calendário</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#diario">
+                        <i>📖</i>
+                        <span>Diário</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#materiais">
+                        <i>📁</i>
+                        <span>Materiais</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#atividades">
+                        <i>✓</i>
+                        <span>Atividades</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#secretaria">
+                        <i>📋</i>
+                        <span>Secretaria</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#relatorios">
+                        <i>📊</i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="#settings">
+                    <i>⚙️</i>
+                    <span>SAIR</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- DASHBOARD CONTENT -->
+        <div class="dashboard-container">
+            {% block content %}
+            {% endblock %}
+        </div>
     </main>
+
+    <script>
+        // Sidebar Toggle
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+            
+            // Mudar o símbolo do botão
+            if (sidebar.classList.contains('collapsed')) {
+                sidebarToggle.textContent = '›';
+            } else {
+                sidebarToggle.textContent = '‹';
+            }
+        });
+
+        // Salvar estado do sidebar no localStorage
+        window.addEventListener('load', function() {
+            const sidebarState = localStorage.getItem('sidebarCollapsed');
+            if (sidebarState === 'true') {
+                sidebar.classList.add('collapsed');
+                sidebarToggle.textContent = '›';
+            }
+        });
+
+        sidebar.addEventListener('click', function() {
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+        });
+    </script>
 
 </body>
 </html>
+
