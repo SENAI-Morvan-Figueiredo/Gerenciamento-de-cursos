@@ -1,29 +1,58 @@
-{% extends "secretaria/turmaList.html" %}
+{% extends "secretaria/Abase.html" %}
+{% load static %}
 
-{% block header_title %}
-    {% if view.object %}
-        Editar Disciplina
-    {% else %}
-        Cadastrar Nova Disciplina
-    {% endif %}
-{% endblock header_title %}
+{% block header_title %}Disciplinas Cadastradas{% endblock %}
 
 {% block content %}
-    <h2>Disciplinas</h2>
+<div class="content-header">
+    <div class="cursos-header">
+        <h2>Disciplinas</h2>
+        <a href="{% url 'disciplina_create_global' %}" class="btn-new-course">
+            <i data-lucide="plus"></i>
+            Nova Disciplina
+        </a>
+    </div>
+</div>
 
-    <a href="{% url 'disciplina_create_global' %}">
-        <button type="button">+ Nova Disciplina (sem curso)</button>
-    </a>
+<div class="cards-container">
+    {% for disciplina in disciplinas %}
+    <div class="card">
+        <h2>{{ disciplina.nome }}</h2>
+        <p>
+            <i data-lucide="clock"></i>
+            <strong>Carga Horária:</strong> {{ disciplina.carga_horaria }}h
+        </p>
+        {% if disciplina.descricao %}
+        <p>
+            <i data-lucide="file-text"></i>
+            <strong>Descrição:</strong> {{ disciplina.descricao|truncatewords:10 }}
+        </p>
+        {% endif %}
+        
+        <div class="card-actions">
+            <a href="{% url 'disciplina_update' disciplina.pk %}" class="btn-edit">
+                <i data-lucide="edit"></i>
+                Editar
+            </a>
+        </div>
+        
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--cinza-borda);">
+            <a href="{% url 'disciplina_delete' disciplina.pk %}" style="color: var(--error); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;" 
+               onclick="return confirm('Tem certeza que deseja excluir esta disciplina?');">
+                <i data-lucide="trash-2"></i>
+                Excluir
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="no-data">
+        <h3>Nenhuma disciplina cadastrada</h3>
+        <p>Clique em "Nova Disciplina" para adicionar a primeira disciplina.</p>
+    </div>
+    {% endfor %}
+</div>
 
-    <ul>
-        {% for disciplina in disciplinas %}
-            <li>
-                {{ disciplina.nome }} — {{ disciplina.carga_horaria }}h
-                <a href="{% url 'disciplina_update' disciplina.pk %}">Editar</a>
-                <a href="{% url 'disciplina_delete' disciplina.pk %}">Excluir</a>
-            </li>
-        {% empty %}
-            <li>Nenhuma disciplina cadastrada.</li>
-        {% endfor %}
-    </ul>
+<script>
+    lucide.createIcons();
+</script>
 {% endblock content %}

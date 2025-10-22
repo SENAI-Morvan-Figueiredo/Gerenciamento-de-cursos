@@ -15,8 +15,7 @@ class Curso(models.Model):
     def __str__(self):
         return self.nome
 
-    def __str__(self):
-        return self.nome
+    
 
 class Disciplina(models.Model):
     nome = models.CharField(max_length=150, verbose_name="Nome da Disciplina", default="Sem Nome")
@@ -27,8 +26,7 @@ class Disciplina(models.Model):
     def __str__(self):
         return self.nome
 
-    def __str__(self):
-        return self.materia
+    
 
 class GradeCurricular(models.Model):
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
@@ -62,8 +60,7 @@ class Turma(models.Model):
     def __str__(self):
         return self.nome
 
-    def __str__(self):
-        return self.nome
+    
 
 class Matricula(models.Model):
     matricula_id = models.AutoField(primary_key=True)

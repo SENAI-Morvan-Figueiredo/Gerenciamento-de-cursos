@@ -18,7 +18,7 @@ def login_view(request):
         
         if user is not None:
             login(request, user)
-            messages.success(request, f"Bem-vindo(a), {user.nome}!")
+           
             
             # DEBUG: Verificar todos os atributos
             print("=== DEBUG USER ===")
@@ -44,9 +44,8 @@ def login_view(request):
         else:
             messages.error(request, "E-mail ou senha incorretos.")
 
-    return render(request, "login.html")
+    return render(request, "Login/login.html")
 
 def logout_view(request):
     logout(request)
-    messages.info(request, "Você saiu da sua conta com sucesso.")
     return redirect("login")  # Redireciona para a página de login

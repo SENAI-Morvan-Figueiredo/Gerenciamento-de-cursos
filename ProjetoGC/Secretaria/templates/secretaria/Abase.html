@@ -19,6 +19,10 @@
                     <i data-lucide="layers"></i>
                     <span>Turmas</span>
                 </a>
+                <a href="{% url 'curso_list' %}" class="menu-item {% if 'aluno' in request.resolver_match.url_name %}active{% endif %}">
+                    <i data-lucide="user"></i>
+                    <span>Cursos</span>
+                </a>
                 <a href="{% url 'secretaria:profList' %}" class="menu-item {% if 'prof' in request.resolver_match.url_name %}active{% endif %}">
                     <i data-lucide="users"></i>
                     <span>Professores</span>
@@ -26,6 +30,10 @@
                 <a href="{% url 'secretaria:alunoList' %}" class="menu-item {% if 'aluno' in request.resolver_match.url_name %}active{% endif %}">
                     <i data-lucide="user"></i>
                     <span>Alunos</span>
+                </a>
+                <a href="{% url 'solicitacao:solicitacaoList' %}" class="menu-item {% if 'aluno' in request.resolver_match.url_name %}active{% endif %}">
+                    <i data-lucide="user"></i>
+                    <span>Solicitações</span>
                 </a>
                 <a href="#" class="menu-item">
                     <i data-lucide="settings"></i>

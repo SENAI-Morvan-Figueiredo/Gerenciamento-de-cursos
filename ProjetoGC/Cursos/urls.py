@@ -16,4 +16,6 @@ urlpatterns = [
     path("disciplinas/nova/", DisciplinaCreateView.as_view(), name="disciplina_create_global"),
     path("disciplinas/<int:pk>/editar/", DisciplinaUpdateView.as_view(), name="disciplina_update"),
     path("disciplinas/<int:pk>/deletar/", DisciplinaDeleteView.as_view(), name="disciplina_delete"),
+
+    
 ]

@@ -553,195 +553,190 @@ button[type="submit"]:hover {
     }
 }
 
-/* --- TABELAS MODERNAS --- */
-.table-container {
-    background: var(--branco);
-    border-radius: 16px;
-    box-shadow: var(--sombra);
-    overflow: hidden;
-    margin-top: 1.5rem;
-    border: 1px solid var(--cinza-borda);
-}
 
-table {
+/* --- FORMULÁRIOS DE CURSO --- */
+.curso-form {
     width: 100%;
-    border-collapse: collapse;
-    background: var(--branco);
 }
 
-table thead {
-    background: linear-gradient(135deg, var(--azul) 0%, var(--azul-claro) 100%);
+.messages-container {
+    margin-bottom: 2rem;
 }
 
-table thead th {
-    padding: 1.2rem 1rem;
-    color: var(--branco);
-    font-weight: 600;
-    font-size: 0.95rem;
-    text-align: left;
-    border: none;
-    position: relative;
+.message {
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 500;
 }
 
-table thead th:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 60%;
-    width: 1px;
-    background: rgba(255, 255, 255, 0.3);
-}
-
-table tbody tr {
-    border-bottom: 1px solid var(--cinza-borda);
-    transition: all 0.3s ease;
-}
-
-table tbody tr:hover {
-    background-color: var(--azul-suave);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-table tbody tr:last-child {
-    border-bottom: none;
-}
-
-table tbody td {
-    padding: 1.2rem 1rem;
-    color: var(--preto);
-    font-size: 0.9rem;
-    border: none;
-}
-
-/* --- STATUS BADGES --- */
-.status-badge {
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: inline-block;
-    text-align: center;
-    min-width: 80px;
-}
-
-.status-pendente {
-    background: #FEF3C7;
-    color: #D97706;
-    border: 1px solid #FBBF24;
-}
-
-.status-aceito {
+.message.success {
     background: #D1FAE5;
     color: #065F46;
     border: 1px solid #34D399;
 }
 
-.status-negado {
+.message.error {
     background: #FEE2E2;
     color: #991B1B;
     border: 1px solid #F87171;
 }
 
-.status-concluido {
-    background: #E0E7FF;
-    color: #3730A3;
-    border: 1px solid #818CF8;
-}
-
-/* --- BOTÕES DE AÇÃO --- */
-.action-buttons {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.btn-accept, .btn-deny {
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 0.8rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-    text-align: center;
-    min-width: 70px;
-}
-
-.btn-accept {
-    background: var(--success);
-    color: var(--branco);
-}
-
-.btn-accept:hover {
-    background: #0da271;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-.btn-deny {
-    background: var(--error);
-    color: var(--branco);
-}
-
-.btn-deny:hover {
-    background: #dc2626;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-/* --- TURMA INFO --- */
-.turma-info {
+/* --- CHECKBOX PERSONALIZADO --- */
+.checkbox-field {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    color: var(--cinza-claro);
+    gap: 1rem;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: var(--azul-suave);
+    border-radius: 12px;
+    border: 1px solid var(--xanadu);
 }
 
-.turma-info::before {
-    content: '→';
-    color: var(--azul-claro);
-    font-weight: bold;
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--azul);
+    margin: 0;
 }
 
-/* --- ESTADO VAZIO PARA TABELAS --- */
-.table-empty-state {
-    text-align: center;
-    padding: 3rem 2rem;
-    color: var(--cinza-claro);
+.checkbox-label input[type="checkbox"] {
+    display: none;
+}
+
+.checkmark {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--azul);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
     background: var(--branco);
 }
 
-.table-empty-state::before {
-    content: '📋';
-    font-size: 2.5rem;
-    display: block;
-    margin-bottom: 1rem;
+.checkbox-label input[type="checkbox"]:checked + .checkmark {
+    background: var(--azul);
+    border-color: var(--azul);
 }
 
-/* --- RESPONSIVIDADE PARA TABELAS --- */
+.checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+    content: '✓';
+    color: var(--branco);
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* --- AÇÕES DO FORMULÁRIO --- */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--cinza-borda);
+}
+
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.9rem 1.8rem;
+    background: var(--laranja-suave);
+    color: var(--laranja);
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(231, 73, 15, 0.2);
+    box-shadow: var(--sombra);
+}
+
+.btn-cancel:hover {
+    background: var(--laranja);
+    color: var(--branco);
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-hover);
+}
+
+.btn-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.9rem 2rem;
+    background: linear-gradient(135deg, var(--azul) 0%, var(--azul-claro) 100%);
+    color: var(--branco);
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--sombra);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-hover);
+    background: linear-gradient(135deg, var(--azul-claro) 0%, var(--azul) 100%);
+}
+
+/* --- CHECKBOX GROUP PARA DISCIPLINAS --- */
+.checkbox-group {
+    background: var(--bg-claro);
+    border: 1.5px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.checkbox-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.8rem;
+}
+
+.checkbox-items label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    padding: 0.4rem 0;
+    cursor: pointer;
+    color: var(--preto);
+}
+
+.checkbox-items input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--azul);
+    cursor: pointer;
+}
+
+/* --- RESPONSIVIDADE --- */
 @media (max-width: 768px) {
-    .table-container {
-        border-radius: 12px;
-        overflow-x: auto;
-    }
-    
-    table {
-        min-width: 600px;
-    }
-    
-    .action-buttons {
+    .form-actions {
         flex-direction: column;
     }
     
-    .btn-accept, .btn-deny {
-        min-width: 60px;
-        padding: 0.4rem 0.8rem;
+    .btn-cancel, .btn-submit {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .checkbox-items {
+        grid-template-columns: 1fr;
+    }
+    
+    .checkbox-field {
+        padding: 0.8rem;
     }
 }
-

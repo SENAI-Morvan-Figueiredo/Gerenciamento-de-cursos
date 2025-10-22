@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SENAI</title>
+    <link rel="stylesheet" href="{% static 'Login/css/style.css' %}">
+</head>
+<body>
+    <div class="login-container">
+        <div class="header">
+            <img src="{% static 'Login/img/senai_logo.png' %}" alt="SENAI Logo" class="senai-logo">
+            <span class="logo-text">Serviço Nacional<br>de Aprendizagem<br>Industrial</span>
+        </div>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            <div class="input-group">
+                <label for="id_email">E-mail</label>
+                <input type="email" id="id_email" name="email" placeholder="" required>
+            </div>
+            <div class="input-group">
+                <label for="id_password">Senha</label>
+                <input type="password" id="id_password" name="password" placeholder="" required>
+            </div>
+            <button type="submit" class="login-button">Login</button>
+            <a href="#" class="forgot-password">ESQUECI MINHA SENHA</a>
+        </form>
+
+        <div class="roles">
+            <a href="#" class="role-link">Aluno</a>
+            <a href="#" class="role-link">Secretaria</a>
+            <a href="#" class="role-link">Professor</a>
+        </div>
+
+        <div class="footer">
+            <p>&copy; SENAI-SP - 2025</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -9,41 +9,81 @@
     {% else %}
         <h2>Minhas Solicitações</h2>
     {% endif %}
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Tipo</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for solicitacao in solicitacoes %}
-                <tr>
-                    <td>{{ solicitacao.solicitacao_id }}</td>
-                    <td>{{ solicitacao.usuario.nome }}</td>
-                    <td>{{ solicitacao.tipo }}</td>
-                    <td>{{ solicitacao.status }}</td>
-                    
-                    {% if solicitacao.tipo == 'realocacao' and solicitacao.turma_origem and solicitacao.turma_destino %}
-                        <td>
-                            {{ solicitacao.turma_origem.nome }} 
-                        </td>
-
-                        <td>
-                            {{ solicitacao.turma_destino.nome }} 
-                        </td>
-                    {% endif %}
     
-                    <td>
-                        {% if tipo_usuario == 'secretaria' and solicitacao.status == 'pendente' %}
-                            <a href="{% url 'solicitacao:solicitacaoStatus' solicitacao.solicitacao_id 'aceitar' %}">Aceitar</a>
-                            <a href="{% url 'solicitacao:solicitacaoStatus' solicitacao.solicitacao_id 'negar' %}">Negar</a>
-                        {% endif %}
-                    </td>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th>Status</th>
+                    {% if tipo_usuario == 'secretaria' %}
+                        <th>Turma Origem</th>
+                        <th>Turma Destino</th>
+                        <th>Ações</th>
+                    {% endif %}
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for solicitacao in solicitacoes %}
+                    <tr>
+                        <td><strong>#{{ solicitacao.solicitacao_id }}</strong></td>
+                        <td>{{ solicitacao.usuario.nome }}</td>
+                        <td>{{ solicitacao.tipo|title }}</td>
+                        <td>
+                            <span class="status-badge status-{{ solicitacao.status|lower }}">
+                                {{ solicitacao.status }}
+                            </span>
+                        </td>
+                        
+                        {% if tipo_usuario == 'secretaria' %}
+                            <td>
+                                {% if solicitacao.tipo == 'realocacao' and solicitacao.turma_origem %}
+                                    <div class="turma-info">
+                                        {{ solicitacao.turma_origem.nome }}
+                                    </div>
+                                {% else %}
+                                    <span style="color: var(--cinza-claro);">-</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if solicitacao.tipo == 'realocacao' and solicitacao.turma_destino %}
+                                    <div class="turma-info">
+                                        {{ solicitacao.turma_destino.nome }}
+                                    </div>
+                                {% else %}
+                                    <span style="color: var(--cinza-claro);">-</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if solicitacao.status == 'pendente' %}
+                                    <div class="action-buttons">
+                                        <a href="{% url 'solicitacao:solicitacaoStatus' solicitacao.solicitacao_id 'aceitar' %}" class="btn-accept">
+                                            Aceitar
+                                        </a>
+                                        <a href="{% url 'solicitacao:solicitacaoStatus' solicitacao.solicitacao_id 'negar' %}" class="btn-deny">
+                                            Negar
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <span style="color: var(--cinza-claro); font-size: 0.8rem;">
+                                        Concluído
+                                    </span>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="{% if tipo_usuario == 'secretaria' %}7{% else %}4{% endif %}" class="table-empty-state">
+                            Nenhuma solicitação encontrada
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
