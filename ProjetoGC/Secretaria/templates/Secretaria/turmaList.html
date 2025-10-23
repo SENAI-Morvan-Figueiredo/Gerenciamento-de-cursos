@@ -76,41 +76,11 @@
     {% endfor %}
 </div>
 
-<style>
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-}
-
-.status-badge {
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.status-active {
-    background: #D1FAE5;
-    color: #065F46;
-}
-
-.status-inactive {
-    background: #FEE2E2;
-    color: #991B1B;
-}
-
-.urls {
-    text-decoration: none;
-    color: inherit;
-}
-</style>
-
 <script>
     // Atualizar ícones após o carregamento
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
     });
 </script>
+
 {% endblock %}

@@ -4,9 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>{% block title %}Secretaria - Sistema{% endblock %}</title>
+
+    <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+    <link rel="stylesheet" herf="{% static 'css/respon.css' %}">
+
+    <!-- ICONES -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
 </head>
 <body>
     {% include 'partials/header.html' %}
@@ -19,7 +27,7 @@
                     <i data-lucide="layers"></i>
                     <span>Turmas</span>
                 </a>
-                <a href="{% url 'curso_list' %}" class="menu-item {% if 'aluno' in request.resolver_match.url_name %}active{% endif %}">
+                <a href="{% url 'curso_list' %}" class="menu-item {% if 'curso' in request.resolver_match.url_name %}active{% endif %}">
                     <i data-lucide="user"></i>
                     <span>Cursos</span>
                 </a>
@@ -31,7 +39,7 @@
                     <i data-lucide="user"></i>
                     <span>Alunos</span>
                 </a>
-                <a href="{% url 'solicitacao:solicitacaoList' %}" class="menu-item {% if 'aluno' in request.resolver_match.url_name %}active{% endif %}">
+                <a href="{% url 'solicitacao:solicitacaoList' %}" class="menu-item {% if 'solicitacao' in request.resolver_match.url_name %}active{% endif %}">
                     <i data-lucide="user"></i>
                     <span>Solicitações</span>
                 </a>
