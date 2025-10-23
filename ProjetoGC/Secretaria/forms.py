@@ -90,8 +90,8 @@ class AlunoUsuarioForm(forms.ModelForm):
                 username = f"{base_username}{count}"
                 count += 1
 
-            # Cria o usuário
-            usuario = Usuario.objects.create(
+            # Cria o usuário com senha igual ao CPF
+            usuario = Usuario.objects.create_user(  # Usando create_user ao invés de create
                 username=username,
                 nome=self.cleaned_data["nome"],
                 sobrenome=self.cleaned_data["sobrenome"],
@@ -100,7 +100,8 @@ class AlunoUsuarioForm(forms.ModelForm):
                 cpf=self.cleaned_data["cpf"],
                 endereco=self.cleaned_data["endereco"],
                 data_nascimento=self.cleaned_data["data_nascimento"],
-                tipo="aluno"
+                tipo="aluno",
+                password=self.cleaned_data["cpf"]  # Define a senha como o CPF
             )
             
             # Cria o aluno vinculado ao usuário
@@ -108,7 +109,6 @@ class AlunoUsuarioForm(forms.ModelForm):
                 usuario=usuario,
                 data_ingresso=self.cleaned_data["data_ingresso"],
             )
-            
 
             Matricula.objects.create(
                 aluno=aluno,
