@@ -1,56 +1,87 @@
+{% extends "secretaria/Abase.html" %}
+{% load static %}
+
 {% block title %}
   {% if view.object %}Editar Curso{% else %}Novo Curso{% endif %}
 {% endblock %}
 
 {% block content %}
-<h2>
-  {% if view.object %}Editar Curso{% else %}Novo Curso{% endif %}
-</h2>
+<div class="content-header">
+    <h1>{% if view.object %}Editar Curso{% else %}Novo Curso{% endif %}</h1>
+    <p>{% if view.object %}Atualize as informações do curso{% else %}Preencha os dados para criar um novo curso{% endif %}</p>
+</div>
 
-<a href="{% url 'curso_list' %}">Voltar para a lista de cursos</a>
+<div class="form-container">
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+            <i data-lucide="{% if message.tags == 'success' %}check-circle{% else %}alert-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-{% if messages %}
-  {% for message in messages %}
-    <p>{{ message }}</p>
-  {% endfor %}
-{% endif %}
+    <form method="post" class="curso-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.non_field_errors }}
+        <div class="form-group">
+            <div class="form-field">
+                {{ form.nome.label_tag }}
+                {{ form.nome }}
+                {{ form.nome.errors }}
+            </div>
 
-  <div>
-    {{ form.nome.label_tag }}<br>
-    {{ form.nome }}
-    {{ form.nome.errors }}
-  </div>
+            <div class="form-field">
+                {{ form.carga_horaria.label_tag }}
+                {{ form.carga_horaria }}
+                {{ form.carga_horaria.errors }}
+            </div>
+        </div>
 
-  <div>
-    {{ form.descricao.label_tag }}<br>
-    {{ form.descricao }}
-    {{ form.descricao.errors }}
-  </div>
+        <div class="form-field">
+            {{ form.descricao.label_tag }}
+            {{ form.descricao }}
+            {{ form.descricao.errors }}
+        </div>
 
-  <div>
-    {{ form.carga_horaria.label_tag }}<br>
-    {{ form.carga_horaria }}
-    {{ form.carga_horaria.errors }}
-  </div>
+        <div class="checkbox-field">
+            {{ form.ativo }}
+            <label for="{{ form.ativo.id_for_label }}" class="checkbox-label">
+                <span class="checkmark"></span>
+                {{ form.ativo.label }}
+            </label>
+            {{ form.ativo.errors }}
+        </div>
 
-  <div>
-    {{ form.ativo.label_tag }}<br>
-    {{ form.ativo }}
-    {{ form.ativo.errors }}
-  </div>
+        {% if form.disciplinas %}
+        <div class="form-field">
+            {{ form.disciplinas.label_tag }}
+            <div class="checkbox-group">
+                <div class="checkbox-items">
+                    {{ form.disciplinas }}
+                </div>
+            </div>
+            {{ form.disciplinas.errors }}
+        </div>
+        {% endif %}
 
-  <div>
-    {{ form.disciplinas.label_tag }}<br>
-    {{ form.disciplinas }}
-    {{ form.disciplinas.errors }}
-  </div>
+        <div class="form-actions">
+            <a href="{% url 'curso_list' %}" class="btn-cancel">
+                <i data-lucide="arrow-left"></i>
+                Voltar para Lista
+            </a>
+            <button type="submit" class="btn-submit">
+                <i data-lucide="{% if view.object %}save{% else %}plus{% endif %}"></i>
+                {% if view.object %}Atualizar Curso{% else %}Criar Curso{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
 
-  <button type="submit">
-    {% if view.object %}Atualizar Curso{% else %}Criar Curso{% endif %}
-  </button>
-</form>
+<script>
+    lucide.createIcons();
+</script>
 {% endblock %}

@@ -1,0 +1,17 @@
+<!-- Secretaria/templates/secretaria/turmaDetail.html -->
+
+{% extends "secretaria/turmaList.html" %}
+
+{% block header_title %} Detalhes da Turma {% endblock %}
+
+{% block content %}
+    <h2>Turma: {{ turma.nome }}</h2>
+    <p><strong>Curso:</strong> {{ turma.curso.nome }}</p>
+    <p><strong>Professor:</strong> {{ turma.professor.usuario.first_name }}</p>
+    <p><strong>Tipo:</strong> {{ turma.tipo }}</p>
+    <p><strong>Alunos:</strong>
+        {% for aluno in turma.alunos.all %}
+            {{ aluno.usuario.first_name }}
+        {% endfor %}
+    </p>
+{% endblock %}

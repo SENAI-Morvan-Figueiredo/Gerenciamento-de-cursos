@@ -1,0 +1,35 @@
+
+import django.db.models.deletion
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+        ('Atividades', '0001_initial'),
+        ('Cursos', '0001_initial'),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name='atividade',
+            name='turma',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Cursos.turma'),
+        ),
+        migrations.AddField(
+            model_name='atividadeentregue',
+            name='atividade',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Atividades.atividade'),
+        ),
+        migrations.AddField(
+            model_name='atividadeentregue',
+            name='matricula',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Cursos.matricula'),
+        ),
+        migrations.AlterUniqueTogether(
+            name='atividadeentregue',
+            unique_together={('atividade', 'matricula')},
+        ),
+    ]

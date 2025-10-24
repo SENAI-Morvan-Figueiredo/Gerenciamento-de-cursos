@@ -1,0 +1,12 @@
+<header class="topbar">
+    <div class="sidebar-logo">
+        <h2>Sistema de Gerencimaneto de Cursos</h2>
+    </div>
+    <div class="header-actions">
+        <span class="user-welcome">Olá, {{ request.user.first_name|default:request.user.username }}</span>
+        <a href="{% url 'logout' %}" class="logout-btn" onclick="return confirm('Tem certeza que deseja sair?');">
+            <i data-lucide="log-out"></i>
+            Sair
+        </a>
+    </div>
+</header>

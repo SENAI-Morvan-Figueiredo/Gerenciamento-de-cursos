@@ -1,30 +1,55 @@
-{% extends "secretaria/turmaList.html" %}
+{% extends "secretaria/Abase.html" %}
+{% load static %}
 
-{% block header_title %}
-    {% if view.object %}
-        Editar Curso
-    {% else %}
-        Cadastrar Novo Curso
-    {% endif %}
-{% endblock header_title %}
+{% block header_title %}Lista de Cursos{% endblock %}
 
 {% block content %}
-    <h2>Cursos</h2>
+<div class="content-header">
+    <div class="cursos-header">
+        <h2>Cursos Cadastrados</h2>
+        <a href="{% url 'curso_create' %}" class="btn-new-course">
+            <i data-lucide="plus"></i>
+            Novo Curso
+        </a>
+    </div>
+</div>
 
-    <a href="{% url 'curso_create' %}">
-        <button type="button">+ Novo Curso</button>
-    </a>
+<div class="cards-container">
+    {% for curso in cursos %}
+    <div class="card">
+        <h2>{{ curso.nome }}</h2>
+        <p>
+            <i data-lucide="clock"></i>
+            <strong>Carga Horária:</strong> {{ curso.carga_horaria }}h
+        </p>
+        
+        <div class="card-actions">
+            <a href="{% url 'disciplina_list' curso.pk %}" class="btn-detail">
+                <i data-lucide="book-open"></i>
+                Disciplinas
+            </a>
+            <a href="{% url 'curso_update' curso.pk %}" class="btn-edit">
+                <i data-lucide="edit"></i>
+                Editar
+            </a>
+        </div>
+        
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--cinza-borda);">
+            <a href="{% url 'curso_delete' curso.pk %}" style="color: var(--error); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i data-lucide="trash-2"></i>
+                Excluir
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="no-data">
+        <h3>Nenhum curso cadastrado</h3>
+        <p>Clique em "Novo Curso" para adicionar o primeiro curso.</p>
+    </div>
+    {% endfor %}
+</div>
 
-    <ul>
-        {% for curso in cursos %}
-            <li>
-                {{ curso.nome }} — {{ curso.carga_horaria }}h
-                <a href="{% url 'curso_update' curso.pk %}">Editar</a>
-                <a href="{% url 'curso_delete' curso.pk %}">Excluir</a>
-                <a href="{% url 'disciplina_list' curso.pk %}">Disciplinas</a>
-            </li>
-        {% empty %}
-            <li>Nenhum curso cadastrado.</li>
-        {% endfor %}
-    </ul>
+<script>
+    lucide.createIcons();
+</script>
 {% endblock content %}
