@@ -24,7 +24,7 @@ class SolicitacaoForm(forms.ModelForm):
         required=False,
         label="Turma de Destino"
     )
-#teste
+
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
@@ -33,12 +33,14 @@ class SolicitacaoForm(forms.ModelForm):
         if user:
             if user.tipo == 'aluno':
                 try:
+
                     aluno = Aluno.objects.get(usuario=user)
                     # Turmas onde o aluno está matriculado e ativo
                     matriculas_ativas = Matricula.objects.filter(
                         aluno=aluno,
                         status_matricula=True
                     )
+                    
                     turmas_origem = Turma.objects.filter(
                         pk__in=matriculas_ativas.values_list('turma_id', flat=True),
                         status=True
