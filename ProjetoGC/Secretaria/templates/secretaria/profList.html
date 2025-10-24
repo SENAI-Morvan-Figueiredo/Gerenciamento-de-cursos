@@ -2,7 +2,7 @@
 {% extends "secretaria/Abase.html" %}
 {% load static %}
 
-{% block title %} Lista de Professores {% endblock %}
+
 
 {% block content %}
 <div class="content-header">
@@ -24,7 +24,7 @@
 
 <div class="cards-container">
     
-    <a href="#" class="card btn-add">
+    <a href="{% url 'secretaria:profAdd' %}" class="card btn-add">
         <i data-lucide="user-plus" width="32" height="32"></i>
         <span>Adicionar Professor</span>
     </a>

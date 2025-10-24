@@ -73,6 +73,7 @@ class SolicitacaoCreateView(CreateView):
         return super().form_valid(form)
 
 
+# View para atualizar status de solicitações de acordo com ações especificas da secretaria
 @method_decorator(secretaria_required, name='dispatch')
 class SolicitacaoStatusView(View):
     """
@@ -87,7 +88,7 @@ class SolicitacaoStatusView(View):
             messages.error(request, "Ação inválida.")
             return redirect('solicitacao:solicitacaoList')
         
-        # Apenas solicitações pendentes podem ser alteradas
+        # Warning:Apenas solicitações pendentes podem ser alteradas
         if solicitacao.status != 'pendente':
             messages.warning(request, "Esta solicitação já foi processada.")
             return redirect('solicitacao:solicitacaoList')

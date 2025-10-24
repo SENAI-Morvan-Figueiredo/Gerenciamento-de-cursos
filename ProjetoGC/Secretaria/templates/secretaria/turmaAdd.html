@@ -1,8 +1,7 @@
 <!-- Secretaria/templates/secretaria/turmaAdd.html -->
-{% extends "secretaria/turmaList.html" %}
+{% extends "secretaria/abase.html" %}
 {% load static %}
 
-{% block header_title %} Adicionar Turma {% endblock %}
 
 {% block content %}
 <div class="form-container">
@@ -11,6 +10,8 @@
     
     <div class="form-group">
       {% for field in form %}
+
+      <!-- Verifica se o campo é o "dias_semana" para aplicar a class "checkbox-group" -->
         {% if field.name == "dias_semana" %}
           <fieldset class="checkbox-group">
             <legend>{{ field.label }}</legend>
@@ -24,6 +25,8 @@
               <ul class="errorlist">{{ field.errors }}</ul>
             {% endif %}
           </fieldset>
+
+        <!-- Inputs normais/sem necessidade de intervenção no HTML -->
         {% else %}
           <div class="form-field">
             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -33,6 +36,7 @@
             {% endif %}
           </div>
         {% endif %}
+
       {% endfor %}
     </div>
 

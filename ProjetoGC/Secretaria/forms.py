@@ -4,120 +4,73 @@ from Cursos.models import Matricula, Turma, Curso
     
 from django.utils.text import slugify
 
-
-class AlunoUsuarioForm(forms.ModelForm):
-    # Campos do Usuario
-    nome = forms.CharField(max_length=150, required=True)
-    sobrenome = forms.CharField(max_length=150, required=True)
-    email = forms.EmailField(required=True)
-    contato = forms.CharField(max_length=20, required=True)
-    turma = forms.ModelChoiceField(
-        queryset=Turma.objects.all(),
-        required=True,
-        empty_label="Selecione uma turma"
-    )
-    cpf = forms.CharField(max_length=14, required=True)
-    endereco = forms.CharField(widget=forms.Textarea, required=True)
-    data_nascimento = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}), required=True)
+class UsuarioBaseForm(forms.ModelForm):
+    password1 = forms.CharField(label='Senha', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Confirmação de Senha', widget=forms.PasswordInput)
     
     class Meta:
-        model = Aluno
-        fields = ["data_ingresso"]
-        widgets = {
-            "data_ingresso": forms.DateInput(attrs={"type": "date"}),
-        }
+        model = Usuario
+        fields = ['nome', 'sobrenome', 'email', 'data_nascimento', 'contato', 'cpf', 'endereco', 'tipo']
+    
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("As senhas não coincidem")
+        return password2
 
+class AlunoUsuarioForm(UsuarioBaseForm):
+    # Campos específicos do aluno, se houver
+    turma = forms.ModelChoiceField(
+        queryset=Turma.objects.all(),
+        required=False,
+        label='Turma'
+    )
+    
+    class Meta(UsuarioBaseForm.Meta):
+        # Define o tipo como aluno automaticamente
+        pass
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Preenche os campos do usuário se estiver editando
-        if self.instance and self.instance.pk and hasattr(self.instance, 'usuario'):
-            usuario = self.instance.usuario
-            self.fields['nome'].initial = usuario.nome
-            self.fields['sobrenome'].initial = usuario.sobrenome
-            self.fields['email'].initial = usuario.email
-            self.fields['contato'].initial = usuario.contato
-            self.fields['cpf'].initial = usuario.cpf
-            self.fields['endereco'].initial = usuario.endereco
-            self.fields['data_nascimento'].initial = usuario.data_nascimento
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if self.instance and self.instance.pk and hasattr(self.instance, 'usuario'):
-            if Usuario.objects.filter(email=email).exclude(pk=self.instance.usuario.pk).exists():
-                raise forms.ValidationError("Já existe um usuário com este e-mail.")
-        else:
-            if Usuario.objects.filter(email=email).exists():
-                raise forms.ValidationError("Já existe um usuário com este e-mail.")
-        return email
-
-    def clean_cpf(self):
-        cpf = self.cleaned_data.get('cpf')
-        if self.instance and self.instance.pk and hasattr(self.instance, 'usuario'):
-            if Usuario.objects.filter(cpf=cpf).exclude(pk=self.instance.usuario.pk).exists():
-                raise forms.ValidationError("Já existe um usuário com este CPF.")
-        else:
-            if Usuario.objects.filter(cpf=cpf).exists():
-                raise forms.ValidationError("Já existe um usuário com este CPF.")
-        return cpf
-
+        # Define o tipo como aluno por padrão
+        self.fields['tipo'].initial = 'aluno'
+        self.fields['tipo'].widget = forms.HiddenInput()
+    
     def save(self, commit=True):
-        # Se for atualização
-        if self.instance and self.instance.pk:
-            aluno = super().save(commit=False)
-            usuario = self.instance.usuario
-            
-            # Atualiza usuário existente
-            usuario.nome = self.cleaned_data["nome"]
-            usuario.sobrenome = self.cleaned_data["sobrenome"]
-            usuario.email = self.cleaned_data["email"]
-            usuario.contato = self.cleaned_data["contato"]
-            usuario.cpf = self.cleaned_data["cpf"]
-            usuario.endereco = self.cleaned_data["endereco"]
-            usuario.data_nascimento = self.cleaned_data["data_nascimento"]
-            
-            if commit:
-                usuario.save()
-                aluno.turma = self.cleaned_data["turma"]
-                aluno.save()
-            
-            return aluno
-        else:
-            # CRIAÇÃO - cria novo usuário e aluno
-            base_username = slugify(self.cleaned_data["nome"])
-            username = base_username
-            count = 1
-            while Usuario.objects.filter(username=username).exists():
-                username = f"{base_username}{count}"
-                count += 1
-
-            # Cria o usuário
-            usuario = Usuario.objects.create(
-                username=username,
-                nome=self.cleaned_data["nome"],
-                sobrenome=self.cleaned_data["sobrenome"],
-                email=self.cleaned_data["email"],
-                contato=self.cleaned_data["contato"],
-                cpf=self.cleaned_data["cpf"],
-                endereco=self.cleaned_data["endereco"],
-                data_nascimento=self.cleaned_data["data_nascimento"],
-                tipo="aluno"
-            )
-            
-            # Cria o aluno vinculado ao usuário
-            aluno = Aluno.objects.create(
-                usuario=usuario,
-                data_ingresso=self.cleaned_data["data_ingresso"],
-            )
-            
-
-            Matricula.objects.create(
-                aluno=aluno,
-                turma=self.cleaned_data["turma"],
-                data_ingresso=self.cleaned_data["data_ingresso"]
-            )
-            
-            return aluno
+        # Primeiro salva o usuário
+        usuario = super().save(commit=False)
+        usuario.set_password(self.cleaned_data["password1"])
         
+        if commit:
+            usuario.save()
+            # Cria o aluno associado
+            aluno = Aluno.objects.create(usuario=usuario)
+            
+            # Se você selecionou uma turma, cria a matrícula
+            turma = self.cleaned_data.get('turma')
+            if turma:
+                Matricula.objects.create(aluno=aluno, turma=turma)
+        
+        return usuario
+    
+    class MatriculaForm(forms.ModelForm):
+        class Meta:
+            model = Matricula
+            fields = ['aluno', 'turma']
+
+        
+
+
+
+
+
+
+
+
+
+
+
 
 
 

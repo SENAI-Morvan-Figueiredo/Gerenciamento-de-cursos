@@ -1,5 +1,6 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.urls import reverse_lazy
+from django.contrib import messages
 from django.utils.decorators import method_decorator
 
 from .forms import AlunoUsuarioForm, ProfessorUsuarioForm, TurmaForm
@@ -67,6 +68,15 @@ class AlunoCreateView(CreateView):
     form_class = AlunoUsuarioForm
     template_name = "secretaria/alunoAdd.html"
     success_url = reverse_lazy("secretaria:alunoList")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Aluno cadastrado com sucesso!')
+        return response
+    
+    def form_invalid(self, form):
+        messages.error(self.request, 'Erro no cadastro. Verifique os dados.')
+        return super().form_invalid(form)
 
 @method_decorator(secretaria_required, name='dispatch')
 class AlunoUpdateView(UpdateView):

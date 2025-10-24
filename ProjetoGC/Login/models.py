@@ -32,7 +32,7 @@ class Usuario(AbstractUser):
 class Aluno(models.Model):
     aluno_id = models.AutoField(primary_key=True)
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
-    data_ingresso = models.DateField('Data de Ingresso')
+    
     
     class Meta:
         db_table = 'Aluno'
