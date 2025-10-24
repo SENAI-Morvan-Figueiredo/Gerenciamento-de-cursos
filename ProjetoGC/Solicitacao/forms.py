@@ -24,7 +24,7 @@ class SolicitacaoForm(forms.ModelForm):
         required=False,
         label="Turma de Destino"
     )
-
+#teste
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
