@@ -181,6 +181,7 @@ class ProfessorUsuarioForm(forms.ModelForm):
     def save(self, commit=True):
         # Se for atualização
         if self.instance and self.instance.pk:
+            # ...existing code...
             professor = super().save(commit=False)
             usuario = self.instance.usuario
             
@@ -214,8 +215,8 @@ class ProfessorUsuarioForm(forms.ModelForm):
                 username = f"{base_username}{count}"
                 count += 1
 
-            # Cria o usuário
-            usuario = Usuario.objects.create(
+            # Cria o usuário com senha padrão igual ao CPF
+            usuario = Usuario.objects.create_user(
                 username=username,
                 nome=self.cleaned_data["nome"],
                 sobrenome=self.cleaned_data["sobrenome"],
@@ -224,7 +225,8 @@ class ProfessorUsuarioForm(forms.ModelForm):
                 cpf=self.cleaned_data["cpf"],
                 endereco=self.cleaned_data["endereco"],
                 data_nascimento=self.cleaned_data["data_nascimento"],
-                tipo="professor"
+                tipo="professor",
+                password=self.cleaned_data["cpf"]  # senha padrão = CPF (hashed por create_user)
             )
             
             # Cria o professor
