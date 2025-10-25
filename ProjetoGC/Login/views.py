@@ -1,5 +1,9 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
+from django.contrib.auth.views import PasswordResetView
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.urls import reverse_lazy
 from django.contrib import messages
 
 def login_view(request):
@@ -49,3 +53,33 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect("login")  # Redireciona para a página de login
+
+from django.contrib import messages
+
+
+def password_reset_done(request):
+    messages.success(request, 'Um email com instruções foi enviado para você.')
+    return redirect('login')
+
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'Login/password_reset_form.html'
+    html_email_template_name = 'Login/password_reset_email.html'
+    success_url = reverse_lazy('password_reset_done')
+
+    def send_mail(self, subject_template_name, email_template_name,
+                  context, from_email, to_email, html_email_template_name=None):
+        subject = "Redefinição de senha - Sistema de Gerenciamento de Cursos"
+        html_email = render_to_string(self.html_email_template_name, context)
+        text_email = (
+            f"Olá {context['user'].get_username()},\n\n"
+            "Você solicitou uma redefinição de senha.\n"
+            f"Acesse o link abaixo:\n"
+            f"{context['protocol']}://{context['domain']}/reset/{context['uid']}/{context['token']}/\n\n"
+            "Se não foi você, ignore este e-mail."
+        )
+
+        msg = EmailMultiAlternatives(subject, text_email, from_email, [to_email])
+        msg.attach_alternative(html_email, "text/html")
+        msg.send()
+

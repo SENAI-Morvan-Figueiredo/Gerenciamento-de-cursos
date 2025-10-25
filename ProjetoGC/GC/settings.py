@@ -141,5 +141,16 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/home/'
 
+# Configurações de e-mail
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend' 
 EMAIL_FILE_PATH = BASE_DIR / 'emails'  # Diretório onde os emails serão salvos
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'gerenciamentodecursossenai@gmail.com'
+EMAIL_HOST_PASSWORD = 'mjyg ncyj cqfv juiy' # alterar para env dps
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# Tempo de expiração do token de reset de senha (em segundos)
+PASSWORD_RESET_TIMEOUT = 3600  # 1 hora
+ALLOWED_HOSTS = []
+
