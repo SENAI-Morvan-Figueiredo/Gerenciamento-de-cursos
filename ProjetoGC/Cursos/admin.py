@@ -2,11 +2,6 @@ from django.contrib import admin
 from .models import Curso, Disciplina, Turma, Matricula, GradeCurricular
 
 
-
-
-
-
-
 @admin.register(GradeCurricular)
 class GradeCurricularAdmin(admin.ModelAdmin):
     list_display = ('curso', 'disciplina')
@@ -31,6 +26,3 @@ class CursoAdmin(admin.ModelAdmin):
 class DisciplinaAdmin(admin.ModelAdmin):
     list_display = ('id', 'nome', 'descricao')
     search_fields = ('id', 'nome', 'descricao')
-
-
-# Register your models here.
