@@ -23,29 +23,38 @@ class SolicitacaoListView(ListView):
 
         if user.tipo == 'secretaria':
             return Solicitacao.objects.all().select_related(
-                'turma_origem', 'turma_destino', 'turma_origem__curso', 'turma_destino__curso'
+                'turma_origem', 'turma_destino',
             )
-
-        return Solicitacao.objects.filter(usuario=user).select_related(
-            'turma_origem', 'turma_destino', 'turma_origem__curso', 'turma_destino__curso'
-        )
+        else:
+            return Solicitacao.objects.filter(usuario=user).select_related(
+                'turma_origem', 'turma_destino',
+            )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['tipo_usuario'] = self.request.user.tipo
         return context
 
-
-@method_decorator(aluno_required or professor_required, name='dispatch')
 class SolicitacaoCreateView(CreateView):
     model = Solicitacao
     form_class = SolicitacaoForm
     template_name = 'Solicitacao/solicitacaoAdd.html'
     
+    def dispatch(self, request, *args, **kwargs):
+        # Verifica se está autenticado
+        if not request.user.is_authenticated:
+            return redirect('login:login')
+        
+        # Verifica se é aluno OU professor
+        if request.user.tipo not in ['aluno', 'professor']:
+            messages.error(request, "Apenas alunos e professores podem criar solicitações.")
+            return redirect('login:login')
+            
+        return super().dispatch(request, *args, **kwargs)
     def get_success_url(self):
         user = self.request.user
         if user.tipo == 'professor':
-            return reverse_lazy('professor:dashboard_professor')
+            return reverse_lazy('professor:home')
         elif user.tipo == 'aluno':
             return reverse_lazy('aluno:dashboard_aluno')
 

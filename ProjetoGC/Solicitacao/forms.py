@@ -1,7 +1,7 @@
 from django import forms
 from .models import Solicitacao
 from Login.models import Aluno, Professor
-from Cursos.models import Matricula, Turma  # ajuste o caminho do import conforme sua estrutura
+from Cursos.models import Matricula, Turma  
 
 class SolicitacaoForm(forms.ModelForm):
 
@@ -29,59 +29,78 @@ class SolicitacaoForm(forms.ModelForm):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
-        # 🔹 Carrega as turmas do usuário logo no GET
-        if user:
-            if user.tipo == 'aluno':
-                try:
-                    aluno = Aluno.objects.get(usuario=user)
-                    # Turmas onde o aluno está matriculado e ativo
-                    matriculas_ativas = Matricula.objects.filter(
-                        aluno=aluno,
-                        status_matricula=True
-                    )
-                    turmas_origem = Turma.objects.filter(
-                        pk__in=matriculas_ativas.values_list('turma_id', flat=True),
+        if user and user.tipo == 'professor':
+            self.fields['tipo'].choices = [
+                ('trancamento', 'Trancamento'),
+                ('realocacao', 'Realocação'),
+            ]
+        
+        elif user and user.tipo == 'aluno':
+            self.fields['tipo'].choices = [
+                ('trancamento', 'Trancamento'),
+                ('realocacao', 'Realocação'),
+                ('declaracao', 'Declaração'),
+            ]
+
+
+    
+
+        #  Carrega as turmas do usuário logo no GET
+        if user.tipo == 'aluno':
+            try:
+
+                aluno = Aluno.objects.get(usuario=user)
+
+                # Turmas onde o aluno está matriculado e ativo
+                matriculas_ativas = Matricula.objects.filter(
+                    aluno=aluno,
+                    status_matricula=True
+                )
+                
+                turmas_origem = Turma.objects.filter(
+                    pk__in=matriculas_ativas.values_list('turma_id', flat=True),
+                    status=True
+                )
+                self.fields['turma_origem'].queryset = turmas_origem
+
+                #  Carregar todas as turmas possíveis de destino (mesmo curso)
+                if turmas_origem.exists():
+                    cursos_ids = turmas_origem.values_list('curso_id', flat=True).distinct()
+                    turmas_destino = Turma.objects.filter(
+                        curso_id__in=cursos_ids,
                         status=True
+                    ).exclude(
+                        pk__in=turmas_origem.values_list('pk', flat=True)
                     )
-                    self.fields['turma_origem'].queryset = turmas_origem
+                    self.fields['turma_destino'].queryset = turmas_destino
 
-                    # 🔥 Carregar todas as turmas possíveis de destino (mesmo curso)
-                    if turmas_origem.exists():
-                        cursos_ids = turmas_origem.values_list('curso_id', flat=True).distinct()
-                        turmas_destino = Turma.objects.filter(
-                            curso_id__in=cursos_ids,
-                            status=True
-                        ).exclude(
-                            pk__in=turmas_origem.values_list('pk', flat=True)
-                        )
-                        self.fields['turma_destino'].queryset = turmas_destino
+            except Aluno.DoesNotExist:
+                self.fields['turma_origem'].queryset = Turma.objects.none()
+                self.fields['turma_destino'].queryset = Turma.objects.none()
 
-                except Aluno.DoesNotExist:
-                    self.fields['turma_origem'].queryset = Turma.objects.none()
-                    self.fields['turma_destino'].queryset = Turma.objects.none()
+        elif user.tipo == 'professor':
 
-            elif user.tipo == 'professor':
-                try:
-                    prof = Professor.objects.get(usuario=user)
-                    turmas_origem = Turma.objects.filter(
-                        professor=prof,
+            try:
+                prof = Professor.objects.get(usuario=user)
+                turmas_origem = Turma.objects.filter(
+                    professor=prof,
+                    status=True
+                )
+                self.fields['turma_origem'].queryset = turmas_origem
+
+                if turmas_origem.exists():
+                    cursos_ids = turmas_origem.values_list('curso_id', flat=True).distinct()
+                    turmas_destino = Turma.objects.filter(
+                        curso_id__in=cursos_ids,
                         status=True
+                    ).exclude(
+                        pk__in=turmas_origem.values_list('pk', flat=True)
                     )
-                    self.fields['turma_origem'].queryset = turmas_origem
+                    self.fields['turma_destino'].queryset = turmas_destino
 
-                    if turmas_origem.exists():
-                        cursos_ids = turmas_origem.values_list('curso_id', flat=True).distinct()
-                        turmas_destino = Turma.objects.filter(
-                            curso_id__in=cursos_ids,
-                            status=True
-                        ).exclude(
-                            pk__in=turmas_origem.values_list('pk', flat=True)
-                        )
-                        self.fields['turma_destino'].queryset = turmas_destino
-
-                except Professor.DoesNotExist:
-                    self.fields['turma_origem'].queryset = Turma.objects.none()
-                    self.fields['turma_destino'].queryset = Turma.objects.none()
+            except Professor.DoesNotExist:
+                self.fields['turma_origem'].queryset = Turma.objects.none()
+                self.fields['turma_destino'].queryset = Turma.objects.none()
 
     def clean(self):
         cleaned_data = super().clean()
@@ -100,7 +119,7 @@ class SolicitacaoForm(forms.ModelForm):
             if turma_origem == turma_destino:
                 raise forms.ValidationError("A turma de destino deve ser diferente da turma de origem.")
             
-            # 🔥 VALIDAÇÃO DE SEGURANÇA (mesmo curso)
+           # VALIDAÇÃO DE SEGURANÇA (mesmo curso)
             if turma_origem.curso != turma_destino.curso:
                 raise forms.ValidationError(
                     "Erro de validação: A turma selecionada não é do mesmo curso."
