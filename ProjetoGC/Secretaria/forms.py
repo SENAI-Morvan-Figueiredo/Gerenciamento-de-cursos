@@ -50,10 +50,9 @@ class AlunoUsuarioForm(UsuarioBaseForm):
 
         # 🔹 Campos do tipo ModelChoiceField, NÃO MECHA!
         # cria o Input do 'turma'
-        self.fields['turma'] = forms.MultipleChoiceField(
-            queryset=Turma.objects.all(status=True),
+        self.fields['turma'] = forms.ModelMultipleChoiceField(
+            queryset=Turma.objects.all().exclude(status=False),
             required=False,
-
         )
 
         # define o 'tipo' como 'aluno'
@@ -68,12 +67,12 @@ class AlunoUsuarioForm(UsuarioBaseForm):
             
             # Preenche o campo turma com a turma atual do aluno
             try:
-                aluno = self.instance.aluno
+                aluno = self.instance.aluno_id
                 turmas_atuais = Turma.objects.filter(
                     matricula__aluno=aluno, 
                     matricula__status_matricula=True
                 )
-                self.fields['turmas'].initial = turmas_atuais
+                self.fields['turma'].initial = turmas_atuais
             except Aluno.DoesNotExist:
                 pass
 
@@ -112,7 +111,7 @@ class AlunoUsuarioForm(UsuarioBaseForm):
             
             
             # Gerencia as matrículas nas turmas
-            turmas_selecionadas = self.cleaned_data.get('turmas', [])
+            turmas_selecionadas = self.cleaned_data.get('turma', [])
             
             # Remove matrículas que não estão mais selecionadas
             matriculas_atuais = Matricula.objects.filter(aluno=aluno, status_matricula=True)
@@ -147,7 +146,7 @@ class AlunoUsuarioForm(UsuarioBaseForm):
             model = Matricula
             fields = [  
                         'aluno', 'turma',
-                        'data_ingresso', 'status_matricula'
+                        'status_matricula'
                     ]
 
 
@@ -162,8 +161,8 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
 
        # 🔹 Campos do tipo ModelChoiceField, NÃO MECHA!
         # cria o Input do 'turma'
-        self.fields['turma'] = forms.MultipleChoiceField(
-            queryset=Turma.objects.all(status=True),
+        self.fields['turma'] = forms.ModelMultipleChoiceField(
+            queryset=Turma.objects.all().exclude(status=False),
             required=False,
 
         )
@@ -196,7 +195,7 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
                     professor=professor,
                     status=True
                 )
-                self.fields['turmas'].initial = turmas_atuais
+                self.fields['turma'].initial = turmas_atuais
                 self.fields['salario'].initial = professor.salario
                 self.fields['status'].initial = professor.status
             except Professor.DoesNotExist:
@@ -204,7 +203,7 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
 
         
         # 🔹 Campos simples configurados diretamente, Colocações das class, id, labels e outros...
-        self.fields['turma'].widget.attrs.update({'class': 'form-control', 'label': 'Turma'})
+        self.fields['turma'].widget.attrs.update({'class': 'form-control', 'label': 'Turmas'})
         self.fields['salario'].widget.attrs.update({'class': 'form-control', 'label': 'Salário'})
         self.fields['status'].widget.attrs.update({'class': 'form-control', 'label': 'Ativo'})
 
@@ -240,7 +239,7 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
                 professor.save()
             
             # Gerencia turmas
-            turmas_selecionadas = self.cleaned_data.get('turmas', [])
+            turmas_selecionadas = self.cleaned_data.get('turma', [])
             Turma.objects.filter(professor=professor).update(professor=None)
             for turma in turmas_selecionadas:
                 turma.professor = professor

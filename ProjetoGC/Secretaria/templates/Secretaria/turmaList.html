@@ -6,19 +6,18 @@
 
 <div class="content-header">
     <h1>Gerenciamento de Turmas</h1>
-    <p>Visualize e gerencie todas as turmas do sistema</p>
 </div>
 
 <div class="turma-search">
     <form method="get" class="search-bar">
         <input type="text" name="q" placeholder="Pesquisar turma, curso ou professor..." value="{{ query }}">
-        <button type="submit">
+        <button type="submit" class="btn btn-style">
             <i data-lucide="search"></i>
         </button>
     </form>
     
     {% if query %}
-        <a href="{% url 'secretaria:turmaList' %}" class="clear-btn">
+        <a href="{% url 'secretaria:turmaList' %}" class="btn btn-style">
             <i data-lucide="x" style="width: 16px; height: 16px;"></i>
             Limpar Filtro
         </a>
@@ -28,7 +27,7 @@
 <div class="cards-container">
     <!-- Card de Adição -->
     <a href="{% url 'secretaria:turmaAdd' %}" class="urls">
-        <div class="card btn-add">
+        <div class="card card-add">
             <h3>Nova Turma</h3>
             <i data-lucide="plus-circle" style="width: 32px; height: 32px;"></i>
         </div>
@@ -58,11 +57,11 @@
             </p>
             
             <div class="card-actions">
-                <a href="{% url 'secretaria:turmaDetail' turma.turma_id %}" class="btn-detail">
+                <a href="{% url 'secretaria:turmaDetail' turma.turma_id %}" class="btn btn-style3">
                     <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
                     Detalhes
                 </a>
-                <a href="{% url 'secretaria:turmaUpdate' turma.turma_id %}" class="btn-edit">
+                <a href="{% url 'secretaria:turmaUpdate' turma.turma_id %}" class="btn btn-style2">
                     <i data-lucide="edit-3" style="width: 16px; height: 16px;"></i>
                     Editar
                 </a>

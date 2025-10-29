@@ -6,6 +6,7 @@
     --xanadu: #C4D0E9;
 
     --laranja: #E7490F;
+    --laranja-escuro: #e7490f33;
     --laranja-suave: #FFF2EE;
 
     --cinza: #3C3C3C;
@@ -30,7 +31,6 @@
 }
 
 body {
-    margin: 0;
     font-family: 'Inter', 'Poppins', sans-serif;
     background-color: var(--bg-claro);
     color: var(--preto);
@@ -82,6 +82,8 @@ body {
     transform: translateY(-2px);
 }
 
+
+
 /* --- TABELAS MODERNAS --- */
 .table-container {
     background: var(--branco);
@@ -91,6 +93,7 @@ body {
     margin-top: 1.5rem;
     border: 1px solid var(--cinza-borda);
 }
+
 
 /* --- TABELAS --- */
 table {
@@ -144,6 +147,61 @@ table tbody td {
     color: var(--preto);
     font-size: 0.9rem;
     border: none;
+}
+
+
+
+/* --- BOTÕES STYLE --- */
+.btn-style {
+    background: var(--azul-claro);
+    color: var(--branco);
+    border: 1px solid var(--azul-claro);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+
+    transition: all 0.3s ease;
+}
+
+.btn-style:hover {
+    background: var(--bg-claro);
+    color: var(--azul-claro);
+    transform: translateY(-1px);
+}
+
+
+.btn-style2 {
+    background: var(--laranja-suave);
+    color: var(--laranja);
+    border: 1px solid var(--laranja-escuro);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+
+    transition: all 0.3s ease;
+}
+
+.btn-style2:hover {
+    background: var(--laranja);
+    color: var(--branco);
+    transform: translateY(-2px);
+}
+
+.btn-style3 {
+    background: var(--azul-suave);
+    color: var(--azul);
+    border-color: 1px solid var(--xanadu);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+
+    transition: all 0.3s ease;
+}
+
+.btn-style3:hover {
+    background: var(--azul);
+    color: var(--branco);
+    transform: translateY(-2px);
 }
 
 
@@ -218,10 +276,15 @@ table tbody td {
 }
 
 
+
+
+
+
 /* ------------------------------------------------------------------------------------------ Template Secundário/Lista de Turmas */
 
 /* --- HEADER DO CONTEÚDO --- */
 .content-header {
+    text-align: center;
     margin-bottom: 2rem;
 }
 
@@ -229,12 +292,8 @@ table tbody td {
     font-size: 2rem;
     font-weight: 700;
     color: var(--preto);
-    margin-bottom: 0.5rem;
-}
-
-.content-header p {
-    color: var(--cinza-claro);
-    font-size: 1.1rem;
+    margin-bottom: 0.2rem;
+    
 }
 
 /* --- BARRA DE PESQUISA --- */
@@ -252,7 +311,7 @@ table tbody td {
 .search-bar {
     width: calc(70vw - 1rem);
     min-width: 420px;
-    max-width: 800px;;
+    max-width: 800px;
     padding: 0.5rem 0rem;
 
     display: flex;
@@ -274,36 +333,9 @@ table tbody td {
     max-width: 100px;
     padding: 0.6rem 1.2rem;
 
-    border: none;
-    border-radius: 8px;
-    background: none;
-    color: var(--azul);
+    border-radius: 10px;
 
     cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.search-bar button:hover {
-    background-color: var(--azul-suave);
-}
-
-.clear-btn {
-    margin-left: 1rem;
-    padding: 0.6rem 1.2rem;
-    background: var(--laranja-suave);
-    color: var(--laranja);
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-}
-
-.clear-btn:hover {
-    background: var(--laranja);
-    color: var(--branco);
-    transform: translateY(-1px);
 }
 
 /* --- CONTAINER DE CARDS --- */
@@ -330,7 +362,7 @@ table tbody td {
     overflow: hidden;
 }
 
-.card::before {
+.card:not(:first-child)::before {
     content: '';
     position: absolute;
     top: 0;
@@ -372,17 +404,17 @@ table tbody td {
 }
 
 /* --- CARD DE ADIÇÃO --- */
-.btn-add {
-    min-height: 140px;
+.card-add {
+    min-height: 180px;
 
     grid-column-start: 1;
-    
     display: flex;
     flex-direction: column;
+    gap: 0.8rem;
     align-items: center;
     justify-content: center;
-    gap: 0.8rem;
 
+    
     background: linear-gradient(135deg, var(--azul) 0%, var(--azul-claro) 100%);
     color: var(--branco);
     border: none;
@@ -393,7 +425,7 @@ table tbody td {
     
 }
 
-.btn-add:hover {
+.card-add:hover {
     background: linear-gradient(135deg, var(--azul-claro) 0%, var(--azul) 100%);
     transform: translateY(-8px) scale(1.02);
 }
@@ -405,7 +437,7 @@ table tbody td {
     gap: 0.8rem;
 }
 
-.btn-detail, .btn-edit {
+.btn {
     text-decoration: none;
     padding: 0.7rem 1.2rem;
     border-radius: 10px;
@@ -414,32 +446,9 @@ table tbody td {
     transition: all 0.3s ease;
     flex: 1;
     text-align: center;
-    border: 1px solid transparent;
+    /* border: 1px solid transparent; */
 }
 
-.btn-detail {
-    background: var(--azul-suave);
-    color: var(--azul);
-    border-color: var(--xanadu);
-}
-
-.btn-detail:hover {
-    background: var(--azul);
-    color: var(--branco);
-    transform: translateY(-2px);
-}
-
-.btn-edit {
-    background: var(--laranja-suave);
-    color: var(--laranja);
-    border-color: rgba(231, 73, 15, 0.2);
-}
-
-.btn-edit:hover {
-    background: var(--laranja);
-    color: var(--branco);
-    transform: translateY(-2px);
-}
 
 .card-header {
     display: flex;

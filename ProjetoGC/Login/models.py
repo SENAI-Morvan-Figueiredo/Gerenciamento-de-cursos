@@ -12,7 +12,7 @@ class Usuario(AbstractUser):
     usuario_id = models.AutoField(primary_key=True)
     nome = models.CharField('Nome', max_length=100, blank=True, null=True)  
     sobrenome = models.CharField('Sobrenome', max_length=100, blank=True, null=True)  
-    email = models.EmailField('E-mail', unique=True, default=None)  
+    email = models.EmailField('E-mail', unique=True, default=None)
     data_nascimento = models.DateField('Data de Nascimento', blank=True, null=True)  
     contato = models.CharField(max_length=20, unique=True, blank=True, null=True)  
     cpf = models.CharField(max_length=14, unique=True, blank=True, null=True)  
