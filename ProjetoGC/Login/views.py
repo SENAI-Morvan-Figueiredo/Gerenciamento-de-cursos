@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import PasswordResetView
+from .forms import CustomPasswordResetForm
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
@@ -72,6 +73,8 @@ class CustomPasswordResetView(PasswordResetView):
     template_name = 'Login/password_reset_form.html'
     html_email_template_name = 'Login/password_reset_email.html'
     success_url = reverse_lazy('password_reset_done')
+
+    form_class = CustomPasswordResetForm
 
     def send_mail(self, subject_template_name, email_template_name,
                   context, from_email, to_email, html_email_template_name=None):
