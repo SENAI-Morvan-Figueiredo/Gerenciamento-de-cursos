@@ -5,6 +5,10 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.contrib import messages
+import logging
+import smtplib
+
+logger = logging.getLogger(__name__)
 
 def login_view(request):
     if request.method == "POST":
@@ -62,6 +66,8 @@ def password_reset_done(request):
     return redirect('login')
 
 
+from django.core.mail import get_connection, EmailMultiAlternatives
+
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'Login/password_reset_form.html'
     html_email_template_name = 'Login/password_reset_email.html'
@@ -79,7 +85,24 @@ class CustomPasswordResetView(PasswordResetView):
             "Se não foi você, ignore este e-mail."
         )
 
-        msg = EmailMultiAlternatives(subject, text_email, from_email, [to_email])
-        msg.attach_alternative(html_email, "text/html")
-        msg.send()
+        try:
+            # cria conexão explícita com timeout
+            connection = get_connection(
+                backend='django.core.mail.backends.smtp.EmailBackend',
+                fail_silently=False,
+                timeout=30,
+            )
+
+            msg = EmailMultiAlternatives(
+                subject, text_email, from_email, [to_email], connection=connection
+            )
+            msg.attach_alternative(html_email, "text/html")
+            msg.send()
+        except smtplib.SMTPException as e:
+            logger.exception("Falha SMTP ao enviar email: %s", e)
+            messages.error(self.request, "Erro ao enviar o e-mail. Tente novamente mais tarde.")
+        except Exception as e:
+            logger.exception("Erro inesperado ao enviar email: %s", e)
+            messages.error(self.request, "Erro inesperado ao enviar o e-mail. Tente novamente mais tarde.")
+
 
