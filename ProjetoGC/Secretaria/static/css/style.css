@@ -37,6 +37,11 @@ body {
     line-height: 1.6;
 }
 
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
 .layout {
     min-height: 100vh;
     display: flex;
@@ -153,9 +158,9 @@ table tbody td {
 
 /* --- BOTÕES STYLE --- */
 .btn-style {
-    background: var(--azul-claro);
-    color: var(--branco);
-    border: 1px solid var(--azul-claro);
+    background: var(--bg-claro);
+    color: var(--azul-claro);
+    border: 1.5px solid var(--azul-claro);
     text-decoration: none;
     font-weight: 500;
     font-size: 0.9rem;
@@ -164,8 +169,8 @@ table tbody td {
 }
 
 .btn-style:hover {
-    background: var(--bg-claro);
-    color: var(--azul-claro);
+    color: var(--azul);
+    border: 1.5px solid var(--azul);
     transform: translateY(-1px);
 }
 
@@ -178,7 +183,7 @@ table tbody td {
     font-weight: 500;
     font-size: 0.9rem;
 
-    transition: all 0.3s ease;
+    transition: all 0.4s ease, background 0.5s ease;
 }
 
 .btn-style2:hover {
@@ -190,12 +195,12 @@ table tbody td {
 .btn-style3 {
     background: var(--azul-suave);
     color: var(--azul);
-    border-color: 1px solid var(--xanadu);
+    border: 1px solid var(--xanadu);
     text-decoration: none;
     font-weight: 500;
     font-size: 0.9rem;
 
-    transition: all 0.3s ease;
+    transition: all 0.4s ease, background 0.5s ease;
 }
 
 .btn-style3:hover {
@@ -357,7 +362,7 @@ table tbody td {
     border: 1px solid var(--cinza-borda);
     box-shadow: var(--sombra);
     
-    transition: all 0.3s ease;
+    transition: all 0.5s ease;
     position: relative;
     overflow: hidden;
 }
@@ -382,7 +387,7 @@ table tbody td {
 }
 
 .card h2 {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: 600;
     color: var(--preto);
     margin-bottom: 1rem;
@@ -405,56 +410,77 @@ table tbody td {
 
 /* --- CARD DE ADIÇÃO --- */
 .card-add {
-    min-height: 180px;
-
+    height: 100%;
+    
     grid-column-start: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 2rem;
     align-items: center;
     justify-content: center;
-
     
-    background: linear-gradient(135deg, var(--azul) 0%, var(--azul-claro) 100%);
+    background: linear-gradient(45deg, var(--azul) 0%, var(--azul-claro) 100%);
     color: var(--branco);
     border: none;
-
-    cursor: pointer;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1.6rem;
     
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-add::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, var(--azul-claro) 0%, var(--azul) 100%);
+    opacity: 0;
+    transition: opacity 1s ease;
+    z-index: 1;
+}
+
+.card-add > * {
+    position: relative;
+    z-index: 2;
 }
 
 .card-add:hover {
-    background: linear-gradient(135deg, var(--azul-claro) 0%, var(--azul) 100%);
     transform: translateY(-8px) scale(1.02);
+}
+
+.card-add:hover::before {
+    opacity: 1;
 }
 
 /* --- AÇÕES DOS CARDS --- */
 .card-actions {
     margin-top: 1.5rem;
+
     display: flex;
     gap: 0.8rem;
 }
 
-.btn {
-    text-decoration: none;
+.card-actions .btn {
     padding: 0.7rem 1.2rem;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
+
     flex: 1;
     text-align: center;
-    /* border: 1px solid transparent; */
+
+    border-radius: 10px;
 }
 
 
+
 .card-header {
+    margin-bottom: 1rem;
+
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 1rem;
 }
 
 .status-badge {
@@ -474,10 +500,6 @@ table tbody td {
     color: #991B1B;
 }
 
-.urls {
-    text-decoration: none;
-    color: inherit;
-}
 
 /* --- ESTADO VAZIO --- */
 .no-data {
