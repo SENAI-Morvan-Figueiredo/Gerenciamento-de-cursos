@@ -1,0 +1,147 @@
+{% extends 'Professor/base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo_pagina }} - Painel SENAI{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h2>{{ titulo_pagina }}</h2>
+    </div>
+
+    <!-- CARDS GRID -->
+    <div class="cards-grid">
+        {% for card in cards %}
+        <div class="card atividade-card" style="border-top: 8px solid {{ card.cor }};">
+            <div class="card-header" style="background-color: {{ card.cor }};">
+                <span>{{ card.titulo }}</span>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <!-- Ícone principal (adaptado do modelo de card da imagem) -->
+                    <div class="card-icon-main">
+                        <!-- Ícone de exemplo para Fixação -->
+                        {% if card.titulo == 'Fixação' %}
+                            <i class="fas fa-check-square"></i>
+                        {% elif card.titulo == 'Relatórios' %}
+                            <span class="icon-text">A</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Aqui você pode adicionar a contagem se for relevante, mas o design da imagem não mostra -->
+                    <!-- <div class="card-count">{{ card.count }}</div>
+                    <div class="card-label">{{ card.label }}</div> -->
+                </div>
+                <div class="card-actions">
+                    <a href="{% url 'atividades:visualizar' card.titulo|lower %}" class="card-btn" title="Visualizar">
+                        <i class="far fa-eye"></i>
+                    </a>
+                    <a href="{% url 'atividades:editar' card.titulo|lower %}" class="card-btn" title="Editar">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>Nenhum tipo de atividade encontrado.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    /* Estilos específicos para a tela de Atividades, se necessário */
+    .atividade-card {
+        width: 300px; /* Ajuste o tamanho conforme o design */
+        height: 180px;
+        margin: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .atividade-card .card-header {
+        color: white;
+        padding: 10px 15px;
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+
+    .atividade-card .card-body {
+        flex-grow: 1;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        background-color: #f8f8f8; /* Cor de fundo cinza clara */
+    }
+    
+    .atividade-card .card-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        padding-bottom: 10px;
+    }
+
+    .atividade-card .card-actions {
+        display: flex;
+        gap: 10px;
+        background-color: #e0e0e0; /* Cor de fundo cinza um pouco mais escura para a barra de ações */
+        padding: 8px 15px;
+        border-radius: 0 0 10px 10px;
+        width: 100%;
+        justify-content: flex-end;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+    
+    .atividade-card .card-body {
+        position: relative;
+        padding: 0;
+    }
+    
+    .atividade-card .card-content {
+        padding: 15px;
+        padding-bottom: 50px; /* Espaço para a barra de ações */
+    }
+
+    .atividade-card .card-btn {
+        background: none;
+        border: none;
+        color: #555;
+        cursor: pointer;
+        font-size: 1.2em;
+        padding: 5px;
+        transition: color 0.2s;
+    }
+
+    .atividade-card .card-btn:hover {
+        color: {{ card.cor }}; /* Cor do topo no hover, se possível */
+    }
+    
+    /* Tentativa de replicar o ícone de check e o ícone 'A' */
+    .card-icon-main {
+        font-size: 3em;
+        color: #5cb85c; /* Cor verde para o check */
+    }
+    
+    .card-icon-main .icon-text {
+        font-size: 2em;
+        font-weight: bold;
+        color: #555;
+        border: 2px solid #555;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+    
+    .cards-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: flex-start;
+    }
+</style>
+{% endblock %}

@@ -29,7 +29,7 @@
     <main>
         <!-- SIDEBAR -->
         <aside class="sidebar" id="sidebar">
-            <button class="sidebar-toggle" id="sidebarToggle">‹</button>
+            <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-chevron-left"></i></button>
             
             <ul class="sidebar-menu">
                 <li>
@@ -57,7 +57,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#atividades">
+                    <a href="{% url 'atividades:home' %}">
                         <i>✓</i>
                         <span>Atividades</span>
                     </a>
@@ -95,15 +95,16 @@
         // Sidebar Toggle
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
+        const toggleIcon = sidebarToggle.querySelector('i');
 
         sidebarToggle.addEventListener('click', function() {
             sidebar.classList.toggle('collapsed');
-            
-            // Mudar o símbolo do botão
             if (sidebar.classList.contains('collapsed')) {
-                sidebarToggle.textContent = '›';
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
             } else {
-                sidebarToggle.textContent = '‹';
+                toggleIcon.classList.remove('fa-chevron-right');
+                toggleIcon.classList.add('fa-chevron-left');
             }
         });
 
