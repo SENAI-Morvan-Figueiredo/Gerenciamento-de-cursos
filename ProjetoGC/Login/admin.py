@@ -3,7 +3,7 @@ from .models import Usuario, Aluno, Professor, Secretaria
 
 @admin.register(Usuario)
 class UsuarioAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'tipo')
     list_filter = ( 'is_staff', 'is_superuser')
     search_fields = ('username', 'email', 'first_name', 'last_name')
 

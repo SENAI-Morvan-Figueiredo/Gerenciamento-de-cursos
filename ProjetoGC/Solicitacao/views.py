@@ -4,11 +4,12 @@ from django.shortcuts import get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.views import View
+from django.db import transaction
 
 from .models import Solicitacao
 from .forms import SolicitacaoForm
-from Login.models import Secretaria
-from Cursos.models import Matricula  # Import necessário para realocação
+from Login.models import Secretaria, Aluno , Professor
+from Cursos.models import Matricula, Turma # Import necessário para realocação
 
 from Login.decorators import aluno_required, secretaria_required, professor_required
 
@@ -130,7 +131,6 @@ class SolicitacaoStatusView(View):
                 return self._processar_trancamento(solicitacao, request)
             
             elif solicitacao.tipo == 'declaracao':
-                # Para declaração, apenas mudar o status é suficiente
                 return True
                 
             else:
@@ -143,61 +143,103 @@ class SolicitacaoStatusView(View):
     
     def _processar_realocacao(self, solicitacao, request):
         """
-        Processa realocação: move aluno da turma de origem para a turma de destino
+        Processa realocação com troca segura de professores entre turmas
         """
         if not solicitacao.turma_origem or not solicitacao.turma_destino:
             messages.error(request, "Dados de turma incompletos para realocação.")
             return False
         
-        # Verifica se o usuário é um aluno
-        if solicitacao.usuario.tipo != 'aluno':
-            messages.error(request, "Realocação disponível apenas para alunos.")
+        if solicitacao.usuario.tipo not in ['aluno', 'professor']:
+            messages.error(request, "Realocação disponível apenas para alunos e professores.")
             return False
         
         try:
-            from Login.models import Aluno
-            aluno = Aluno.objects.get(usuario=solicitacao.usuario)
+            # LÓGICA PARA ALUNO (mantida igual)
+            if solicitacao.usuario.tipo == 'aluno':
+                aluno = Aluno.objects.get(usuario=solicitacao.usuario)
+                
+                matricula = Matricula.objects.get(
+                    aluno=aluno, 
+                    turma=solicitacao.turma_origem,
+                    status_matricula=True
+                )
+                
+                matricula_existente = Matricula.objects.filter(
+                    aluno=aluno,
+                    turma=solicitacao.turma_destino,
+                    status_matricula=True
+                ).exists()
+                
+                if matricula_existente:
+                    messages.error(request, "Aluno já está matriculado na turma de destino.")
+                    return False
+                
+                matricula.turma = solicitacao.turma_destino
+                matricula.save()
+                return True
             
-            # Encontra a matrícula na turma de origem
-            matricula = Matricula.objects.get(
-                aluno=aluno, 
-                turma=solicitacao.turma_origem,
-                status_matricula=True
-            )
-            
-            # Verifica se já existe matrícula na turma de destino
-            matricula_existente = Matricula.objects.filter(
-                aluno=aluno,
-                turma=solicitacao.turma_destino,
-                status_matricula=True
-            ).exists()
-            
-            if matricula_existente:
-                messages.error(request, "Aluno já está matriculado na turma de destino.")
-                return False
-            
-            # Atualiza a matrícula para a nova turma
-            matricula.turma = solicitacao.turma_destino
-            matricula.save()
-            
-            # Atualiza dados adicionais se necessário (como professor, se for o caso)
-            if solicitacao.usuario.tipo == 'professor':
-                from Login.models import Professor
+            # LÓGICA PARA PROFESSOR - COM TRANSAÇÃO SEGURA
+            elif solicitacao.usuario.tipo == 'professor':
+                
                 professor = Professor.objects.get(usuario=solicitacao.usuario)
-                # Lógica para realocação de professor se necessário
-            
-            return True
-            
+                
+                # Verifica se o professor é realmente o professor da turma de origem
+                if solicitacao.turma_origem.professor != professor:
+                    messages.error(request, "Você não é o professor da turma de origem.")
+                    return False
+                
+                # Usa transação atômica para garantir que nenhuma turma fique sem professor
+                with transaction.atomic():
+                    # Bloqueia as turmas para evitar condições de corrida
+                    turma_origem = Turma.objects.select_for_update().get(pk=solicitacao.turma_origem.pk)
+                    turma_destino = Turma.objects.select_for_update().get(pk=solicitacao.turma_destino.pk)
+                    
+                    # Guarda os professores atuais
+                    professor_origem_atual = turma_origem.professor
+                    professor_destino_atual = turma_destino.professor
+                    
+                    # VALIDAÇÕES DE SEGURANÇA
+                    if not professor_origem_atual:
+                        messages.error(request, "Turma de origem não possui professor.")
+                        return False
+                    
+                    if professor_origem_atual != professor:
+                        messages.error(request, "Você não é mais o professor da turma de origem.")
+                        return False
+                    
+                    # REALIZA A TROCA
+                    # 1. Atribui o professor da origem para a destino
+                    turma_destino.professor = professor_origem_atual
+                    turma_destino.save()
+                    
+                    # 2. Atribui o professor da destino para a origem
+                    turma_origem.professor = professor_destino_atual
+                    turma_origem.save()
+                    
+                    # Mensagens informativas
+                    if professor_destino_atual:
+                        messages.info(request, f"Troca realizada: {professor_origem_atual.usuario.nome} para {turma_destino.nome} e {professor_destino_atual.usuario.nome} para {turma_origem.nome}")
+                    else:
+                        messages.info(request, f"Professor {professor_origem_atual.usuario.nome} movido para {turma_destino.nome}. Turma {turma_origem.nome} ficou sem professor.")
+                
+                return True
+                
         except Matricula.DoesNotExist:
             messages.error(request, "Matrícula não encontrada na turma de origem.")
             return False
         except Aluno.DoesNotExist:
             messages.error(request, "Aluno não encontrado.")
             return False
+        except Professor.DoesNotExist:
+            messages.error(request, "Professor não encontrado.")
+            return False
+        except Turma.DoesNotExist:
+            messages.error(request, "Turma não encontrada.")
+            return False
         except Exception as e:
             messages.error(request, f"Erro na realocação: {str(e)}")
             return False
-    
+        
     def _processar_trancamento(self, solicitacao, request):
         """
         Processa trancamento: desativa matrículas do aluno
@@ -207,7 +249,6 @@ class SolicitacaoStatusView(View):
             return False
         
         try:
-            from Login.models import Aluno
             aluno = Aluno.objects.get(usuario=solicitacao.usuario)
             
             # Desativa todas as matrículas ativas do aluno
@@ -237,4 +278,4 @@ class SolicitacaoStatusView(View):
         """
         # Para recusa, geralmente apenas registrar o status é suficiente
         # Mas você pode adicionar lógica específica aqui se necessário
-        return True
+        return False

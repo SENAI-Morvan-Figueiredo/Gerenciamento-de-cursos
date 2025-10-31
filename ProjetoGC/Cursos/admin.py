@@ -14,8 +14,8 @@ class MatriculaAdmin(admin.ModelAdmin):
 
 @admin.register(Turma)
 class TurmaAdmin(admin.ModelAdmin):
-    list_display = ('turma_id', 'curso', 'professor', 'data_inicio')
-    search_fields = ('turma_id', 'curso', 'professor', 'data_inicio')
+    list_display = ('turma_id', 'curso', 'professor', 'data_inicio', )
+    search_fields = ('turma_id', 'curso', 'professor', 'data_inicio',)
 
 @admin.register(Curso)
 class CursoAdmin(admin.ModelAdmin):

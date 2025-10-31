@@ -7,11 +7,11 @@
 {% block content %}
     <h2>Turma: {{ turma.nome }}</h2>
     <p><strong>Curso:</strong> {{ turma.curso.nome }}</p>
-    <p><strong>Professor:</strong> {{ turma.professor.usuario.first_name }}</p>
+    <p><strong>Professor:</strong> {{ turma.professor.usuario.nome }}</p>
     <p><strong>Tipo:</strong> {{ turma.tipo }}</p>
     <p><strong>Alunos:</strong>
-        {% for aluno in turma.alunos.all %}
-            {{ aluno.usuario.first_name }}
+        {% for aluno in usuarios.matricula_set.all %}
+            {{ aluno.usuario.nome }}
         {% endfor %}
     </p>
 {% endblock %}
