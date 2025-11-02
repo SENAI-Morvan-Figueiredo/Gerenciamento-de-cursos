@@ -44,7 +44,7 @@ body {
 }
 
 .logo-text {
-    font-size: 16px;
+    font-size: 14.5px;
     margin-bottom: 30px;
     line-height: 1.2;
     font-weight: normal;
@@ -71,6 +71,15 @@ body {
     font-size: 16px;
 }
 
+ul{
+
+    padding-inline-start: 20px;
+    font-size: 15px;
+    margin-top: 20px;
+    
+}
+
+
 .login-button {
     width: 100%;
     padding: 12px;
@@ -82,6 +91,9 @@ body {
     cursor: pointer;
     transition: background-color 0.3s ease;
     margin-top: 10px;
+}
+a {
+    text-decoration: none;
 }
 
 .login-button:hover {
@@ -125,17 +137,13 @@ body {
     color: #777;
 }
 
-
-
-
-
-.reset-form {
+/* .reset-form {
     max-width: 400px;
     margin: 2rem auto;
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
+} */
 
 .reset-form h1 {
     margin-bottom: 1.5rem;
@@ -146,17 +154,6 @@ body {
     width: 100%;
     margin-top: 1rem;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 /* Fundo com formas fluidas e orgânicas (SVG incorporado) */
 body::before,

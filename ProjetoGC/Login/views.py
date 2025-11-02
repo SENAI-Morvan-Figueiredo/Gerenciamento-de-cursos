@@ -1,11 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import PasswordResetView
-from .forms import CustomPasswordResetForm
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import get_connection, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.contrib import messages
+from .forms import CustomPasswordResetForm
 import logging
 import smtplib
 
@@ -67,7 +67,7 @@ def password_reset_done(request):
     return redirect('login')
 
 
-from django.core.mail import get_connection, EmailMultiAlternatives
+
 
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'Login/password_reset_form.html'

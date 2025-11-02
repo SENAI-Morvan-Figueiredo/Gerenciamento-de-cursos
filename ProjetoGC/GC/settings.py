@@ -162,3 +162,10 @@ EMAIL_USE_TLS = False
 EMAIL_HOST_USER = 'gerenciamentodecursossenai@gmail.com'
 EMAIL_HOST_PASSWORD = 'jeahyztywprevkot'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+LANGUAGE_CODE = 'pt-br'
+
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+
