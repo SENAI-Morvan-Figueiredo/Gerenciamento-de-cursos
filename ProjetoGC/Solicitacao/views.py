@@ -1,6 +1,7 @@
-from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView
-from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy, reverse
+from django.views.generic import ListView, CreateView, TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.views import View
@@ -12,6 +13,8 @@ from Login.models import Secretaria, Aluno , Professor
 from Cursos.models import Matricula, Turma # Import necessário para realocação
 
 from Login.decorators import aluno_required, secretaria_required, professor_required
+
+
 
 
 class SolicitacaoListView(ListView):
@@ -242,31 +245,56 @@ class SolicitacaoStatusView(View):
         
     def _processar_trancamento(self, solicitacao, request):
         """
-        Processa trancamento: desativa matrículas do aluno
+        Processa trancamento: para alunos desativa matrículas, para professores remove das turmas
         """
-        if solicitacao.usuario.tipo != 'aluno':
-            messages.error(request, "Trancamento disponível apenas para alunos.")
-            return False
-        
         try:
-            aluno = Aluno.objects.get(usuario=solicitacao.usuario)
+            if solicitacao.usuario.tipo == 'aluno':
+                aluno = Aluno.objects.get(usuario=solicitacao.usuario)
+                
+                # Desativa todas as matrículas ativas do aluno
+                matriculas_ativas = Matricula.objects.filter(
+                    aluno=aluno,
+                    status_matricula=True
+                )
+                
+                if not matriculas_ativas.exists():
+                    messages.warning(request, "Aluno não possui matrículas ativas.")
+                    return True  # Considera como sucesso, pois não há nada para trancar
+                
+                matriculas_ativas.update(status_matricula=False)
+                
+                return True
             
-            # Desativa todas as matrículas ativas do aluno
-            matriculas_ativas = Matricula.objects.filter(
-                aluno=aluno,
-                status_matricula=True
-            )
-            
-            if not matriculas_ativas.exists():
-                messages.warning(request, "Aluno não possui matrículas ativas.")
-                return True  # Considera como sucesso, pois não há nada para trancar
-            
-            matriculas_ativas.update(status_matricula=False)
-            
-            return True
-            
+            elif solicitacao.usuario.tipo == 'professor':
+                professor = Professor.objects.get(usuario=solicitacao.usuario)
+                
+                # Busca todas as turmas ativas do professor
+                turmas_do_professor = Turma.objects.filter(
+                    professor=professor,
+                    status=True
+                )
+                
+                if not turmas_do_professor.exists():
+                    messages.warning(request, "Professor não possui turmas ativas.")
+                    return True
+                
+                # Armazena informações para redirecionamento
+                request.session['trancamento_professor_id'] = professor.pk
+                request.session['turmas_afetadas'] = list(turmas_do_professor.values_list('pk', flat=True))
+                request.session['solicitacao_id'] = solicitacao.pk
+                
+                # Redireciona para página de escolha de substituto
+                return redirect(reverse('solicitacao:escolher_substituto'))
+                
+            else:
+                messages.error(request, "Trancamento disponível apenas para alunos e professores.")
+                return False
+                
         except Aluno.DoesNotExist:
             messages.error(request, "Aluno não encontrado.")
+            return False
+        except Professor.DoesNotExist:
+            messages.error(request, "Professor não encontrado.")
             return False
         except Exception as e:
             messages.error(request, f"Erro no trancamento: {str(e)}")
@@ -279,3 +307,91 @@ class SolicitacaoStatusView(View):
         # Para recusa, geralmente apenas registrar o status é suficiente
         # Mas você pode adicionar lógica específica aqui se necessário
         return False
+    
+@method_decorator(secretaria_required, name='dispatch')
+class EscolherSubstitutoView(LoginRequiredMixin, TemplateView):
+    template_name = 'Solicitacao/escolher_substituto.html'
+    
+    def get(self, request, *args, **kwargs):
+        # Verifica se os dados da sessão existem
+        professor_id = request.session.get('trancamento_professor_id')
+        turmas_ids = request.session.get('turmas_afetadas')
+        solicitacao_id = request.session.get('solicitacao_id')
+        
+        if not all([professor_id, turmas_ids, solicitacao_id]):
+            messages.error(request, "Sessão expirada ou dados inválidos. Por favor, inicie o processo novamente.")
+            return redirect('solicitacao:solicitacaoList')
+        
+        return super().get(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Recupera dados da sessão
+        professor_id = self.request.session.get('trancamento_professor_id')
+        turmas_ids = self.request.session.get('turmas_afetadas')
+        solicitacao_id = self.request.session.get('solicitacao_id')
+        
+        if not all([professor_id, turmas_ids, solicitacao_id]):
+            return context
+        
+        # Busca os objetos
+        professor = get_object_or_404(Professor, pk=professor_id)
+        turmas = Turma.objects.filter(pk__in=turmas_ids, status=True)
+        solicitacao = get_object_or_404(Solicitacao, pk=solicitacao_id)
+        
+        # Busca professores disponíveis (excluindo o próprio professor)
+        professores_disponiveis = Professor.objects.exclude(pk=professor_id).select_related('usuario')
+        
+        context.update({
+            'professor': professor,
+            'turmas': turmas,
+            'solicitacao': solicitacao,
+            'professores_disponiveis': professores_disponiveis,
+        })
+        
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        professor_id = request.session.get('trancamento_professor_id')
+        turmas_ids = request.session.get('turmas_afetadas')
+        solicitacao_id = request.session.get('solicitacao_id')
+        
+        if not all([professor_id, turmas_ids, solicitacao_id]):
+            messages.error(request, "Dados de sessão inválidos.")
+            return redirect('solicitacao:solicitacaoList')
+        
+        professor_substituto_id = request.POST.get('professor_substituto')
+        
+        if not professor_substituto_id:
+            messages.error(request, "Selecione um professor substituto.")
+            return self.get(request, *args, **kwargs)
+        
+        try:
+            professor_original = Professor.objects.get(pk=professor_id)
+            professor_substituto = Professor.objects.get(pk=professor_substituto_id)
+            turmas = Turma.objects.filter(pk__in=turmas_ids, status=True)
+            solicitacao = Solicitacao.objects.get(pk=solicitacao_id)
+            
+            # Atualiza todas as turmas com o novo professor
+            turmas_atualizadas = turmas.update(professor=professor_substituto)
+            
+            # Limpa a sessão
+            request.session.pop('trancamento_professor_id', None)
+            request.session.pop('turmas_afetadas', None)
+            request.session.pop('solicitacao_id', None)
+            
+            messages.success(
+                request, 
+                f"Professor {professor_original.usuario.nome} removido de {turmas_atualizadas} turma(s). "
+                f"Professor {professor_substituto.usuario.nome} designado como substituto."
+            )
+            
+            # Atualiza o status da solicitação
+            solicitacao.status = 'aceito'
+            solicitacao.save()
+            
+        except Exception as e:
+            messages.error(request, f"Erro ao designar substituto: {str(e)}")
+        
+        return redirect('solicitacao:solicitacaoList')
