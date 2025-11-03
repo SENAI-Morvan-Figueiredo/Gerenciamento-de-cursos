@@ -10,116 +10,83 @@
     <p>Gerencie os professores do sistema</p>
 </div>
 
-<div class="turma-search">
-    <div class="search-bar">
-        <input type="text" placeholder="Buscar professor..." id="searchInput">
-        <button type="button" onclick="filtrarProfessores()">
-            <i data-lucide="search"></i> Buscar
-        </button>
-        <a href="{% url 'secretaria:profList' %}" class="clear-btn">
-            <i data-lucide="x"></i> Limpar
-        </a>
+
+
+
+<div class="table-container"> 
+
+    <div class="turma-search">
+        <form method="get" class="search-bar">
+            <input type="text" name="q" placeholder="Pesquisar turma, curso ou professor..." value="{{ query }}">
+            <button type="submit" class="btn btn-style">
+                <i data-lucide="search"></i>
+            </button>
+        </form>
+        
+        {% if query %}
+            <a href="{% url 'secretaria:turmaList' %}" class="btn btn-style">
+                <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                Limpar Filtro
+            </a>
+        {% endif %}
     </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for professor in professores %}
+                <tr>
+                    <td>{{ professor.id }}</td>
+                    <td>{{ professor.usuario.nome }}</td>
+                    <td>
+                        <a href="{% url 'secretaria:profUpdate' professor.professor_id %}">Editar</a>
+                        
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
-<div class="cards-container">
-    
-    <a href="{% url 'secretaria:profAdd' %}" class="card btn-add">
-        <i data-lucide="user-plus" width="32" height="32"></i>
-        <span>Adicionar Professor</span>
-    </a>
-    
-    {% for professor in professores %}
-    <div class="card professor-card" data-nome="{{ professor.usuario.nome|lower }}">
-        <h2>{{ professor.usuario.nome }}</h2>
-        
-        <p>
-            <i data-lucide="id-card"></i>
-            <strong>ID:</strong> {{ professor.professor_id }}
-        </p>
-        
-        <p>
-            <i data-lucide="mail"></i>
-            <strong>Email:</strong> {{ professor.usuario.email|default:"Não informado" }}
-        </p>
-        
-        <p>
-            <i data-lucide="phone"></i>
-            <strong>Telefone:</strong> {{ professor.usuario.contato|default:"Não informado" }}
-        </p>
-
-        <div class="card-actions">
-            <a href="{% url 'secretaria:profUpdate' professor.professor_id %}" class="btn-edit">
-                <i data-lucide="edit"></i> Editar
-            </a>
-            <a href="#" class="btn-detail">
-                <i data-lucide="eye"></i> Detalhes
-            </a>
-        </div>
-    </div>
-    {% empty %}
-    <div class="no-data">
-        <h3>Nenhum professor encontrado</h3>
-        <p>Não há professores cadastrados no sistema.</p>
-        <a href="#" class="btn-add" style="margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.5rem;">
-            <i data-lucide="plus"></i> Adicionar Professor
-        </a>
-    </div>
-    {% endfor %}
 </div>
+
 
 <script>
     // Inicializar ícones
     lucide.createIcons();
-    
-    // Função para filtrar professores
-    function filtrarProfessores() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const cards = document.querySelectorAll('.professor-card');
-        
-        cards.forEach(card => {
-            const nome = card.getAttribute('data-nome');
-            if (nome.includes(searchTerm)) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    }
-    
-    // Permitir busca ao pressionar Enter
-    document.getElementById('searchInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            filtrarProfessores();
-        }
-    });
-    
     // Atualizar ícones quando o DOM for carregado
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
     });
-</script>
-
-<style>
-    /* Estilos específicos para a página de professores */
-    .professor-card:hover::before {
-        background: linear-gradient(135deg, var(--laranja) 0%, #FF6B35 100%);
-    }
     
-    .card p i {
-        width: 16px;
-        height: 16px;
-    }
-    
-    /* Melhorar responsividade dos cards */
-    @media (max-width: 768px) {
-        .card-actions {
-            flex-direction: column;
-        }
+    // Função para filtrar professores
+    // function filtrarProfessores() {
+    //     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    //     const cards = document.querySelectorAll('.professor-card');
         
-        .btn-detail, .btn-edit {
-            flex: none;
-        }
-    }
-</style>
+    //     cards.forEach(card => {
+    //         const nome = card.getAttribute('data-nome');
+    //         if (nome.includes(searchTerm)) {
+    //             card.style.display = 'block';
+    //         } else {
+    //             card.style.display = 'none';
+    //         }
+    //     });
+    // }
+    
+    // // Permitir busca ao pressionar Enter
+    // document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    //     if (e.key === 'Enter') {
+    //         filtrarProfessores();
+    //     }
+    // });
+    
+    
+</script>
 {% endblock %}

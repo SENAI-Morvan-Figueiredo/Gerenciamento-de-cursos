@@ -3,26 +3,31 @@
 
 
 {% block content %}
-    <h2>Lista de Alunos</h2>
-    <table>
-        <thead>
+<div class="content-header">
+    <h1>Lista de Alunos</h1>
+</div>
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for aluno in alunos %}
             <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Ações</th>
+                <td>{{ aluno.id }}</td>
+                <td>{{ aluno.usuario.nome }}</td>
+                <td>
+                    <a href="{% url 'secretaria:alunoUpdate' aluno.aluno_id %}">Editar</a>
+                    
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            {% for aluno in alunos %}
-                <tr>
-                    <td>{{ aluno.id }}</td>
-                    <td>{{ aluno.usuario.nome }}</td>
-                    <td>
-                        <a href="{% url 'secretaria:alunoUpdate' aluno.aluno_id %}">Editar</a>
-                        
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

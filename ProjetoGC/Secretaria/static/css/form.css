@@ -1,7 +1,6 @@
 /* --- FORMULÁRIOS --- */
 
 .form-container {
-    
     border-radius: 20px;
     padding: 2.5rem;
     box-shadow: var(--sombra);
@@ -30,34 +29,41 @@
 }
 
 
-
 .form-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
     margin-top: 2.5rem;
     padding-top: 1.5rem;
+
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    
     border-top: 1px solid var(--cinza-borda);
 }
 
+
+
+/* --- BOTOES --- */
 .form-container .btn {
     width: 100%;
     max-width: 300px;
-    height: 35px;
+    height: 50px;
     padding: 1rem 2rem;
-    /* margin-top: 2rem; */
+
+    margin-top: 2rem;
     margin-left: auto;
     margin-right: auto;
-
-    
-
     display: block;
+    text-align: center;
     
     border-radius: 12px;
+    line-height: 1;
+    
 
     cursor: pointer;
 }
+
+
+
 
 /* --- INPUTS --- */
 .form-control,
@@ -125,6 +131,84 @@ input[type="checkbox"].form-check-input {
     height: 18px;
     accent-color: var(--azul);
     cursor: pointer;
+}
+
+/* --- SELECTS PERSONALIZADOS --- */
+.select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.select-wrapper::after {
+    content: '⌄';
+    position: absolute;
+    right: 1rem;
+    top: 40%;
+    transform: translateY(-50%);
+    color: var(--preto);
+    font-size: 1.4rem;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Remove a seta padrão do select */
+.select-wrapper select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 3rem;
+}
+
+/* Estilo para o campo status escondido */
+.checkbox-field input[type="checkbox"] {
+    display: none;
+}
+
+/* Mensagens de erro */
+.errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+}
+
+.errorlist li {
+    color: #dc2626;
+    font-size: 0.85rem;
+    padding: 0.3rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.errorlist li::before {
+    content: '⚠';
+    font-size: 0.8rem;
+}
+
+
+
+
+
+/* Garantir que os campos select tenham o mesmo estilo */
+select.form-control {
+    width: 100%;
+    padding: 0.9rem 1.2rem;
+    border-radius: 12px;
+    border: 1.5px solid var(--cinza-borda);
+    background-color: var(--bg-claro);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+select.form-control:focus {
+    border-color: var(--azul-claro);
+    background-color: var(--branco);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(61, 122, 255, 0.1);
+    transform: translateY(-1px);
 }
 
 

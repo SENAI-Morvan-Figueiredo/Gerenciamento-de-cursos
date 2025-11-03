@@ -259,13 +259,27 @@ class TurmaForm(forms.ModelForm):
             "nome",
             "curso",
             "professor",
-            "duracao",
             "tipo",
-            "horarios",
-            "data_inicio", 
+            "entrada_horas",
+            "saida_horas",
+            "data_inicio",
+            "data_fim",
             "status", 
             "dias_semana"
         ]
+
+        labels = {
+            'entrada_horas': 'Horário de Entrada',
+            'saida_horas': 'Horário de Saída',      
+            'nome': 'Nome da Turma',
+            'curso': 'Curso',
+            'professor': 'Professor',
+            'tipo': 'Tipo de Turma',
+            'data_inicio': 'Data de Início',
+            'data_fim': 'Data de Término',
+            'status': 'Turma Ativa',
+            'dias_semana': 'Dias da Semana'
+        }
 
     DIA_SEMANA_CHOICES = [
         ('segunda', 'Segunda-feira'),
@@ -298,39 +312,69 @@ class TurmaForm(forms.ModelForm):
         self.fields['professor'].queryset = Professor.objects.all()
 
         # 🔹 Campos simples configurados diretamente, Colocações das class, id, labels e outros...
-        self.fields['curso'].widget.attrs.update({'class': 'form-control','required': True})
-        self.fields['professor'].widget.attrs.update({'class': 'form-control','required': True})
+        self.fields['nome'].widget.attrs.update({
+        'class': 'form-control', 
+        'required': True, 
+        'placeholder': 'Nome da Turma'
+        })
+        self.fields['curso'].widget.attrs.update({
+            'class': 'form-control',
+            'required': True
+        })
+        self.fields['professor'].widget.attrs.update({
+            'class': 'form-control',
+            'required': True
+        })
         
-        self.fields['nome'].widget.attrs.update({'class': 'form-control', 'required': True, 'placeholder': 'Nome da Turma'})
-        
+        # 🔹 Campo tipo
         self.fields['tipo'] = forms.ChoiceField(
             choices=self.TIPO_CHOICES,
-            widget=forms.Select(attrs={'class': 'form-control', 'required': True})
+            widget=forms.Select(attrs={
+                'class': 'form-control', 
+                'required': True, 
+                'placeholder': 'Selecione o tipo de turma'
+            })
         )
-        self.fields['duracao'].widget.attrs.update({
-            'class': 'form-control',
-            'placeholder': 'Duração (em horas)',
-            'min': '1',
-            'type': 'number',
+
+        # 🔹 CORREÇÃO: Campos de hora - configurar o widget, não substituir o campo
+        self.fields['entrada_horas'].widget = forms.TimeInput(attrs={
+            'class': 'form-control', 
+            'type': 'time', 
+            'required': True
+        })
+        self.fields['saida_horas'].widget = forms.TimeInput(attrs={
+            'class': 'form-control', 
+            'type': 'time', 
             'required': True
         })
 
-        self.fields['horarios'].widget = forms.TimeInput(
-            attrs={'class': 'form-control', 'type': 'time', 'required': True}
-        )
-        self.fields['data_inicio'].widget = forms.DateInput(
-            attrs={'class': 'form-control', 'type': 'date', 'required': True}
-        )
+        # 🔹 Campos de data
+        self.fields['data_inicio'].widget = forms.DateInput(attrs={
+            'class': 'form-control', 
+            'type': 'date', 
+            'required': True
+        })
+        self.fields['data_fim'].widget = forms.DateInput(attrs={
+            'class': 'form-control', 
+            'type': 'date', 
+            'required': True
+        })
         
+        # 🔹 Dias da semana
         self.fields['dias_semana'] = forms.MultipleChoiceField(
             choices=self.DIA_SEMANA_CHOICES,
             required=True,
-            label="Dias da Semana",
-            widget=forms.CheckboxSelectMultiple(
-                attrs={'class': 'form-check-input', 'data-group': 'dias-semana', 'required': True}
-            )
+            widget=forms.CheckboxSelectMultiple(attrs={
+                'class': 'form-check-input', 
+                'data-group': 'dias-semana', 
+                'required': True
+            })
         )
-        
+
+        # self.fields['status'].initial = self.instance.status
+        # self.fields['status'] = forms.HiddenInput()
+
+    # if self.instance and self.instance.pk:
         self.fields['status'] = forms.ChoiceField(
             choices=self.STATUS_CHOICES,
             initial=True,

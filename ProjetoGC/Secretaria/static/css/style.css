@@ -88,6 +88,17 @@ a {
 }
 
 
+/*  */
+
+.table-container {
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: var(--sombra);
+    max-width: 900px;
+    margin: 0 auto;
+    border: 2px solid var(--cinza-borda);
+}
+
 
 /* --- TABELAS MODERNAS --- */
 .table-container {
