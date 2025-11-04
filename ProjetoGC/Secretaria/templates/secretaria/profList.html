@@ -2,51 +2,90 @@
 {% extends "secretaria/Abase.html" %}
 {% load static %}
 
-
-
 {% block content %}
 <div class="content-header">
     <h1>Lista de Professores</h1>
     <p>Gerencie os professores do sistema</p>
 </div>
 
-
-
-
 <div class="table-container"> 
 
-    <div class="turma-search">
-        <form method="get" class="search-bar">
-            <input type="text" name="q" placeholder="Pesquisar turma, curso ou professor..." value="{{ query }}">
-            <button type="submit" class="btn btn-style">
+    <div class="container-search">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Pesquisar por nome, email, telefone ou turma...">
+            <button type="button" id="searchBtn" class="btn btn-style">
                 <i data-lucide="search"></i>
             </button>
-        </form>
+        </div>
         
-        {% if query %}
-            <a href="{% url 'secretaria:turmaList' %}" class="btn btn-style">
-                <i data-lucide="x" style="width: 16px; height: 16px;"></i>
-                Limpar Filtro
-            </a>
-        {% endif %}
+        <button type="button" id="clearFilter" class="btn btn-style" style="display: none;">
+            <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+            Limpar Filtro
+        </button>
     </div>
 
-    <table>
+    <div id="searchResultsInfo" class="search-results-info" style="display: none;">
+        <p id="resultsText"></p>
+    </div>
+
+    <table id="professoresTable">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Turmas</th>
+                <th>Status</th>
+                <th>Detalhes</th>
                 <th>Ações</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="tableBody">
             {% for professor in professores %}
-                <tr>
-                    <td>{{ professor.id }}</td>
-                    <td>{{ professor.usuario.nome }}</td>
+                <tr class="professor-row" 
+                    data-nome="{{ professor.usuario.nome|lower }} {{ professor.usuario.sobrenome|lower }}"
+                    data-email="{{ professor.usuario.email|lower }}"
+                    data-telefone="{{ professor.usuario.contato }}"
+                    data-turmas="{% for turma in professor.turma_set.all %}{{ turma.nome|lower }} {% endfor %}">
+                    <td>{{ professor.professor_id }}</td>
+                    <td>{{ professor.usuario.nome }} {{ professor.usuario.sobrenome }}</td>
+                    <td>{{ professor.usuario.email }}</td>
+                    <td>{{ professor.usuario.contato }}</td>
                     <td>
-                        <a href="{% url 'secretaria:profUpdate' professor.professor_id %}">Editar</a>
-                        
+                        {% with professor.turma_set.all as turmas %}
+                            {% if turmas %}
+                                {% for turma in turmas|slice:":3" %}
+                                    {{ turma.nome }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                                {% if turmas|length > 3 %}...{% endif %}
+                            {% else %}
+                                Sem turmas
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td>
+                        {% if professor.status %}
+                            <span class="status-active">Ativo</span>
+                        {% else %}
+                            <span class="status-inactive">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'secretaria:profDetail' professor.professor_id %}" class="btn-link">
+                            <i data-lucide="eye"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'secretaria:profUpdate' professor.professor_id %}" class="btn-link">
+                            <i data-lucide="edit"></i> Editar
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr id="noDataRow">
+                    <td colspan="8" class="no-data">
+                        Nenhum professor cadastrado.
                     </td>
                 </tr>
             {% endfor %}
@@ -54,39 +93,147 @@
     </table>
 </div>
 
-</div>
-
-
 <script>
-    // Inicializar ícones
+document.addEventListener('DOMContentLoaded', function() {
     lucide.createIcons();
-    // Atualizar ícones quando o DOM for carregado
-    document.addEventListener('DOMContentLoaded', function() {
-        lucide.createIcons();
+    
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const clearFilter = document.getElementById('clearFilter');
+    const searchResultsInfo = document.getElementById('searchResultsInfo');
+    const resultsText = document.getElementById('resultsText');
+    const tableBody = document.getElementById('tableBody');
+    const professorRows = document.querySelectorAll('.professor-row');
+    const noDataRow = document.getElementById('noDataRow');
+    
+    let currentSearchTerm = '';
+
+    // Adicione esta função para evitar muitas execuções
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Use assim:
+    const debouncedFilter = debounce(filterProfessors, 300);
+    searchInput.addEventListener('keyup', function(e) {
+        debouncedFilter(searchInput.value);
     });
     
-    // Função para filtrar professores
-    // function filtrarProfessores() {
-    //     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    //     const cards = document.querySelectorAll('.professor-card');
+    // Função para filtrar os resultados
+    function filterProfessors(searchTerm) {
+        const term = searchTerm.toLowerCase().trim();
+        let visibleCount = 0;
         
-    //     cards.forEach(card => {
-    //         const nome = card.getAttribute('data-nome');
-    //         if (nome.includes(searchTerm)) {
-    //             card.style.display = 'block';
-    //         } else {
-    //             card.style.display = 'none';
-    //         }
-    //     });
-    // }
+        professorRows.forEach(row => {
+            const nome = row.getAttribute('data-nome');
+            const email = row.getAttribute('data-email');
+            const telefone = row.getAttribute('data-telefone');
+            const turmas = row.getAttribute('data-turmas');
+            
+            const matches = nome.includes(term) || 
+                           email.includes(term) || 
+                           telefone.includes(term) || 
+                           turmas.includes(term);
+            
+            if (matches) {
+                row.classList.remove('hidden');
+                visibleCount++;
+                
+                // Adiciona highlight se houver termo de busca
+                if (term) {
+                    row.classList.add('highlight');
+                    highlightText(row, term);
+                } else {
+                    row.classList.remove('highlight');
+                    removeHighlight(row);
+                }
+            } else {
+                row.classList.add('hidden');
+                row.classList.remove('highlight');
+                removeHighlight(row);
+            }
+        });
+        
+        // Mostra/oculta a linha de "nenhum dado"
+        if (noDataRow) {
+            if (visibleCount === 0 && professorRows.length > 0) {
+                if (!document.getElementById('noResultsRow')) {
+                    const noResultsRow = document.createElement('tr');
+                    noResultsRow.id = 'noResultsRow';
+                    noResultsRow.innerHTML = `<td colspan="8" class="no-data">Nenhum professor encontrado para "${searchTerm}"</td>`;
+                    tableBody.appendChild(noResultsRow);
+                }
+            } else {
+                const noResultsRow = document.getElementById('noResultsRow');
+                if (noResultsRow) {
+                    noResultsRow.remove();
+                }
+            }
+        }
+        
+        // Atualiza informações de resultados
+        if (term) {
+            resultsText.textContent = `Encontrados ${visibleCount} professor(es) para "${searchTerm}"`;
+            searchResultsInfo.style.display = 'block';
+            clearFilter.style.display = 'inline-block';
+        } else {
+            searchResultsInfo.style.display = 'none';
+            clearFilter.style.display = 'none';
+        }
+        
+        currentSearchTerm = term;
+    }
     
-    // // Permitir busca ao pressionar Enter
-    // document.getElementById('searchInput').addEventListener('keypress', function(e) {
-    //     if (e.key === 'Enter') {
-    //         filtrarProfessores();
-    //     }
-    // });
+    // Função para destacar texto encontrado
+    function highlightText(row, term) {
+        const cells = row.querySelectorAll('td:not(:last-child):not(:nth-last-child(2))');
+        
+        cells.forEach(cell => {
+            const originalText = cell.textContent;
+            const regex = new RegExp(`(${term})`, 'gi');
+            const highlightedText = originalText.replace(regex, '<mark>$1</mark>');
+            cell.innerHTML = highlightedText;
+        });
+    }
     
+    // Função para remover destaque
+    function removeHighlight(row) {
+        const cells = row.querySelectorAll('td');
+        cells.forEach(cell => {
+            cell.innerHTML = cell.textContent;
+        });
+    }
     
+    // Event Listeners
+    searchBtn.addEventListener('click', function() {
+        filterProfessors(searchInput.value);
+    });
+    
+    searchInput.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+            filterProfessors(searchInput.value);
+        } else {
+            // Busca em tempo real (opcional)
+            // filterProfessors(searchInput.value);
+        }
+    });
+    
+    clearFilter.addEventListener('click', function() {
+        searchInput.value = '';
+        filterProfessors('');
+        searchInput.focus();
+    });
+    
+    // Focar no campo de busca quando a página carregar
+    searchInput.focus();
+});
 </script>
 {% endblock %}

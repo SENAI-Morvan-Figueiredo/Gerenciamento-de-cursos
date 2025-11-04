@@ -16,6 +16,15 @@ class UsuarioBaseForm(forms.ModelForm):
                     'email', 'contato',
                     'endereco', 'tipo'
                 ]
+        labels = {
+            'nome': 'Nome',
+            'sobrenome': 'Sobrenome',
+            'cpf': 'CPF',
+            'data_nascimento': 'Data de Nascimento',
+            'email': 'Email',
+            'contato': 'Contato',
+            'endereco': 'Endereço',
+        }
     
     def __init__(self, *arg, **kwargs):
         super().__init__(*arg, **kwargs)
@@ -67,18 +76,26 @@ class AlunoUsuarioForm(UsuarioBaseForm):
             
             # Preenche o campo turma com a turma atual do aluno
             try:
-                aluno = self.instance.aluno_id
+                aluno = self.instance
                 turmas_atuais = Turma.objects.filter(
                     matricula__aluno=aluno, 
                     matricula__status_matricula=True
                 )
                 self.fields['turma'].initial = turmas_atuais
+
+                self.fields['nome'].initial = aluno.usuario.nome
+                self.fields['email'].initial = aluno.usuario.email
+                self.fields['cpf'].initial = aluno.usuario.cpf
+                self.fields['sobrenome'].initial = aluno.usuario.sobrenome
+                self.fields['contato'].initial = aluno.usuario.contato
+                self.fields['endereco'].initial = aluno.usuario.endereco
+                self.fields['data_nascimento'].initial = aluno.usuario.data_nascimento
             except Aluno.DoesNotExist:
                 pass
 
         
         # 🔹 Campos simples configurados diretamente, Colocações das class, id, labels e outros...
-        self.fields['turma'].widget.attrs.update({'class': 'form-control', 'label': 'Turma'})
+        self.fields['turma'].widget.attrs.update({'class': 'form-control'})
 
     
     def clean_password2(self):
@@ -190,7 +207,7 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
             
             # Preenche os campo com o professor atual
             try:
-                professor = self.instance.professor
+                professor = self.instance
                 turmas_atuais = Turma.objects.filter(
                     professor=professor,
                     status=True
@@ -198,6 +215,17 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
                 self.fields['turma'].initial = turmas_atuais
                 self.fields['salario'].initial = professor.salario
                 self.fields['status'].initial = professor.status
+
+                self.fields['nome'].initial = professor.usuario.nome
+                self.fields['email'].initial = professor.usuario.email
+                self.fields['cpf'].initial = professor.usuario.cpf
+                self.fields['sobrenome'].initial = professor.usuario.sobrenome
+                self.fields['contato'].initial = professor.usuario.contato
+                self.fields['endereco'].initial = professor.usuario.endereco
+                self.fields['data_nascimento'].initial = professor.usuario.data_nascimento
+                
+                
+
             except Professor.DoesNotExist:
                 pass
 
@@ -233,7 +261,7 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
                     status=self.cleaned_data['status']
                 )
             else:
-                professor = usuario.professor
+                professor = usuario.professor_id
                 professor.salario = self.cleaned_data['salario']
                 professor.status = self.cleaned_data['status']
                 professor.save()

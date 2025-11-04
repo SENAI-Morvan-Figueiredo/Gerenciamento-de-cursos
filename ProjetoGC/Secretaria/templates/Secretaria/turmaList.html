@@ -8,7 +8,7 @@
     <h1>Gerenciamento de Turmas</h1>
 </div>
 
-<div class="turma-search">
+<div class="container-search">
     <form method="get" class="search-bar">
         <input type="text" name="q" placeholder="Pesquisar turma, curso ou professor..." value="{{ query }}">
         <button type="submit" class="btn btn-style">
@@ -80,6 +80,29 @@
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
     });
+
+    // Função para filtrar turmas
+    function filtrarTurmas() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const cards = document.querySelectorAll('.turma-card');
+        
+        cards.forEach(card => {
+            const nome = card.getAttribute('data-nome');
+            if (nome.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    
+    // Permitir busca ao pressionar Enter
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            filtrarTurmas();
+        }
+    });
+    
 </script>
 
 {% endblock content %}

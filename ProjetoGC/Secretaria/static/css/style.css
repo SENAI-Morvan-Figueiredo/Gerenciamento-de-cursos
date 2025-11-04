@@ -88,86 +88,11 @@ a {
 }
 
 
-/*  */
-
-.table-container {
-    border-radius: 20px;
-    padding: 2.5rem;
-    box-shadow: var(--sombra);
-    max-width: 900px;
-    margin: 0 auto;
-    border: 2px solid var(--cinza-borda);
-}
-
-
-/* --- TABELAS MODERNAS --- */
-.table-container {
-    background: var(--branco);
-    border-radius: 16px;
-    box-shadow: var(--sombra);
-    overflow: hidden;
-    margin-top: 1.5rem;
-    border: 1px solid var(--cinza-borda);
-}
-
-
-/* --- TABELAS --- */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--branco);
-}
-
-table thead {
-    background: linear-gradient(135deg, var(--azul) 0%, var(--azul-claro) 100%);
-}
-
-table thead th {
-    padding: 1.2rem 1rem;
-    color: var(--branco);
-    font-weight: 600;
-    font-size: 0.95rem;
-    text-align: left;
-    border: none;
-    position: relative;
-}
-
-table thead th:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 60%;
-    width: 1px;
-    background: rgba(255, 255, 255, 0.3);
-}
-
-table tbody tr {
-    border-bottom: 1px solid var(--cinza-borda);
-    transition: all 0.3s ease;
-}
-
-table tbody tr:hover {
-    background-color: var(--azul-suave);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-table tbody tr:last-child {
-    border-bottom: none;
-}
-
-table tbody td {
-    padding: 1.2rem 1rem;
-    color: var(--preto);
-    font-size: 0.9rem;
-    border: none;
-}
-
 
 
 /* --- BOTÕES STYLE --- */
+
+/* Botão - searchbar */
 .btn-style {
     background: var(--bg-claro);
     color: var(--azul-claro);
@@ -185,7 +110,7 @@ table tbody td {
     transform: translateY(-1px);
 }
 
-
+/* Botões secundários - furmularios  e cards*/
 .btn-style2 {
     background: var(--laranja-suave);
     color: var(--laranja);
@@ -221,7 +146,24 @@ table tbody td {
 }
 
 
-/* ------------------------------------------------------------------------------------------ Template Principal */
+/* Botões secundários - Tabelas */
+.btn-style4 {
+    color: #007bff;
+    border: 1px solid #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.bnt-style4:hover {
+    background: #007bff;
+    color: var(--branco);
+}
+
+
+
+
+/* ------------------------------------------------------------------------------------------ Template Principal/ Abase */
 
 /* --- MENU LATERAL --- */
 .sidebar {
@@ -313,7 +255,7 @@ table tbody td {
 }
 
 /* --- BARRA DE PESQUISA --- */
-.turma-search {
+.container-search {
     width: max-content;
     display: flex;
     justify-content: space-between;

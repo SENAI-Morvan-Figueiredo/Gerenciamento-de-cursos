@@ -16,12 +16,12 @@ urlpatterns = [
     path('alunos/', AlunoListView.as_view(), name='alunoList'),
     path('alunos/add/', AlunoCreateView.as_view(), name='alunoAdd'),
     path('alunos/<int:pk>/update/', AlunoUpdateView.as_view(), name='alunoUpdate'),
-    # path('alunos/<int:pk>/detail/', AlunoDetailView.as_view(), name='alunoDetail'),
+    path('alunos/<int:pk>/detail/', AlunoDetailView.as_view(), name='alunoDetail'),
 
     path('professores/', ProfessorListView.as_view(), name='profList'),
     path('professores/add/', ProfessorCreateView.as_view(), name='profAdd'),
     path('professores/<int:pk>/update/', ProfessorUpdateView.as_view(), name='profUpdate'),
-    # path('professores/<int:pk>/detail/', ProfessorDetailView.as_view(), name='profDetail'),
+    path('professores/<int:pk>/detail/', ProfessorDetailView.as_view(), name='profDetail'),
 
     
 ]

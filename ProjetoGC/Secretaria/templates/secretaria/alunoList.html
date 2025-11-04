@@ -1,33 +1,204 @@
 <!-- Secretaria/templates/secretaria/alunoList.html -->
 {% extends "secretaria/Abase.html" %}
-
+{% load static %}
 
 {% block content %}
 <div class="content-header">
     <h1>Lista de Alunos</h1>
+    <p>Gerencie os alunos do sistema</p>
 </div>
 
+<div class="table-container"> 
 
+    <div class="container-search">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Pesquisar por nome, ID ou email...">
+            <button type="button" id="searchBtn" class="btn btn-style">
+                <i data-lucide="search"></i>
+            </button>
+        </div>
+        
+        <button type="button" id="clearFilter" class="btn btn-style" style="display: none;">
+            <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+            Limpar Filtro
+        </button>
+    </div>
 
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for aluno in alunos %}
+    <div id="searchResultsInfo" class="search-results-info" style="display: none;">
+        <p id="resultsText"></p>
+    </div>
+
+    <table id="alunosTable">
+        <thead>
             <tr>
-                <td>{{ aluno.id }}</td>
-                <td>{{ aluno.usuario.nome }}</td>
-                <td>
-                    <a href="{% url 'secretaria:alunoUpdate' aluno.aluno_id %}">Editar</a>
-                    
-                </td>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Detalhes</th>
+                <th>Ações</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody id="tableBody">
+            {% for aluno in alunos %}
+                <tr class="aluno-row" 
+                    data-id="{{ aluno.aluno_id }}"
+                    data-nome="{{ aluno.usuario.nome|lower }} {{ aluno.usuario.sobrenome|default:''|lower }}"
+                    data-email="{{ aluno.usuario.email|lower }}"
+                    data-telefone="{{ aluno.usuario.contato|default:'' }}">
+                    <td>{{ aluno.aluno_id }}</td>
+                    <td>{{ aluno.usuario.nome }} {{ aluno.usuario.sobrenome }}</td>
+                    <td>{{ aluno.usuario.email }}</td>
+                    <td>{{ aluno.usuario.contato|default:"Não informado" }}</td>
+                    <td>
+                        <a href="{% url 'secretaria:profDetail' aluno.aluno_id %}" class="btn-link">
+                            <i data-lucide="eye"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'secretaria:alunoUpdate' aluno.aluno_id %}" class="btn-link">
+                            <i data-lucide="edit"></i> Editar
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr id="noDataRow">
+                    <td colspan="6" class="no-data">
+                        Nenhum aluno cadastrado.
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    lucide.createIcons();
+    
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const clearFilter = document.getElementById('clearFilter');
+    const searchResultsInfo = document.getElementById('searchResultsInfo');
+    const resultsText = document.getElementById('resultsText');
+    const tableBody = document.getElementById('tableBody');
+    const alunoRows = document.querySelectorAll('.aluno-row');
+    const noDataRow = document.getElementById('noDataRow');
+    
+    let currentSearchTerm = '';
+    
+    // Função para filtrar os resultados
+    function filterAlunos(searchTerm) {
+        const term = searchTerm.toLowerCase().trim();
+        let visibleCount = 0;
+        
+        alunoRows.forEach(row => {
+            const id = row.getAttribute('data-id');
+            const nome = row.getAttribute('data-nome');
+            const email = row.getAttribute('data-email');
+            const telefone = row.getAttribute('data-telefone');
+            
+            const matches = id.includes(term) || 
+                           nome.includes(term) || 
+                           email.includes(term) || 
+                           telefone.includes(term);
+            
+            if (matches) {
+                row.classList.remove('hidden');
+                visibleCount++;
+                
+                // Adiciona highlight se houver termo de busca
+                if (term) {
+                    row.classList.add('highlight');
+                    highlightText(row, term);
+                } else {
+                    row.classList.remove('highlight');
+                    removeHighlight(row);
+                }
+            } else {
+                row.classList.add('hidden');
+                row.classList.remove('highlight');
+                removeHighlight(row);
+            }
+        });
+        
+        // Mostra/oculta a linha de "nenhum dado"
+        if (noDataRow) {
+            noDataRow.style.display = visibleCount === 0 && alunoRows.length > 0 ? 'none' : '';
+        }
+        
+        // Cria ou remove mensagem de nenhum resultado
+        if (term && visibleCount === 0 && alunoRows.length > 0) {
+            if (!document.getElementById('noResultsRow')) {
+                const noResultsRow = document.createElement('tr');
+                noResultsRow.id = 'noResultsRow';
+                noResultsRow.innerHTML = `<td colspan="6" class="no-data">Nenhum aluno encontrado para "${searchTerm}"</td>`;
+                tableBody.appendChild(noResultsRow);
+            }
+        } else {
+            const noResultsRow = document.getElementById('noResultsRow');
+            if (noResultsRow) {
+                noResultsRow.remove();
+            }
+        }
+        
+        // Atualiza informações de resultados
+        if (term) {
+            resultsText.textContent = `Encontrados ${visibleCount} aluno(s) para "${searchTerm}"`;
+            searchResultsInfo.style.display = 'block';
+            clearFilter.style.display = 'inline-block';
+        } else {
+            searchResultsInfo.style.display = 'none';
+            clearFilter.style.display = 'none';
+        }
+        
+        currentSearchTerm = term;
+    }
+    
+    // Função para destacar texto encontrado
+    function highlightText(row, term) {
+        const cells = row.querySelectorAll('td:not(:last-child)'); // Exclui coluna de ações
+        
+        cells.forEach(cell => {
+            const originalText = cell.textContent;
+            const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            const highlightedText = originalText.replace(regex, '<mark>$1</mark>');
+            cell.innerHTML = highlightedText;
+        });
+    }
+    
+    // Função para remover destaque
+    function removeHighlight(row) {
+        const cells = row.querySelectorAll('td');
+        cells.forEach(cell => {
+            // Restaura o texto original sem as tags HTML
+            const textContent = cell.textContent;
+            cell.innerHTML = textContent;
+        });
+    }
+    
+    // Event Listeners
+    searchBtn.addEventListener('click', function() {
+        filterAlunos(searchInput.value);
+    });
+    
+    searchInput.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+            filterAlunos(searchInput.value);
+        } else {
+            // Busca em tempo real (opcional - descomente se quiser)
+            filterAlunos(searchInput.value);
+        }
+    });
+    
+    clearFilter.addEventListener('click', function() {
+        searchInput.value = '';
+        filterAlunos('');
+        searchInput.focus();
+    });
+    
+    // Focar no campo de busca quando a página carregar
+    searchInput.focus();
+});
+</script>
 {% endblock %}
