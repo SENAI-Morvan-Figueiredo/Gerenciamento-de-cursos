@@ -261,14 +261,14 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
                     status=self.cleaned_data['status']
                 )
             else:
-                professor = usuario.professor_id
+                professor = usuario
                 professor.salario = self.cleaned_data['salario']
                 professor.status = self.cleaned_data['status']
                 professor.save()
             
             # Gerencia turmas
             turmas_selecionadas = self.cleaned_data.get('turma', [])
-            Turma.objects.filter(professor=professor).update(professor=None)
+            Turma.objects.filter(professor=professor)
             for turma in turmas_selecionadas:
                 turma.professor = professor
                 turma.save()

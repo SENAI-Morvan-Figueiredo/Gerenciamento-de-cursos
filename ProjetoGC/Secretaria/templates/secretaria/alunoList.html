@@ -53,12 +53,12 @@
                     <td>{{ aluno.usuario.email }}</td>
                     <td>{{ aluno.usuario.contato|default:"Não informado" }}</td>
                     <td>
-                        <a href="{% url 'secretaria:alunoDetail' aluno.aluno_id %}" class="btn-link">
+                        <a href="{% url 'secretaria:alunoDetail' aluno.aluno_id %}" class="btn-link btn-style4">
                             <i data-lucide="eye"></i>
                         </a>
                     </td>
                     <td>
-                        <a href="{% url 'secretaria:alunoUpdate' aluno.aluno_id %}" class="btn-link">
+                        <a href="{% url 'secretaria:alunoUpdate' aluno.aluno_id %}" class="btn-link btn-style4">
                             <i data-lucide="edit"></i> Editar
                         </a>
                     </td>
