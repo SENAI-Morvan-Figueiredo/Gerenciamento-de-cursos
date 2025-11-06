@@ -16,12 +16,14 @@
             <button type="button" id="searchBtn" class="btn btn-style">
                 <i data-lucide="search"></i>
             </button>
+
+            <button type="button" id="clearFilter" class="btn btn-style" style="display: none;">
+                <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                Limpar
+            </button>
         </div>
         
-        <button type="button" id="clearFilter" class="btn btn-style" style="display: none;">
-            <i data-lucide="x" style="width: 16px; height: 16px;"></i>
-            Limpar Filtro
-        </button>
+        
     </div>
 
     <div id="searchResultsInfo" class="search-results-info" style="display: none;">
@@ -34,7 +36,7 @@
                 <th>ID</th>
                 <th>Nome</th>
                 <th>Email</th>
-                <th>Telefone</th>
+                
                 <th>Turmas</th>
                 <th>Status</th>
                 <th>Detalhes</th>
@@ -46,12 +48,11 @@
                 <tr class="professor-row" 
                     data-nome="{{ professor.usuario.nome|lower }} {{ professor.usuario.sobrenome|lower }}"
                     data-email="{{ professor.usuario.email|lower }}"
-                    data-telefone="{{ professor.usuario.contato }}"
                     data-turmas="{% for turma in professor.turma_set.all %}{{ turma.nome|lower }} {% endfor %}">
                     <td>{{ professor.professor_id }}</td>
                     <td>{{ professor.usuario.nome }} {{ professor.usuario.sobrenome }}</td>
                     <td>{{ professor.usuario.email }}</td>
-                    <td>{{ professor.usuario.contato }}</td>
+                    
                     <td>
                         {% with professor.turma_set.all as turmas %}
                             {% if turmas %}
@@ -108,25 +109,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let currentSearchTerm = '';
 
-    // Adicione esta função para evitar muitas execuções
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    // Use assim:
-    const debouncedFilter = debounce(filterProfessors, 300);
-    searchInput.addEventListener('keyup', function(e) {
-        debouncedFilter(searchInput.value);
-    });
-    
     // Função para filtrar os resultados
     function filterProfessors(searchTerm) {
         const term = searchTerm.toLowerCase().trim();
@@ -135,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
         professorRows.forEach(row => {
             const nome = row.getAttribute('data-nome');
             const email = row.getAttribute('data-email');
-            const telefone = row.getAttribute('data-telefone');
+            
             const turmas = row.getAttribute('data-turmas');
             
             const matches = nome.includes(term) || 
@@ -144,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
                            turmas.includes(term);
             
             if (matches) {
-                row.classList.remove('hidden');
+                row.style.display = '';
                 visibleCount++;
                 
                 // Adiciona highlight se houver termo de busca
@@ -156,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     removeHighlight(row);
                 }
             } else {
-                row.classList.add('hidden');
+                row.style.display = 'none';
                 row.classList.remove('highlight');
                 removeHighlight(row);
             }
@@ -171,11 +153,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     noResultsRow.innerHTML = `<td colspan="8" class="no-data">Nenhum professor encontrado para "${searchTerm}"</td>`;
                     tableBody.appendChild(noResultsRow);
                 }
+                noDataRow.style.display = 'none';
             } else {
                 const noResultsRow = document.getElementById('noResultsRow');
                 if (noResultsRow) {
                     noResultsRow.remove();
                 }
+                noDataRow.style.display = visibleCount === 0 ? '' : 'none';
             }
         }
         
@@ -183,7 +167,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (term) {
             resultsText.textContent = `Encontrados ${visibleCount} professor(es) para "${searchTerm}"`;
             searchResultsInfo.style.display = 'block';
-            clearFilter.style.display = 'inline-block';
+            clearFilter.style.display = 'flex';
+            
         } else {
             searchResultsInfo.style.display = 'none';
             clearFilter.style.display = 'none';
@@ -191,39 +176,74 @@ document.addEventListener('DOMContentLoaded', function() {
         
         currentSearchTerm = term;
     }
-    
+
     // Função para destacar texto encontrado
     function highlightText(row, term) {
-        const cells = row.querySelectorAll('td:not(:last-child):not(:nth-last-child(2))');
+        // Seleciona apenas as células de dados (excluindo as colunas de ação)
+        const dataCells = row.querySelectorAll('td:not(:last-child):not(:nth-last-child(2))');
         
-        cells.forEach(cell => {
-            const originalText = cell.textContent;
-            const regex = new RegExp(`(${term})`, 'gi');
-            const highlightedText = originalText.replace(regex, '<mark>$1</mark>');
-            cell.innerHTML = highlightedText;
+        dataCells.forEach(cell => {
+            const originalHTML = cell.innerHTML;
+            // Armazena o HTML original se ainda não foi armazenado
+            if (!cell.hasAttribute('data-original')) {
+                cell.setAttribute('data-original', originalHTML);
+            }
+            
+            const textContent = cell.textContent || cell.innerText;
+            const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            const highlightedHTML = textContent.replace(regex, '<mark>$1</mark>');
+            cell.innerHTML = highlightedHTML;
         });
     }
     
     // Função para remover destaque
     function removeHighlight(row) {
-        const cells = row.querySelectorAll('td');
-        cells.forEach(cell => {
-            cell.innerHTML = cell.textContent;
+        const dataCells = row.querySelectorAll('td:not(:last-child):not(:nth-last-child(2))');
+        
+        dataCells.forEach(cell => {
+            // Restaura o HTML original se foi armazenado
+            if (cell.hasAttribute('data-original')) {
+                cell.innerHTML = cell.getAttribute('data-original');
+            }
         });
     }
     
+    // Função auxiliar para obter o conteúdo original da célula
+    function getOriginalCellContent(row, cellIndex) {
+        // Esta função deve retornar o conteúdo original baseado na estrutura do seu template
+        // Para simplificar, vamos armazenar o conteúdo original em um data attribute
+        const cell = row.children[cellIndex];
+        const contentSpan = cell.querySelector('.cell-content');
+        
+        if (!contentSpan.hasAttribute('data-original')) {
+            contentSpan.setAttribute('data-original', contentSpan.textContent);
+        }
+        
+        return contentSpan.getAttribute('data-original');
+    }
+
+    // Debounce para otimizar a busca
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    const debouncedFilter = debounce(filterProfessors, 300);
+    
     // Event Listeners
-    searchBtn.addEventListener('click', function() {
-        filterProfessors(searchInput.value);
+    searchInput.addEventListener('keyup', function(e) {
+        debouncedFilter(searchInput.value);
     });
     
-    searchInput.addEventListener('keyup', function(e) {
-        if (e.key === 'Enter') {
-            filterProfessors(searchInput.value);
-        } else {
-            // Busca em tempo real (opcional)
-            // filterProfessors(searchInput.value);
-        }
+    searchBtn.addEventListener('click', function() {
+        filterProfessors(searchInput.value);
     });
     
     clearFilter.addEventListener('click', function() {

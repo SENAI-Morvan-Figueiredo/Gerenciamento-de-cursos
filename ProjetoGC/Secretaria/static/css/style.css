@@ -288,8 +288,12 @@ a {
 }
 
 .search-bar button {
-    max-width: 100px;
+    max-width: 130px;
     padding: 0.6rem 1.2rem;
+
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
 
     border-radius: 10px;
 
