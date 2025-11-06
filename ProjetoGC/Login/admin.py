@@ -13,7 +13,7 @@ class AlunoAdmin(admin.ModelAdmin):
 
 @admin.register(Professor)
 class ProfessorAdmin(admin.ModelAdmin):
-    list_display = ('professor_id', 'usuario')
+    list_display = ('professor_id', 'usuario',)
 
 @admin.register(Secretaria)
 class SecretariaAdmin(admin.ModelAdmin):

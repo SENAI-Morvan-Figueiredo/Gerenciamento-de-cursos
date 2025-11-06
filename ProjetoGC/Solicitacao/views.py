@@ -107,10 +107,17 @@ class SolicitacaoStatusView(View):
         
         # Processa de acordo com o tipo de solicitação
         if acao == 'aceitar':
-            success = self._processar_aceitacao(solicitacao, request)
+            result = self._processar_aceitacao(solicitacao, request)  # Mudou para 'result'
+            
+            # ✅ VERIFICA SE É UM REDIRECIONAMENTO
+            if hasattr(result, 'status_code') and result.status_code in [301, 302]:
+                return result  # Retorna o redirecionamento diretamente
+            
+            success = result
         else:  # negar
             success = self._processar_recusa(solicitacao, request)
         
+        # ✅ SÓ EXECUTA SE NÃO FOI REDIRECIONAMENTO
         if success:
             solicitacao.status = 'aceito' if acao == 'aceitar' else 'negado'
             solicitacao.save()
@@ -245,7 +252,7 @@ class SolicitacaoStatusView(View):
         
     def _processar_trancamento(self, solicitacao, request):
         """
-        Processa trancamento: para alunos desativa matrículas, para professores remove das turmas
+        Processa trancamento: para alunos desativa matrículas, para professores redireciona para escolha de substituto
         """
         try:
             if solicitacao.usuario.tipo == 'aluno':
@@ -278,12 +285,15 @@ class SolicitacaoStatusView(View):
                     messages.warning(request, "Professor não possui turmas ativas.")
                     return True
                 
+                # **AQUI ESTÁ A MUDANÇA PRINCIPAL**
                 # Armazena informações para redirecionamento
                 request.session['trancamento_professor_id'] = professor.pk
                 request.session['turmas_afetadas'] = list(turmas_do_professor.values_list('pk', flat=True))
                 request.session['solicitacao_id'] = solicitacao.pk
                 
-                # Redireciona para página de escolha de substituto
+                # **NÃO retorna True aqui - apenas redireciona**
+                # O redirecionamento será feito pelo método get() principal
+                # Retornamos um objeto de redirecionamento que será tratado no nível superior
                 return redirect(reverse('solicitacao:escolher_substituto'))
                 
             else:
@@ -306,7 +316,7 @@ class SolicitacaoStatusView(View):
         """
         # Para recusa, geralmente apenas registrar o status é suficiente
         # Mas você pode adicionar lógica específica aqui se necessário
-        return False
+        return True
     
 @method_decorator(secretaria_required, name='dispatch')
 class EscolherSubstitutoView(LoginRequiredMixin, TemplateView):
@@ -373,6 +383,9 @@ class EscolherSubstitutoView(LoginRequiredMixin, TemplateView):
             turmas = Turma.objects.filter(pk__in=turmas_ids, status=True)
             solicitacao = Solicitacao.objects.get(pk=solicitacao_id)
             
+            professor_original.status = False
+            professor_original.save()
+            
             # Atualiza todas as turmas com o novo professor
             turmas_atualizadas = turmas.update(professor=professor_substituto)
             
@@ -381,15 +394,15 @@ class EscolherSubstitutoView(LoginRequiredMixin, TemplateView):
             request.session.pop('turmas_afetadas', None)
             request.session.pop('solicitacao_id', None)
             
+            # **AQUI MARCA A SOLICITAÇÃO COMO ACEITA - SÓ AGORA!**
+            solicitacao.status = 'aceito'
+            solicitacao.save()
+            
             messages.success(
                 request, 
                 f"Professor {professor_original.usuario.nome} removido de {turmas_atualizadas} turma(s). "
                 f"Professor {professor_substituto.usuario.nome} designado como substituto."
             )
-            
-            # Atualiza o status da solicitação
-            solicitacao.status = 'aceito'
-            solicitacao.save()
             
         except Exception as e:
             messages.error(request, f"Erro ao designar substituto: {str(e)}")
