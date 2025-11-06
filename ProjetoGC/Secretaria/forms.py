@@ -261,7 +261,7 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
                     status=self.cleaned_data['status']
                 )
             else:
-                professor = usuario.professor_id
+                professor = usuario
                 professor.salario = self.cleaned_data['salario']
                 professor.status = self.cleaned_data['status']
                 professor.save()
