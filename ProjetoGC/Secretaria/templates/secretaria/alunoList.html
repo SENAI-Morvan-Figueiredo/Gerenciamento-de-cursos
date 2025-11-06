@@ -1,29 +1,241 @@
 <!-- Secretaria/templates/secretaria/alunoList.html -->
-{% extends "secretaria/turmaList.html" %}
-
-{% block header_title %} Lista de Alunos {% endblock %}
+{% extends "secretaria/Abase.html" %}
+{% load static %}
 
 {% block content %}
-    <h2>Lista de Alunos</h2>
-    <table>
+<div class="content-header">
+    <h1>Lista de Alunos</h1>
+    <p>Gerencie os alunos do sistema</p>
+</div>
+
+<div class="table-container"> 
+
+    <div class="container-search">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Pesquisar por nome, ID ou email...">
+            <button type="button" id="searchBtn" class="btn-style">
+                <i data-lucide="search"></i>
+            </button>
+
+            <button type="button" id="clearFilter" class="btn-style" style="display: none;">
+                <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                Limpar
+            </button>
+        </div>
+        
+        
+    </div>
+
+    <div id="searchResultsInfo" class="search-results-info" style="display: none;">
+        <p id="resultsText"></p>
+    </div>
+
+    <table id="alunosTable">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Detalhes</th>
                 <th>Ações</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="tableBody">
             {% for aluno in alunos %}
-                <tr>
-                    <td>{{ aluno.id }}</td>
-                    <td>{{ aluno.usuario.nome }}</td>
+                <tr class="aluno-row" 
+                    data-id="{{ aluno.aluno_id }}"
+                    data-nome="{{ aluno.usuario.nome|lower }} {{ aluno.usuario.sobrenome|default:''|lower }}"
+                    data-email="{{ aluno.usuario.email|lower }}"
+                    data-telefone="{{ aluno.usuario.contato|default:'' }}">
+                    <td>{{ aluno.aluno_id }}</td>
+                    <td>{{ aluno.usuario.nome }} {{ aluno.usuario.sobrenome }}</td>
+                    <td>{{ aluno.usuario.email }}</td>
+                    <td>{{ aluno.usuario.contato|default:"Não informado" }}</td>
                     <td>
-                        <a href="{% url 'secretaria:alunoUpdate' aluno.aluno_id %}">Editar</a>
-                        
+                        <a href="{% url 'secretaria:alunoDetail' aluno.aluno_id %}" class="btn-link">
+                            <i data-lucide="eye"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'secretaria:alunoUpdate' aluno.aluno_id %}" class="btn-link">
+                            <i data-lucide="edit"></i> Editar
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr id="noDataRow">
+                    <td colspan="6" class="no-data">
+                        Nenhum aluno cadastrado.
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    lucide.createIcons();
+    
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const clearFilter = document.getElementById('clearFilter');
+    const searchResultsInfo = document.getElementById('searchResultsInfo');
+    const resultsText = document.getElementById('resultsText');
+    const tableBody = document.getElementById('tableBody');
+    const alunoRows = document.querySelectorAll('.aluno-row');
+    const noDataRow = document.getElementById('noDataRow');
+    
+    let currentSearchTerm = '';
+    
+    // Função para filtrar os resultados
+    function filterAlunos(searchTerm) {
+        const term = searchTerm.toLowerCase().trim();
+        let visibleCount = 0;
+        
+        alunoRows.forEach(row => {
+            const id = row.getAttribute('data-id');
+            const nome = row.getAttribute('data-nome');
+            const email = row.getAttribute('data-email');
+            const telefone = row.getAttribute('data-telefone');
+            
+            const matches = id.includes(term) || 
+                           nome.includes(term) || 
+                           email.includes(term) || 
+                           telefone.includes(term);
+            
+            if (matches) {
+                row.style.display = '';
+                visibleCount++;
+                
+                // Adiciona highlight se houver termo de busca
+                if (term) {
+                    row.classList.add('highlight');
+                    highlightText(row, term);
+                } else {
+                    row.classList.remove('highlight');
+                    removeHighlight(row);
+                }
+            } else {
+                row.style.display = 'none';
+                row.classList.remove('highlight');
+                removeHighlight(row);
+            }
+        });
+        
+        // Mostra/oculta a linha de "nenhum dado" e "nenhum resultado"
+        if (visibleCount === 0 && alunoRows.length > 0) {
+            // Mostra linha de nenhum resultado
+            if (!document.getElementById('noResultsRow')) {
+                const noResultsRow = document.createElement('tr');
+                noResultsRow.id = 'noResultsRow';
+                noResultsRow.innerHTML = `<td colspan="6" class="no-data">Nenhum aluno encontrado para "${searchTerm}"</td>`;
+                tableBody.appendChild(noResultsRow);
+            }
+            if (noDataRow) noDataRow.style.display = 'none';
+        } else {
+            // Remove linha de nenhum resultado se existir
+            const noResultsRow = document.getElementById('noResultsRow');
+            if (noResultsRow) {
+                noResultsRow.remove();
+            }
+            // Mostra/oculta linha de nenhum dado original
+            if (noDataRow) {
+                noDataRow.style.display = visibleCount === 0 && alunoRows.length === 0 ? '' : 'none';
+            }
+        }
+        
+        // Atualiza informações de resultados
+        if (term) {
+            resultsText.textContent = `Encontrados ${visibleCount} aluno(s) para "${searchTerm}"`;
+            searchResultsInfo.style.display = 'block';
+            clearFilter.style.display = 'flex';
+        } else {
+            searchResultsInfo.style.display = 'none';
+            clearFilter.style.display = 'none';
+        }
+        
+        currentSearchTerm = term;
+    }
+
+    // Função para destacar texto encontrado (MODIFICADA)
+    function highlightText(row, term) {
+        // Seleciona apenas as células de dados (excluindo as colunas de ação)
+        const dataCells = row.querySelectorAll('td:not(:last-child):not(:nth-last-child(2))');
+        
+        dataCells.forEach(cell => {
+            const originalHTML = cell.innerHTML;
+            // Armazena o HTML original se ainda não foi armazenado
+            if (!cell.hasAttribute('data-original')) {
+                cell.setAttribute('data-original', originalHTML);
+            }
+            
+            const textContent = cell.textContent || cell.innerText;
+            const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            const highlightedHTML = textContent.replace(regex, '<mark>$1</mark>');
+            cell.innerHTML = highlightedHTML;
+        });
+    }
+    
+    // Função para remover destaque (MODIFICADA)
+    function removeHighlight(row) {
+        const dataCells = row.querySelectorAll('td:not(:last-child):not(:nth-last-child(2))');
+        
+        dataCells.forEach(cell => {
+            // Restaura o HTML original se foi armazenado
+            if (cell.hasAttribute('data-original')) {
+                cell.innerHTML = cell.getAttribute('data-original');
+            }
+        });
+    }
+
+    // Função auxiliar para obter o conteúdo original da célula
+    function getOriginalCellContent(row, cellIndex) {
+        // Esta função deve retornar o conteúdo original baseado na estrutura do seu template
+        // Para simplificar, vamos armazenar o conteúdo original em um data attribute
+        const cell = row.children[cellIndex];
+        const contentSpan = cell.querySelector('.cell-content');
+        
+        if (!contentSpan.hasAttribute('data-original')) {
+            contentSpan.setAttribute('data-original', contentSpan.textContent);
+        }
+        
+        return contentSpan.getAttribute('data-original');
+    }
+
+    // Debounce para otimizar a busca
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    const debouncedFilter = debounce(filterAlunos, 300);
+    
+    // Event Listeners
+    searchInput.addEventListener('keyup', function(e) {
+        debouncedFilter(searchInput.value);
+    });
+    
+    searchBtn.addEventListener('click', function() {
+        filterAlunos(searchInput.value);
+    });
+    
+    clearFilter.addEventListener('click', function() {
+        searchInput.value = '';
+        filterAlunos('');
+        searchInput.focus();
+    });
+    
+    // Focar no campo de busca quando a página carregar
+    searchInput.focus();
+});
+</script>
 {% endblock %}

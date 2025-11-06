@@ -1,13 +1,31 @@
 <!-- Secretaria/templates/secretaria/alunoEdit.html -->
-{% extends "secretaria/turmaList.html" %}
-
-{% block header_title %} Editar Aluno {% endblock %}
+{% extends "secretaria/Abase.html" %}
 
 {% block content %}
-    <h2>Aluno: {{ aluno.nome }}</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Salvar</button>
-    </form>
+<div class="form-container">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    
+    <div class="form-group">
+      {% for field in form %}
+
+      
+
+        <!-- Inputs normais/sem necessidade de intervenção no HTML -->
+        
+          <div class="form-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <ul class="errorlist">{{ field.errors }}</ul>
+            {% endif %}
+          </div>
+        
+
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="subm-form">Salvar</button>
+  </form>
+</div>
 {% endblock %}

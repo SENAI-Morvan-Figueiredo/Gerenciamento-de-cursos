@@ -1,24 +1,23 @@
 {% extends 'secretaria/Abase.html' %}
 {% load static %}
 
-{% block title %}Gerenciamento de Turmas{% endblock %}
 
 {% block content %}
+
 <div class="content-header">
     <h1>Gerenciamento de Turmas</h1>
-    <p>Visualize e gerencie todas as turmas do sistema</p>
 </div>
 
-<div class="turma-search">
+<div class="container-search">
     <form method="get" class="search-bar">
         <input type="text" name="q" placeholder="Pesquisar turma, curso ou professor..." value="{{ query }}">
-        <button type="submit">
+        <button type="submit" class="btn btn-style">
             <i data-lucide="search"></i>
         </button>
     </form>
     
     {% if query %}
-        <a href="{% url 'secretaria:turmaList' %}" class="clear-btn">
+        <a href="{% url 'secretaria:turmaList' %}" class="btn btn-style">
             <i data-lucide="x" style="width: 16px; height: 16px;"></i>
             Limpar Filtro
         </a>
@@ -27,8 +26,8 @@
 
 <div class="cards-container">
     <!-- Card de Adição -->
-    <a href="{% url 'secretaria:turmaAdd' %}" class="urls">
-        <div class="card btn-add">
+    <a href="{% url 'secretaria:turmaAdd' %}">
+        <div class="card card-add">
             <h3>Nova Turma</h3>
             <i data-lucide="plus-circle" style="width: 32px; height: 32px;"></i>
         </div>
@@ -58,11 +57,11 @@
             </p>
             
             <div class="card-actions">
-                <a href="{% url 'secretaria:turmaDetail' turma.turma_id %}" class="btn-detail">
+                <a href="{% url 'secretaria:turmaDetail' turma.turma_id %}" class="btn btn-style3">
                     <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
                     Detalhes
                 </a>
-                <a href="{% url 'secretaria:turmaUpdate' turma.turma_id %}" class="btn-edit">
+                <a href="{% url 'secretaria:turmaUpdate' turma.turma_id %}" class="btn btn-style2">
                     <i data-lucide="edit-3" style="width: 16px; height: 16px;"></i>
                     Editar
                 </a>
@@ -76,41 +75,34 @@
     {% endfor %}
 </div>
 
-<style>
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-}
-
-.status-badge {
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.status-active {
-    background: #D1FAE5;
-    color: #065F46;
-}
-
-.status-inactive {
-    background: #FEE2E2;
-    color: #991B1B;
-}
-
-.urls {
-    text-decoration: none;
-    color: inherit;
-}
-</style>
-
 <script>
     // Atualizar ícones após o carregamento
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
     });
+
+    // Função para filtrar turmas
+    function filtrarTurmas() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const cards = document.querySelectorAll('.turma-card');
+        
+        cards.forEach(card => {
+            const nome = card.getAttribute('data-nome');
+            if (nome.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    
+    // Permitir busca ao pressionar Enter
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            filtrarTurmas();
+        }
+    });
+    
 </script>
-{% endblock %}
+
+{% endblock content %}

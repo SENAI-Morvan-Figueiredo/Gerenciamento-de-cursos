@@ -47,10 +47,15 @@ class Turma(models.Model):
     nome = models.CharField(max_length=100, null=True, blank=True)
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     professor = models.ForeignKey('Login.Professor', on_delete=models.CASCADE)
-    dias_semana = models.CharField(max_length=50)
-    horarios = models.CharField(max_length=100)
+
     data_inicio = models.DateField()
-    duracao = models.IntegerField()
+    data_fim = models.DateField( null=True, blank=True)
+    dias_semana = models.CharField(max_length=50)
+    
+
+    entrada_horas = models.CharField(max_length=100, null=True, blank=True)
+    saida_horas = models.CharField(max_length=100, null=True, blank=True)
+    
     tipo = models.CharField(max_length=10, choices=TIPO_AULA)
     status = models.BooleanField(default=True)
 

@@ -2,124 +2,258 @@
 {% extends "secretaria/Abase.html" %}
 {% load static %}
 
-{% block title %} Lista de Professores {% endblock %}
-
 {% block content %}
 <div class="content-header">
     <h1>Lista de Professores</h1>
     <p>Gerencie os professores do sistema</p>
 </div>
 
-<div class="turma-search">
-    <div class="search-bar">
-        <input type="text" placeholder="Buscar professor..." id="searchInput">
-        <button type="button" onclick="filtrarProfessores()">
-            <i data-lucide="search"></i> Buscar
-        </button>
-        <a href="{% url 'secretaria:profList' %}" class="clear-btn">
-            <i data-lucide="x"></i> Limpar
-        </a>
-    </div>
-</div>
+<div class="table-container"> 
 
-<div class="cards-container">
-    
-    <a href="#" class="card btn-add">
-        <i data-lucide="user-plus" width="32" height="32"></i>
-        <span>Adicionar Professor</span>
-    </a>
-    
-    {% for professor in professores %}
-    <div class="card professor-card" data-nome="{{ professor.usuario.nome|lower }}">
-        <h2>{{ professor.usuario.nome }}</h2>
-        
-        <p>
-            <i data-lucide="id-card"></i>
-            <strong>ID:</strong> {{ professor.professor_id }}
-        </p>
-        
-        <p>
-            <i data-lucide="mail"></i>
-            <strong>Email:</strong> {{ professor.usuario.email|default:"Não informado" }}
-        </p>
-        
-        <p>
-            <i data-lucide="phone"></i>
-            <strong>Telefone:</strong> {{ professor.usuario.contato|default:"Não informado" }}
-        </p>
+    <div class="container-search">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Pesquisar por nome, email, telefone ou turma...">
+            <button type="button" id="searchBtn" class="btn btn-style">
+                <i data-lucide="search"></i>
+            </button>
 
-        <div class="card-actions">
-            <a href="{% url 'secretaria:profUpdate' professor.professor_id %}" class="btn-edit">
-                <i data-lucide="edit"></i> Editar
-            </a>
-            <a href="#" class="btn-detail">
-                <i data-lucide="eye"></i> Detalhes
-            </a>
+            <button type="button" id="clearFilter" class="btn btn-style" style="display: none;">
+                <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                Limpar
+            </button>
         </div>
+        
+        
     </div>
-    {% empty %}
-    <div class="no-data">
-        <h3>Nenhum professor encontrado</h3>
-        <p>Não há professores cadastrados no sistema.</p>
-        <a href="#" class="btn-add" style="margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.5rem;">
-            <i data-lucide="plus"></i> Adicionar Professor
-        </a>
+
+    <div id="searchResultsInfo" class="search-results-info" style="display: none;">
+        <p id="resultsText"></p>
     </div>
-    {% endfor %}
+
+    <table id="professoresTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Email</th>
+                
+                <th>Turmas</th>
+                <th>Status</th>
+                <th>Detalhes</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            {% for professor in professores %}
+                <tr class="professor-row" 
+                    data-nome="{{ professor.usuario.nome|lower }} {{ professor.usuario.sobrenome|lower }}"
+                    data-email="{{ professor.usuario.email|lower }}"
+                    data-turmas="{% for turma in professor.turma_set.all %}{{ turma.nome|lower }} {% endfor %}">
+                    <td>{{ professor.professor_id }}</td>
+                    <td>{{ professor.usuario.nome }} {{ professor.usuario.sobrenome }}</td>
+                    <td>{{ professor.usuario.email }}</td>
+                    
+                    <td>
+                        {% with professor.turma_set.all as turmas %}
+                            {% if turmas %}
+                                {% for turma in turmas|slice:":3" %}
+                                    {{ turma.nome }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                                {% if turmas|length > 3 %}...{% endif %}
+                            {% else %}
+                                Sem turmas
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td>
+                        {% if professor.status %}
+                            <span class="status-active">Ativo</span>
+                        {% else %}
+                            <span class="status-inactive">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'secretaria:profDetail' professor.professor_id %}" class="btn-link">
+                            <i data-lucide="eye"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'secretaria:profUpdate' professor.professor_id %}" class="btn-link">
+                            <i data-lucide="edit"></i> Editar
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr id="noDataRow">
+                    <td colspan="8" class="no-data">
+                        Nenhum professor cadastrado.
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 <script>
-    // Inicializar ícones
+document.addEventListener('DOMContentLoaded', function() {
     lucide.createIcons();
     
-    // Função para filtrar professores
-    function filtrarProfessores() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const cards = document.querySelectorAll('.professor-card');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const clearFilter = document.getElementById('clearFilter');
+    const searchResultsInfo = document.getElementById('searchResultsInfo');
+    const resultsText = document.getElementById('resultsText');
+    const tableBody = document.getElementById('tableBody');
+    const professorRows = document.querySelectorAll('.professor-row');
+    const noDataRow = document.getElementById('noDataRow');
+    
+    let currentSearchTerm = '';
+
+    // Função para filtrar os resultados
+    function filterProfessors(searchTerm) {
+        const term = searchTerm.toLowerCase().trim();
+        let visibleCount = 0;
         
-        cards.forEach(card => {
-            const nome = card.getAttribute('data-nome');
-            if (nome.includes(searchTerm)) {
-                card.style.display = 'block';
+        professorRows.forEach(row => {
+            const nome = row.getAttribute('data-nome');
+            const email = row.getAttribute('data-email');
+            
+            const turmas = row.getAttribute('data-turmas');
+            
+            const matches = nome.includes(term) || 
+                           email.includes(term) || 
+                           telefone.includes(term) || 
+                           turmas.includes(term);
+            
+            if (matches) {
+                row.style.display = '';
+                visibleCount++;
+                
+                // Adiciona highlight se houver termo de busca
+                if (term) {
+                    row.classList.add('highlight');
+                    highlightText(row, term);
+                } else {
+                    row.classList.remove('highlight');
+                    removeHighlight(row);
+                }
             } else {
-                card.style.display = 'none';
+                row.style.display = 'none';
+                row.classList.remove('highlight');
+                removeHighlight(row);
+            }
+        });
+        
+        // Mostra/oculta a linha de "nenhum dado"
+        if (noDataRow) {
+            if (visibleCount === 0 && professorRows.length > 0) {
+                if (!document.getElementById('noResultsRow')) {
+                    const noResultsRow = document.createElement('tr');
+                    noResultsRow.id = 'noResultsRow';
+                    noResultsRow.innerHTML = `<td colspan="8" class="no-data">Nenhum professor encontrado para "${searchTerm}"</td>`;
+                    tableBody.appendChild(noResultsRow);
+                }
+                noDataRow.style.display = 'none';
+            } else {
+                const noResultsRow = document.getElementById('noResultsRow');
+                if (noResultsRow) {
+                    noResultsRow.remove();
+                }
+                noDataRow.style.display = visibleCount === 0 ? '' : 'none';
+            }
+        }
+        
+        // Atualiza informações de resultados
+        if (term) {
+            resultsText.textContent = `Encontrados ${visibleCount} professor(es) para "${searchTerm}"`;
+            searchResultsInfo.style.display = 'block';
+            clearFilter.style.display = 'flex';
+            
+        } else {
+            searchResultsInfo.style.display = 'none';
+            clearFilter.style.display = 'none';
+        }
+        
+        currentSearchTerm = term;
+    }
+
+    // Função para destacar texto encontrado
+    function highlightText(row, term) {
+        // Seleciona apenas as células de dados (excluindo as colunas de ação)
+        const dataCells = row.querySelectorAll('td:not(:last-child):not(:nth-last-child(2))');
+        
+        dataCells.forEach(cell => {
+            const originalHTML = cell.innerHTML;
+            // Armazena o HTML original se ainda não foi armazenado
+            if (!cell.hasAttribute('data-original')) {
+                cell.setAttribute('data-original', originalHTML);
+            }
+            
+            const textContent = cell.textContent || cell.innerText;
+            const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            const highlightedHTML = textContent.replace(regex, '<mark>$1</mark>');
+            cell.innerHTML = highlightedHTML;
+        });
+    }
+    
+    // Função para remover destaque
+    function removeHighlight(row) {
+        const dataCells = row.querySelectorAll('td:not(:last-child):not(:nth-last-child(2))');
+        
+        dataCells.forEach(cell => {
+            // Restaura o HTML original se foi armazenado
+            if (cell.hasAttribute('data-original')) {
+                cell.innerHTML = cell.getAttribute('data-original');
             }
         });
     }
     
-    // Permitir busca ao pressionar Enter
-    document.getElementById('searchInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            filtrarProfessores();
-        }
-    });
-    
-    // Atualizar ícones quando o DOM for carregado
-    document.addEventListener('DOMContentLoaded', function() {
-        lucide.createIcons();
-    });
-</script>
-
-<style>
-    /* Estilos específicos para a página de professores */
-    .professor-card:hover::before {
-        background: linear-gradient(135deg, var(--laranja) 0%, #FF6B35 100%);
-    }
-    
-    .card p i {
-        width: 16px;
-        height: 16px;
-    }
-    
-    /* Melhorar responsividade dos cards */
-    @media (max-width: 768px) {
-        .card-actions {
-            flex-direction: column;
+    // Função auxiliar para obter o conteúdo original da célula
+    function getOriginalCellContent(row, cellIndex) {
+        // Esta função deve retornar o conteúdo original baseado na estrutura do seu template
+        // Para simplificar, vamos armazenar o conteúdo original em um data attribute
+        const cell = row.children[cellIndex];
+        const contentSpan = cell.querySelector('.cell-content');
+        
+        if (!contentSpan.hasAttribute('data-original')) {
+            contentSpan.setAttribute('data-original', contentSpan.textContent);
         }
         
-        .btn-detail, .btn-edit {
-            flex: none;
-        }
+        return contentSpan.getAttribute('data-original');
     }
-</style>
+
+    // Debounce para otimizar a busca
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    const debouncedFilter = debounce(filterProfessors, 300);
+    
+    // Event Listeners
+    searchInput.addEventListener('keyup', function(e) {
+        debouncedFilter(searchInput.value);
+    });
+    
+    searchBtn.addEventListener('click', function() {
+        filterProfessors(searchInput.value);
+    });
+    
+    clearFilter.addEventListener('click', function() {
+        searchInput.value = '';
+        filterProfessors('');
+        searchInput.focus();
+    });
+    
+    // Focar no campo de busca quando a página carregar
+    searchInput.focus();
+});
+</script>
 {% endblock %}

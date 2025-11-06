@@ -2,7 +2,6 @@
 {% extends "secretaria/Abase.html" %}
 {% load static %}
 
-{% block title %} Editar Turma {% endblock %}
 
 {% block content %}
 <div class="form-container">
@@ -12,22 +11,49 @@
     <div class="form-group">
       {% for field in form %}
 
-      <!-- Verifica se o campo é o "dias_semana" para aplicar a class "checkbox-group" -->
+        <!-- Campo dias_semana como checkbox group -->
         {% if field.name == "dias_semana" %}
           <fieldset class="checkbox-group">
             <legend>{{ field.label }}</legend>
-            {% for checkbox in field %}
-              <label class="checkbox-item">
-                {{ checkbox.tag }}
-                {{ checkbox.choice_label }}
-              </label>
-            {% endfor %}
+            <div class="checkbox-items">
+              {% for checkbox in field %}
+                <label class="checkbox-item">
+                  {{ checkbox.tag }}
+                  {{ checkbox.choice_label }}
+                </label>
+              {% endfor %}
+            </div>
             {% if field.errors %}
               <ul class="errorlist">{{ field.errors }}</ul>
             {% endif %}
           </fieldset>
 
-        <!-- Outros Campos -->
+        <!-- Campos select (curso, professor, tipo) com wrapper personalizado -->
+        {% elif field.name == "curso" or field.name == "professor" or field.name == "tipo" %}
+          <div class="form-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            <div class="select-wrapper">
+              {{ field }}
+            </div>
+            {% if field.errors %}
+              <ul class="errorlist">{{ field.errors }}</ul>
+            {% endif %}
+          </div>
+
+        <!-- Campo status como checkbox customizado -->
+        {% elif field.name == "status" %}
+          <div class="checkbox-field">
+            <label class="checkbox-label">
+              {{ field }}
+              <span class="checkmark"></span>
+              <span>{{ field.label }}</span>
+            </label>
+            {% if field.errors %}
+              <ul class="errorlist">{{ field.errors }}</ul>
+            {% endif %}
+          </div>
+
+        <!-- Inputs normais/sem necessidade de intervenção no HTML -->
         {% else %}
           <div class="form-field">
             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -37,10 +63,14 @@
             {% endif %}
           </div>
         {% endif %}
+
       {% endfor %}
     </div>
 
-    <button type="submit">Salvar</button>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-style3">Salvar Turma</button>
+      <a href="{% url 'secretaria:turmaList' %}" class="btn btn-style2">Cancelar</a>
+    </div>
   </form>
 </div>
 {% endblock %}

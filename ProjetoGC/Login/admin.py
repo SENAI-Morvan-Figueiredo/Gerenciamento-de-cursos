@@ -9,7 +9,7 @@ class UsuarioAdmin(admin.ModelAdmin):
 
 @admin.register(Aluno)
 class AlunoAdmin(admin.ModelAdmin):
-    list_display = ('aluno_id', 'usuario', 'data_ingresso')
+    list_display = ('aluno_id', 'usuario')
 
 @admin.register(Professor)
 class ProfessorAdmin(admin.ModelAdmin):

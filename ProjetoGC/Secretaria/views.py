@@ -1,5 +1,6 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.urls import reverse_lazy
+from django.contrib import messages
 from django.utils.decorators import method_decorator
 
 from .forms import AlunoUsuarioForm, ProfessorUsuarioForm, TurmaForm
@@ -48,6 +49,11 @@ class TurmaUpdateView(UpdateView):
         turma.save()
         return super().form_valid(form)
 
+
+
+
+
+
 #   <----------------- Alunos ----------------->
 @method_decorator(secretaria_required, name='dispatch')
 class AlunoListView(ListView):
@@ -68,12 +74,33 @@ class AlunoCreateView(CreateView):
     template_name = "secretaria/alunoAdd.html"
     success_url = reverse_lazy("secretaria:alunoList")
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Aluno cadastrado com sucesso!')
+        return response
+    
+    def form_invalid(self, form):
+        messages.error(self.request, 'Erro no cadastro. Verifique os dados.')
+        return super().form_invalid(form)
+
 @method_decorator(secretaria_required, name='dispatch')
 class AlunoUpdateView(UpdateView):
     model = Aluno
     form_class = AlunoUsuarioForm  
     template_name = "secretaria/alunoEdit.html"
     success_url = reverse_lazy("secretaria:alunoList")
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Aluno atualizado com sucesso!')
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        messages.error(self.request, 'Erro na atualização. Verifique os dados.')
+        return super().form_invalid(form)
+
+
+
+
 
 #   <----------------- Professores ----------------->
 @method_decorator(secretaria_required, name='dispatch')
@@ -95,9 +122,27 @@ class ProfessorCreateView(CreateView):
     template_name = "secretaria/profAdd.html"
     success_url = reverse_lazy("secretaria:profList")
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Professor cadastrado com sucesso!')
+        return response
+    
+    def form_invalid(self, form):
+        messages.error(self.request, 'Erro no cadastro. Verifique os dados.')
+        return super().form_invalid(form)
+
 @method_decorator(secretaria_required, name='dispatch')
 class ProfessorUpdateView(UpdateView):
     model = Professor
     form_class = ProfessorUsuarioForm
     template_name = "secretaria/profEdit.html"
     success_url = reverse_lazy("secretaria:profList")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Professor cadastrado com sucesso!')
+        return response
+    
+    def form_invalid(self, form):
+        messages.error(self.request, 'Erro no cadastro. Verifique os dados.')
+        return super().form_invalid(form)

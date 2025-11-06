@@ -1,0 +1,53 @@
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 768px) {
+    .layout {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        max-width: none;
+    }
+    
+    .sidebar-menu {
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 1rem;
+    }
+    
+    .menu-item {
+        min-width: fit-content;
+    }
+    
+    .cards-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .content-area {
+        padding: 1rem;
+    }
+
+    .table-container {
+        border-radius: 12px;
+        overflow-x: auto;
+    }
+    
+    /* TABELA */
+    table {
+        min-width: 600px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-accept, .btn-deny {
+        min-width: 60px;
+        padding: 0.4rem 0.8rem;
+    }
+}
