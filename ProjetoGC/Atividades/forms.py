@@ -1,6 +1,7 @@
 from django import forms
 from .models import Avaliacao
 from django.forms.widgets import DateTimeInput
+from Cursos.models import Turma
 
 class AvaliacaoForm(forms.ModelForm):
     class Meta:
@@ -20,7 +21,8 @@ class AvaliacaoForm(forms.ModelForm):
 
         # Filtrar o campo 'turma' para mostrar apenas as turmas do professor
         if professor:
-            self.fields['turma'].queryset = professor.turma_set.all()
+            # Filtra explicitamente por Turma.professor para evitar dependência do related_name
+            self.fields['turma'].queryset = Turma.objects.filter(professor=professor)
         else:
             # Se não houver professor, não deve haver turmas para selecionar
             self.fields['turma'].queryset = self.fields['turma'].queryset.none()

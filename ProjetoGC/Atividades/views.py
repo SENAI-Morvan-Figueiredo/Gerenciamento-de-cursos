@@ -119,7 +119,7 @@ def adicionar_avaliacao(request):
             avaliacao = form.save(commit=False)
             avaliacao.professor = professor
             avaliacao.save()
-            return redirect('listar_avaliacoes')
+            return redirect('atividades:listar_avaliacoes')
     else:
         form = AvaliacaoForm(professor=professor)
     
@@ -133,6 +133,62 @@ def adicionar_avaliacao(request):
     }
     
     return render(request, 'Atividades/adicionar_avaliacao.html', context)
+
+
+@login_required
+def editar_avaliacao(request, avaliacao_id):
+    """
+    Editar uma avaliacao existente. Somente o professor dono pode editar.
+    """
+    if request.user.tipo != 'professor':
+        return HttpResponse("Apenas professores podem editar avaliacoes.", status=403)
+
+    try:
+        professor = ProfessorModel.objects.get(usuario=request.user)
+    except ProfessorModel.DoesNotExist:
+        return redirect('home')
+
+    avaliacao = get_object_or_404(Avaliacao, pk=avaliacao_id, professor=professor)
+
+    if request.method == 'POST':
+        form = AvaliacaoForm(professor=professor, data=request.POST, files=request.FILES, instance=avaliacao)
+        if form.is_valid():
+            form.save()
+            return redirect('atividades:listar_avaliacoes')
+    else:
+        form = AvaliacaoForm(professor=professor, instance=avaliacao)
+
+    context = {
+        'form': form,
+        'titulo_pagina': 'EDITAR AVALIACAO',
+    }
+
+    # Reutiliza o template de adicionar para o formulário de edição
+    return render(request, 'Atividades/adicionar_avaliacao.html', context)
+
+
+@login_required
+def deletar_avaliacao(request, avaliacao_id):
+    """
+    Deleta uma avaliacao. Somente o professor dono pode deletar.
+    Nota: o template atualmente faz a chamada via GET com confirmação em JS.
+    """
+    if request.user.tipo != 'professor':
+        return HttpResponse("Apenas professores podem deletar avaliacoes.", status=403)
+
+    try:
+        professor = ProfessorModel.objects.get(usuario=request.user)
+    except ProfessorModel.DoesNotExist:
+        return redirect('home')
+
+    avaliacao = get_object_or_404(Avaliacao, pk=avaliacao_id, professor=professor)
+    # Aceitar apenas POST para exclusão por segurança
+    if request.method == 'POST':
+        avaliacao.delete()
+        return redirect('atividades:listar_avaliacoes')
+    else:
+        # Método não permitido
+        return HttpResponse('Method Not Allowed', status=405)
 
 @login_required
 def listar_avaliacoes(request):

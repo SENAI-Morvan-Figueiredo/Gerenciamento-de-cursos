@@ -53,9 +53,12 @@
                             <a href="{% url 'atividades:editar_avaliacao' avaliacao.avaliacao_id %}" class="btn btn-edit">
                                 <i class="fas fa-edit"></i> Editar
                             </a>
-                            <a href="{% url 'atividades:deletar_avaliacao' avaliacao.avaliacao_id %}" class="btn btn-delete" onclick="return confirm('Tem certeza que deseja deletar esta avaliação?');">
-                                <i class="fas fa-trash"></i> Deletar
-                            </a>
+                            <form method="post" action="{% url 'atividades:deletar_avaliacao' avaliacao.avaliacao_id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-delete" onclick="return confirm('Tem certeza que deseja deletar esta avaliação?');">
+                                    <i class="fas fa-trash"></i> Deletar
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
