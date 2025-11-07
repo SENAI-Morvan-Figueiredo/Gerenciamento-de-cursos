@@ -246,6 +246,8 @@ select.form-control:focus {
 
 /* --- CHECKBOX PERSONALIZADO --- */
 .checkbox-field {
+    width: min-content;
+    height: min-content;
     display: flex;
     align-items: center;
     gap: 1rem;

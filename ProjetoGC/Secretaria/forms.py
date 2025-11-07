@@ -66,7 +66,16 @@ class AlunoUsuarioForm(UsuarioBaseForm):
 
         # define o 'tipo' como 'aluno'
         self.fields['tipo'].initial = 'aluno'
-        self.fields['tipo'].widget = forms.HiddenInput()
+        # 🔹 Verifica se é uma criação (instance não existe ou não tem pk)
+        is_creating = self.instance.pk is None
+        
+        # 🔹 Se for criação, remove o campo tipo
+        if is_creating:
+            self.fields.pop('tipo', None)
+        else:
+            # 🔹 Se for edição, mantém o campo 
+            self.fields['tipo'] = forms
+            
 
         # Se for uma instância existente (edição)
         if self.instance and self.instance.pk:
@@ -292,8 +301,8 @@ class TurmaForm(forms.ModelForm):
             "saida_horas",
             "data_inicio",
             "data_fim",
-            "status", 
-            "dias_semana"
+            "dias_semana",
+            "status"
         ]
 
         labels = {
@@ -338,6 +347,20 @@ class TurmaForm(forms.ModelForm):
         # 🔹 Campos do tipo ModelChoiceField, NÃO MECHA!
         self.fields['curso'].queryset = Curso.objects.all()
         self.fields['professor'].queryset = Professor.objects.all()
+
+        # 🔹 Verifica se é uma criação (instance não existe ou não tem pk)
+        is_creating = self.instance.pk is None
+        
+        # 🔹 Se for criação, remove o campo status
+        if is_creating:
+            self.fields.pop('status', None)
+        else:
+            # 🔹 Se for edição, mantém o campo status
+            self.fields['status'] = forms.ChoiceField(
+                choices=self.STATUS_CHOICES,
+                initial=self.instance.status if self.instance else True,
+                widget=forms.CheckboxInput(attrs={'class': 'form-control'})
+            )
 
         # 🔹 Campos simples configurados diretamente, Colocações das class, id, labels e outros...
         self.fields['nome'].widget.attrs.update({
@@ -399,15 +422,6 @@ class TurmaForm(forms.ModelForm):
             })
         )
 
-        # self.fields['status'].initial = self.instance.status
-        # self.fields['status'] = forms.HiddenInput()
-
-    # if self.instance and self.instance.pk:
-        self.fields['status'] = forms.ChoiceField(
-            choices=self.STATUS_CHOICES,
-            initial=True,
-            widget=forms.Select(attrs={'class': 'form-control'})
-        )
         
         # Se estiver editando, preencher os valores iniciais para dias_semana
         if self.instance and self.instance.pk:

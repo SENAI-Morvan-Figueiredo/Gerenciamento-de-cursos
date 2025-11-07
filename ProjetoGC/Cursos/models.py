@@ -13,7 +13,7 @@ class Curso(models.Model):
         ordering = ["nome"]
 
     def __str__(self):
-        return self.nome
+        return self.nome if self.nome else "Curso sem nome"
 
     
 
@@ -24,7 +24,7 @@ class Disciplina(models.Model):
     # Remova o campo curso
 
     def __str__(self):
-        return self.nome
+        return self.nome if self.nome else "Disciplina sem nome"
 
     
 
@@ -66,7 +66,14 @@ class Turma(models.Model):
         db_table = 'Turma'
     
     def __str__(self):
-        return self.nome
+        if self.nome and self.curso:
+            return f"{self.nome} - {self.curso.nome}"
+        elif self.nome:
+            return self.nome
+        elif self.curso:
+            return f"Turma - {self.curso.nome}"
+        else:
+            return "Turma sem nome"  # Fallback seguro
 
     
 
