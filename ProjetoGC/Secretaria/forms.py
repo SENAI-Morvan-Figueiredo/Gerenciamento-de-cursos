@@ -268,7 +268,7 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
             
             # Gerencia turmas
             turmas_selecionadas = self.cleaned_data.get('turma', [])
-            Turma.objects.filter(professor=professor).update(professor=None)
+            Turma.objects.filter(professor=professor)
             for turma in turmas_selecionadas:
                 turma.professor = professor
                 turma.save()

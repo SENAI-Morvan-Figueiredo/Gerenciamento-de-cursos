@@ -28,7 +28,7 @@
             <tbody>
                 {% for solicitacao in solicitacoes %}
                     <tr>
-                        <td><strong>#{{ solicitacao.solicitacao_id }}</strong></td>
+                        <td><strong>{{ solicitacao.solicitacao_id }}</strong></td>
                         <td>{{ solicitacao.usuario.email }}</td>
                         <td>{{ solicitacao.tipo|title }}</td>
                         <td>

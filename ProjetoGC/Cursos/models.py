@@ -46,7 +46,7 @@ class Turma(models.Model):
     turma_id = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=100, null=True, blank=True)
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    professor = models.ForeignKey('Login.Professor', on_delete=models.CASCADE)
+    professor = models.ForeignKey('Login.Professor', on_delete=models.CASCADE, null=True, blank=True, default=None)
 
     data_inicio = models.DateField()
     data_fim = models.DateField( null=True, blank=True)
