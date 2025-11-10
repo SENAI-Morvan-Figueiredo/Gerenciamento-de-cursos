@@ -1,1 +1,213 @@
-<!-- Secretaria/templates/secretaria/profDetail.html -->
+{% extends 'Secretaria/Abase.html' %}
+{% load static %}
+
+{% block title %}Detalhes do Professor - {{ professor.usuario.nome }}{% endblock %}
+
+{% block content %}
+<style>
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: var(--branco);
+        border-radius: 16px;
+        box-shadow: var(--sombra);
+    }
+    
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, var(--azul) 0%, var(--azul-claro) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--branco);
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    
+    .profile-info h1 {
+        margin-bottom: 0.5rem;
+        color: var(--preto);
+    }
+    
+    .profile-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .turmas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .detail-full {
+        grid-column: 1 / -1;
+    }
+    
+    .card-info p {
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .card-info strong {
+        color: var(--preto);
+        min-width: 120px;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+        background: var(--azul-suave);
+        border-radius: 8px;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--azul);
+        display: block;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--cinza-claro);
+    }
+</style>
+
+<div class="profile-header">
+    <div class="profile-avatar">
+        {{ professor.usuario.nome|first }}{{ professor.usuario.sobrenome|first }}
+    </div>
+    <div class="profile-info">
+        <h1>{{ professor.usuario.nome }} {{ professor.usuario.sobrenome }}</h1>
+        <p class="text-muted">{{ professor.usuario.email }}</p>
+        
+        <div class="profile-stats">
+            <div class="stat-item">
+                <span class="stat-value">{{ total_turmas }}</span>
+                <span class="stat-label">Turmas</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ turmas_ativas }}</span>
+                <span class="stat-label">Turmas Ativas</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">R$ {{ professor.salario }}</span>
+                <span class="stat-label">Salário</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="detail-grid">
+    <!-- Informações Pessoais -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Informações Pessoais</h2>
+            <span class="status-badge {% if professor.status %}status-active{% else %}status-inactive{% endif %}">
+                {{ professor.status|yesno:"Ativo,Inativo" }}
+            </span>
+        </div>
+        
+        <div class="card-info">
+            <p><strong>CPF:</strong> {{ professor.usuario.cpf }}</p>
+            <p><strong>Contato:</strong> {{ professor.usuario.contato|default:"-" }}</p>
+            <p><strong>Nascimento:</strong> {{ professor.usuario.data_nascimento|default:"-" }}</p>
+            <p><strong>Endereço:</strong> {{ professor.usuario.endereco|default:"-" }}</p>
+        </div>
+    </div>
+
+    <!-- Estatísticas -->
+    <div class="card">
+        <h2>Estatísticas Gerais</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-value">{{ cursos_count }}</span>
+                <span class="stat-label">Cursos</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ total_alunos }}</span>
+                <span class="stat-label">Total Alunos</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Turmas do Professor -->
+    <div class="card detail-full">
+        <h2>Turmas Ministradas ({{ total_turmas }})</h2>
+        
+        {% if professor.turma_set.all %}
+        <div class="turmas-grid">
+            {% for turma in professor.turma_set.all %}
+            <div class="card">
+                <div class="card-header">
+                    <h3>{{ turma.nome }}</h3>
+                    <span class="status-badge {% if turma.status %}status-active{% else %}status-inactive{% endif %}">
+                        {{ turma.status|yesno:"Ativa,Inativa" }}
+                    </span>
+                </div>
+                
+                <div class="card-info">
+                    <p><strong>Curso:</strong> {{ turma.curso.nome }}</p>
+                    <p><strong>Tipo:</strong> {{ turma.get_tipo_display }}</p>
+                    <p><strong>Período:</strong> {{ turma.data_inicio }} a {{ turma.data_fim|default:"-" }}</p>
+                    <p><strong>Horário:</strong> {{ turma.entrada_horas }} - {{ turma.saida_horas }}</p>
+                    <p><strong>Alunos:</strong> {{ turma.matricula_set.count }}</p>
+                </div>
+                
+                <div class="card-actions">
+                    <a href="{% url 'secretaria:turmaDetail' turma.turma_id %}" class="btn btn-style4">
+                        <i data-lucide="eye"></i>
+                        Ver Turma
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-data">
+            <p>Professor não está ministrando nenhuma turma</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card-actions" style="margin-top: 2rem; justify-content: center;">
+    <a href="{% url 'secretaria:profList' %}" class="btn btn-style3">
+        <i data-lucide="arrow-left"></i>
+        Voltar para Professores
+    </a>
+    <a href="{% url 'secretaria:profUpdate' professor.professor_id %}" class="btn btn-style2">
+        <i data-lucide="edit"></i>
+        Editar Professor
+    </a>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}

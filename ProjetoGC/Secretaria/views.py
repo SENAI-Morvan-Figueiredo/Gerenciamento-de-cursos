@@ -5,7 +5,7 @@ from django.utils.decorators import method_decorator
 
 from .forms import AlunoUsuarioForm, ProfessorUsuarioForm, TurmaForm
 from Login.models import Secretaria, Aluno, Professor
-from Cursos.models import Turma
+from Cursos.models import Turma, Matricula, Curso
 
 from Login.decorators import secretaria_required
 
@@ -22,6 +22,14 @@ class TurmaDetailView(DetailView):
     model = Turma
     template_name = "secretaria/turmaDetail.html"
     context_object_name = "turma"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        turma = self.object
+        context['total_alunos'] = turma.matricula_set.count()
+        context['alunos_ativos'] = turma.matricula_set.filter(status_matricula=True).count()
+        context['percentual_ativos'] = round((context['alunos_ativos'] / context['total_alunos'] * 100) if context['total_alunos'] > 0 else 0, 1)
+        return context
 
 @method_decorator(secretaria_required, name='dispatch')
 class TurmaCreateView(CreateView):
@@ -66,6 +74,19 @@ class AlunoDetailView(DetailView):
     model = Aluno
     template_name = "secretaria/alunoDetail.html"
     context_object_name = "aluno"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        aluno = self.object
+        context['total_turmas'] = aluno.matricula_set.count()
+        context['turmas_ativas'] = aluno.matricula_set.filter(status_matricula=True).count()
+        context['cursos_count'] = Curso.objects.filter(
+            turma__matricula__aluno=aluno
+        ).distinct().count()
+        context['matricula_ativa'] = aluno.matricula_set.filter(status_matricula=True).exists()
+        context['turmas_atuais'] = aluno.matricula_set.filter(status_matricula=True)
+        context['historico_turmas'] = aluno.matricula_set.all().order_by('-data_ingresso')
+        return context
 
 @method_decorator(secretaria_required, name='dispatch')
 class AlunoCreateView(CreateView):
@@ -114,6 +135,20 @@ class ProfessorDetailView(DetailView):
     model = Professor
     template_name = "secretaria/profDetail.html"
     context_object_name = "professor"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        professor = self.object
+        context['total_turmas'] = professor.turma_set.count()
+        context['turmas_ativas'] = professor.turma_set.filter(status=True).count()
+        context['total_alunos'] = Matricula.objects.filter(
+            turma__professor=professor, 
+            status_matricula=True
+        ).count()
+        context['cursos_count'] = Curso.objects.filter(
+            turma__professor=professor
+        ).distinct().count()
+        return context
 
 @method_decorator(secretaria_required, name='dispatch')
 class ProfessorCreateView(CreateView):

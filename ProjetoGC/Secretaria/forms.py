@@ -14,8 +14,10 @@ class UsuarioBaseForm(forms.ModelForm):
                     'nome', 'sobrenome',
                     'cpf', 'data_nascimento',
                     'email', 'contato',
-                    'endereco', 'tipo'
+                    'endereco'
                 ]
+        
+        
         labels = {
             'nome': 'Nome',
             'sobrenome': 'Sobrenome',
@@ -25,6 +27,12 @@ class UsuarioBaseForm(forms.ModelForm):
             'contato': 'Contato',
             'endereco': 'Endereço',
         }
+        
+    TIPO_USUARIO = [
+        ('aluno', 'Aluno'),
+        ('professor', 'Professor'),
+        ('secretaria', 'Secretaria'),
+    ]
     
     def __init__(self, *arg, **kwargs):
         super().__init__(*arg, **kwargs)
@@ -39,6 +47,21 @@ class UsuarioBaseForm(forms.ModelForm):
         self.fields['contato'].widget.attrs.update({'class': 'form-control', 'required': True})
 
         self.fields['endereco'].widget.attrs.update({'class': 'form-control', 'required': True})
+        
+        # 🔹 Verifica se é uma criação (instance não existe ou não tem pk)
+        is_creating = self.instance.pk is None
+        
+        # 🔹 Se for criação, remove o campo tipo
+        # 🔹 Verifica se é uma criação (instance não existe ou não tem pk)
+        is_creating = self.instance.pk is None
+        
+        # 🔹 Se for EDIÇÃO, adiciona o campo tipo
+        if not is_creating:
+            self.fields['tipo'] = forms.ChoiceField(
+                choices=self.TIPO_USUARIO,
+                widget=forms.Select(attrs={'class': 'form-control'}),
+                label='Tipo de Usuário'
+            )
         
 
     def clean_password2(self):
@@ -62,20 +85,21 @@ class AlunoUsuarioForm(UsuarioBaseForm):
         self.fields['turma'] = forms.ModelMultipleChoiceField(
             queryset=Turma.objects.all().exclude(status=False),
             required=False,
+            widget=forms.SelectMultiple(attrs={'class': 'form-control'})
         )
-
-        # define o 'tipo' como 'aluno'
-        self.fields['tipo'].initial = 'aluno'
-        # 🔹 Verifica se é uma criação (instance não existe ou não tem pk)
+        
         is_creating = self.instance.pk is None
         
-        # 🔹 Se for criação, remove o campo tipo
+        # 🔹 Se for criação, remove o campo status_matricula
         if is_creating:
-            self.fields.pop('tipo', None)
+            self.fields.pop('status_matricula', None)
         else:
-            # 🔹 Se for edição, mantém o campo 
-            self.fields['tipo'] = forms
-            
+            # 🔹 Se for edição, mantém o campo status_matricula
+            self.fields['status_matricula'] = forms.BooleanField(
+                initial=True,
+                label='Matriculado',
+                widget=forms.CheckboxInput(attrs={'class': 'form-control'})
+            )
 
         # Se for uma instância existente (edição)
         if self.instance and self.instance.pk:
@@ -90,7 +114,15 @@ class AlunoUsuarioForm(UsuarioBaseForm):
                     matricula__aluno=aluno, 
                     matricula__status_matricula=True
                 )
+                
+                tem_matriculas_ativas = Matricula.objects.filter(
+                        aluno=aluno, 
+                        status_matricula=True
+                    ).exists()
+                self.fields['status_matricula'].initial = tem_matriculas_ativas
+                
                 self.fields['turma'].initial = turmas_atuais
+                self.fields['tipo'].initial = 'aluno'
 
                 self.fields['nome'].initial = aluno.usuario.nome
                 self.fields['email'].initial = aluno.usuario.email
@@ -99,12 +131,10 @@ class AlunoUsuarioForm(UsuarioBaseForm):
                 self.fields['contato'].initial = aluno.usuario.contato
                 self.fields['endereco'].initial = aluno.usuario.endereco
                 self.fields['data_nascimento'].initial = aluno.usuario.data_nascimento
+                
             except Aluno.DoesNotExist:
                 pass
 
-        
-        # 🔹 Campos simples configurados diretamente, Colocações das class, id, labels e outros...
-        self.fields['turma'].widget.attrs.update({'class': 'form-control'})
 
     
     def clean_password2(self):
@@ -121,6 +151,10 @@ class AlunoUsuarioForm(UsuarioBaseForm):
         is_creating = self.instance.pk is None
         
         usuario = super().save(commit=False)
+        
+        if is_creating:
+            usuario.tipo = 'aluno'
+            usuario.status = True
 
          # Só define nova senha se foi fornecida
         if self.cleaned_data.get("password1"):
@@ -135,20 +169,42 @@ class AlunoUsuarioForm(UsuarioBaseForm):
             else:
                 aluno = usuario.aluno
             
+            # 🔹 GERENCIAMENTO DO STATUS_MATRICULA (APENAS NA EDIÇÃO)
+            if not is_creating and 'status_matricula' in self.cleaned_data:
+                status_matricula_geral = self.cleaned_data['status_matricula']
+                
+                # Se desmarcou o status_matricula, desativa TODAS as matrículas
+                if not status_matricula_geral:
+                    Matricula.objects.filter(aluno=aluno).update(status_matricula=False)
+                else:
+                    # Se marcou como ativa, garante que pelo menos uma matrícula esteja ativa
+                    matriculas_ativas = Matricula.objects.filter(
+                        aluno=aluno, 
+                        status_matricula=True
+                    )
+                    if not matriculas_ativas.exists():
+                        # Se não há matrículas ativas, ativa a primeira turma selecionada
+                        turmas_selecionadas = self.cleaned_data.get('turma', [])
+                        if turmas_selecionadas:
+                            primeira_turma = turmas_selecionadas.first()
+                            Matricula.objects.create(
+                                aluno=aluno, 
+                                turma=primeira_turma, 
+                                status_matricula=True
+                            )
             
-            # Gerencia as matrículas nas turmas
+            # Gerencia as matrículas nas turmas específicas
             turmas_selecionadas = self.cleaned_data.get('turma', [])
             
             # Remove matrículas que não estão mais selecionadas
-            matriculas_atuais = Matricula.objects.filter(aluno=aluno, status_matricula=True)
+            matriculas_atuais = Matricula.objects.filter(aluno=aluno)
             turmas_atuais = set(matricula.turma for matricula in matriculas_atuais)
             turmas_selecionadas_set = set(turmas_selecionadas)
             
             # Desmatricula das turmas removidas
             for matricula in matriculas_atuais:
                 if matricula.turma not in turmas_selecionadas_set:
-                    matricula.status_matricula = False
-                    matricula.save()
+                    matricula.delete()  # 🔹 Remove completamente a matrícula
             
             # Matricula nas novas turmas
             for turma in turmas_selecionadas:
@@ -158,12 +214,6 @@ class AlunoUsuarioForm(UsuarioBaseForm):
                         turma=turma, 
                         status_matricula=True
                     )
-                else:
-                    # Reativa matrícula se existia mas estava inativa
-                    matricula = Matricula.objects.get(aluno=aluno, turma=turma)
-                    if not matricula.status_matricula:
-                        matricula.status_matricula = True
-                        matricula.save()
         
         return usuario
     
@@ -199,14 +249,21 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
             required=True
         )
         
-        self.fields['status'] = forms.BooleanField(
-            required=True,
-            initial=True
-        )
+        is_creating = self.instance.pk is None
+        
+        # 🔹 Se for criação, remove o campo status
+        if is_creating:
+            self.fields.pop('status', None)
+        else:
+            # 🔹 Se for edição, mantém o campo status
+            self.fields['status'] = forms.BooleanField(
+                initial=True,
+                widget=forms.CheckboxInput(attrs={'class': 'form-control', 'label': 'Ativo'})
+                
+            )
+            
 
-        # define o 'tipo' como 'professor'
-        self.fields['tipo'].initial = 'professor'
-        self.fields['tipo'].widget = forms.HiddenInput()
+        
 
         # Se for uma instância existente (edição)
         if self.instance and self.instance.pk:
@@ -222,6 +279,8 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
                     status=True
                 )
                 self.fields['turma'].initial = turmas_atuais
+                self.fields['tipo'].initial = 'professor'
+                
                 self.fields['salario'].initial = professor.salario
                 self.fields['status'].initial = professor.status
 
@@ -242,7 +301,7 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
         # 🔹 Campos simples configurados diretamente, Colocações das class, id, labels e outros...
         self.fields['turma'].widget.attrs.update({'class': 'form-control', 'label': 'Turmas'})
         self.fields['salario'].widget.attrs.update({'class': 'form-control', 'label': 'Salário'})
-        self.fields['status'].widget.attrs.update({'class': 'form-control', 'label': 'Ativo'})
+        
 
     def clean_password2(self):
         # Na edição, se senha não for fornecida, não valida
@@ -257,6 +316,10 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
         is_creating = self.instance is None
 
         usuario = super().save(commit=False)
+        
+        if is_creating:
+            usuario.tipo = 'professor'
+            
         if self.cleaned_data.get("password1"):
             usuario.set_password(self.cleaned_data["password1"])
         
@@ -267,12 +330,13 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
                 professor = Professor.objects.create(
                     usuario=usuario,
                     salario=self.cleaned_data['salario'],
-                    status=self.cleaned_data['status']
+                    status=True
                 )
             else:
                 professor = usuario
                 professor.salario = self.cleaned_data['salario']
-                professor.status = self.cleaned_data['status']
+                if 'status' in self.cleaned_data:
+                    professor.status = self.cleaned_data['status']
                 professor.save()
             
             # Gerencia turmas
