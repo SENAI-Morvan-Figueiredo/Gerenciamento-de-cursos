@@ -6,7 +6,7 @@ from .views import (
 
 urlpatterns = [
     # Cursos
-    path("cursos/", CursoListView.as_view(), name="curso_list"),
+    path("", CursoListView.as_view(), name="curso_list"),
     path("cursos/novo/", CursoCreateView.as_view(), name="curso_create"),
     path("cursos/<int:pk>/editar/", CursoUpdateView.as_view(), name="curso_update"),
     path("cursos/<int:pk>/deletar/", CursoDeleteView.as_view(), name="curso_delete"),
