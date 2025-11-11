@@ -1,13 +1,10 @@
 from django import forms
 from Login.models import Usuario, Aluno, Professor
 from Cursos.models import Matricula, Turma, Curso
-    
+from django.db import transaction
 from django.utils.text import slugify
 
 class UsuarioBaseForm(forms.ModelForm):
-    password1 = forms.CharField(label='Senha', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Confirmação de Senha', widget=forms.PasswordInput)
-    
     class Meta:
         model = Usuario
         fields = [
@@ -17,6 +14,21 @@ class UsuarioBaseForm(forms.ModelForm):
                     'endereco'
                 ]
         
+    def clean(self):
+        cleaned_data = super().clean()
+        nome = cleaned_data.get('nome')
+        sobrenome = cleaned_data.get('sobrenome')
+        
+        if nome and sobrenome:
+            base_username = slugify(f"{nome}.{sobrenome}")
+            username = base_username
+            counter = 1
+            while Usuario.objects.filter(username=username).exists():
+                username = f"{base_username}{counter}"
+                counter += 1
+            cleaned_data['username'] = username
+        
+        return cleaned_data
         
         labels = {
             'nome': 'Nome',
@@ -48,30 +60,14 @@ class UsuarioBaseForm(forms.ModelForm):
 
         self.fields['endereco'].widget.attrs.update({'class': 'form-control', 'required': True})
         
-        # 🔹 Verifica se é uma criação (instance não existe ou não tem pk)
         is_creating = self.instance.pk is None
         
-        # 🔹 Se for criação, remove o campo tipo
-        # 🔹 Verifica se é uma criação (instance não existe ou não tem pk)
-        is_creating = self.instance.pk is None
-        
-        # 🔹 Se for EDIÇÃO, adiciona o campo tipo
         if not is_creating:
             self.fields['tipo'] = forms.ChoiceField(
                 choices=self.TIPO_USUARIO,
                 widget=forms.Select(attrs={'class': 'form-control'}),
                 label='Tipo de Usuário'
             )
-        
-
-    def clean_password2(self):
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError("As senhas não coincidem")
-        return password2
-    
-
 
 class AlunoUsuarioForm(UsuarioBaseForm): 
     class Meta(UsuarioBaseForm.Meta):
@@ -80,8 +76,6 @@ class AlunoUsuarioForm(UsuarioBaseForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # 🔹 Campos do tipo ModelChoiceField, NÃO MECHA!
-        # cria o Input do 'turma'
         self.fields['turma'] = forms.ModelMultipleChoiceField(
             queryset=Turma.objects.all().exclude(status=False),
             required=False,
@@ -90,24 +84,16 @@ class AlunoUsuarioForm(UsuarioBaseForm):
         
         is_creating = self.instance.pk is None
         
-        # 🔹 Se for criação, remove o campo status_matricula
         if is_creating:
             self.fields.pop('status_matricula', None)
         else:
-            # 🔹 Se for edição, mantém o campo status_matricula
             self.fields['status_matricula'] = forms.BooleanField(
                 initial=True,
                 label='Matriculado',
                 widget=forms.CheckboxInput(attrs={'class': 'form-control'})
             )
 
-        # Se for uma instância existente (edição)
         if self.instance and self.instance.pk:
-            # Remove a obrigatoriedade da senha na edição
-            self.fields['password1'].required = False
-            self.fields['password2'].required = False
-            
-            # Preenche o campo turma com a turma atual do aluno
             try:
                 aluno = self.instance
                 turmas_atuais = Turma.objects.filter(
@@ -134,20 +120,9 @@ class AlunoUsuarioForm(UsuarioBaseForm):
                 
             except Aluno.DoesNotExist:
                 pass
-
-
     
-    def clean_password2(self):
-        # Na edição, se senha não for fornecida, não valida
-        if self.instance and self.instance.pk:
-            password1 = self.cleaned_data.get("password1")
-            password2 = self.cleaned_data.get("password2")
-            if not password1 and not password2:
-                return password2  # Permite edição sem alterar senha
-        return super().clean_password2()
-    
+    @transaction.atomic
     def save(self, commit=True):
-
         is_creating = self.instance.pk is None
         
         usuario = super().save(commit=False)
@@ -155,35 +130,27 @@ class AlunoUsuarioForm(UsuarioBaseForm):
         if is_creating:
             usuario.tipo = 'aluno'
             usuario.status = True
+            usuario.username = self.cleaned_data.get('username')
 
-         # Só define nova senha se foi fornecida
-        if self.cleaned_data.get("password1"):
-            usuario.set_password(self.cleaned_data["password1"])
-        
         if commit:
             usuario.save()
     
-            # Cria o aluno
             if is_creating:
                 aluno = Aluno.objects.create(usuario=usuario)
             else:
                 aluno = usuario.aluno
             
-            # 🔹 GERENCIAMENTO DO STATUS_MATRICULA (APENAS NA EDIÇÃO)
             if not is_creating and 'status_matricula' in self.cleaned_data:
                 status_matricula_geral = self.cleaned_data['status_matricula']
                 
-                # Se desmarcou o status_matricula, desativa TODAS as matrículas
                 if not status_matricula_geral:
                     Matricula.objects.filter(aluno=aluno).update(status_matricula=False)
                 else:
-                    # Se marcou como ativa, garante que pelo menos uma matrícula esteja ativa
                     matriculas_ativas = Matricula.objects.filter(
                         aluno=aluno, 
                         status_matricula=True
                     )
                     if not matriculas_ativas.exists():
-                        # Se não há matrículas ativas, ativa a primeira turma selecionada
                         turmas_selecionadas = self.cleaned_data.get('turma', [])
                         if turmas_selecionadas:
                             primeira_turma = turmas_selecionadas.first()
@@ -193,20 +160,16 @@ class AlunoUsuarioForm(UsuarioBaseForm):
                                 status_matricula=True
                             )
             
-            # Gerencia as matrículas nas turmas específicas
             turmas_selecionadas = self.cleaned_data.get('turma', [])
             
-            # Remove matrículas que não estão mais selecionadas
             matriculas_atuais = Matricula.objects.filter(aluno=aluno)
             turmas_atuais = set(matricula.turma for matricula in matriculas_atuais)
             turmas_selecionadas_set = set(turmas_selecionadas)
             
-            # Desmatricula das turmas removidas
             for matricula in matriculas_atuais:
                 if matricula.turma not in turmas_selecionadas_set:
-                    matricula.delete()  # 🔹 Remove completamente a matrícula
+                    matricula.delete()
             
-            # Matricula nas novas turmas
             for turma in turmas_selecionadas:
                 if turma not in turmas_atuais:
                     Matricula.objects.create(
@@ -216,17 +179,6 @@ class AlunoUsuarioForm(UsuarioBaseForm):
                     )
         
         return usuario
-    
-    class MatriculaForm(forms.ModelForm):
-        class Meta:
-            model = Matricula
-            fields = [  
-                        'aluno', 'turma',
-                        'status_matricula'
-                    ]
-
-
-#  <------------------------- Professores ------------------------->
 
 class ProfessorUsuarioForm(UsuarioBaseForm):
     class Meta(UsuarioBaseForm.Meta):
@@ -234,14 +186,15 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        is_creating = self.instance.pk is None
 
-       # 🔹 Campos do tipo ModelChoiceField, NÃO MECHA!
-        # cria o Input do 'turma'
-        self.fields['turma'] = forms.ModelMultipleChoiceField(
-            queryset=Turma.objects.all().exclude(status=False),
-            required=False,
-
-        )
+        if not is_creating:
+            self.fields['turma'] = forms.ModelMultipleChoiceField(
+                queryset=Turma.objects.all().exclude(status=False),
+                required=False,
+                widget=forms.SelectMultiple(attrs={'class': 'form-control'})
+            )
 
         self.fields['salario'] = forms.DecimalField(
             max_digits=10,
@@ -249,29 +202,15 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
             required=True
         )
         
-        is_creating = self.instance.pk is None
-        
-        # 🔹 Se for criação, remove o campo status
         if is_creating:
             self.fields.pop('status', None)
         else:
-            # 🔹 Se for edição, mantém o campo status
             self.fields['status'] = forms.BooleanField(
                 initial=True,
                 widget=forms.CheckboxInput(attrs={'class': 'form-control', 'label': 'Ativo'})
-                
             )
-            
 
-        
-
-        # Se for uma instância existente (edição)
         if self.instance and self.instance.pk:
-            # Remove a obrigatoriedade da senha na edição
-            self.fields['password1'].required = False
-            self.fields['password2'].required = False
-            
-            # Preenche os campo com o professor atual
             try:
                 professor = self.instance
                 turmas_atuais = Turma.objects.filter(
@@ -291,38 +230,22 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
                 self.fields['contato'].initial = professor.usuario.contato
                 self.fields['endereco'].initial = professor.usuario.endereco
                 self.fields['data_nascimento'].initial = professor.usuario.data_nascimento
-                
-                
 
             except Professor.DoesNotExist:
                 pass
 
-        
-        # 🔹 Campos simples configurados diretamente, Colocações das class, id, labels e outros...
-        self.fields['turma'].widget.attrs.update({'class': 'form-control', 'label': 'Turmas'})
         self.fields['salario'].widget.attrs.update({'class': 'form-control', 'label': 'Salário'})
-        
 
-    def clean_password2(self):
-        # Na edição, se senha não for fornecida, não valida
-        if self.instance and self.instance.pk:
-            password1 = self.cleaned_data.get("password1")
-            password2 = self.cleaned_data.get("password2")
-            if not password1 and not password2:
-                return password2  # Permite edição sem alterar senha
-        return super().clean_password2()
-    
+    @transaction.atomic
     def save(self, commit=True):
-        is_creating = self.instance is None
+        is_creating = self.instance.pk is None
 
         usuario = super().save(commit=False)
         
         if is_creating:
             usuario.tipo = 'professor'
+            usuario.username = self.cleaned_data.get('username')
             
-        if self.cleaned_data.get("password1"):
-            usuario.set_password(self.cleaned_data["password1"])
-        
         if commit:
             usuario.save()
             
@@ -333,25 +256,20 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
                     status=True
                 )
             else:
-                professor = usuario
+                professor = usuario.professor
                 professor.salario = self.cleaned_data['salario']
                 if 'status' in self.cleaned_data:
                     professor.status = self.cleaned_data['status']
                 professor.save()
             
-            # Gerencia turmas
-            turmas_selecionadas = self.cleaned_data.get('turma', [])
-            Turma.objects.filter(professor=professor)
-            for turma in turmas_selecionadas:
-                turma.professor = professor
-                turma.save()
+            if not is_creating:
+                turmas_selecionadas = self.cleaned_data.get('turma', [])
+                Turma.objects.filter(professor=professor).update(professor=None)
+                for turma in turmas_selecionadas:
+                    turma.professor = professor
+                    turma.save()
         
         return usuario
-
-        
-
-
-# <----------------------- TURMA ------------------------>
 
 class TurmaForm(forms.ModelForm):
     class Meta:
@@ -405,28 +323,21 @@ class TurmaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # feito para facil modificação dos campos de forma manual,
-        # posteriormente mudar para algo mais automatizado.
 
-        # 🔹 Campos do tipo ModelChoiceField, NÃO MECHA!
         self.fields['curso'].queryset = Curso.objects.all()
         self.fields['professor'].queryset = Professor.objects.all()
 
-        # 🔹 Verifica se é uma criação (instance não existe ou não tem pk)
         is_creating = self.instance.pk is None
         
-        # 🔹 Se for criação, remove o campo status
         if is_creating:
             self.fields.pop('status', None)
         else:
-            # 🔹 Se for edição, mantém o campo status
             self.fields['status'] = forms.ChoiceField(
                 choices=self.STATUS_CHOICES,
                 initial=self.instance.status if self.instance else True,
                 widget=forms.CheckboxInput(attrs={'class': 'form-control'})
             )
 
-        # 🔹 Campos simples configurados diretamente, Colocações das class, id, labels e outros...
         self.fields['nome'].widget.attrs.update({
         'class': 'form-control', 
         'required': True, 
@@ -441,7 +352,6 @@ class TurmaForm(forms.ModelForm):
             'required': True
         })
         
-        # 🔹 Campo tipo
         self.fields['tipo'] = forms.ChoiceField(
             choices=self.TIPO_CHOICES,
             widget=forms.Select(attrs={
@@ -451,7 +361,6 @@ class TurmaForm(forms.ModelForm):
             })
         )
 
-        # 🔹 CORREÇÃO: Campos de hora - configurar o widget, não substituir o campo
         self.fields['entrada_horas'].widget = forms.TimeInput(attrs={
             'class': 'form-control', 
             'type': 'time', 
@@ -463,7 +372,6 @@ class TurmaForm(forms.ModelForm):
             'required': True
         })
 
-        # 🔹 Campos de data
         self.fields['data_inicio'].widget = forms.DateInput(attrs={
             'class': 'form-control', 
             'type': 'date', 
@@ -475,7 +383,6 @@ class TurmaForm(forms.ModelForm):
             'required': True
         })
         
-        # 🔹 Dias da semana
         self.fields['dias_semana'] = forms.MultipleChoiceField(
             choices=self.DIA_SEMANA_CHOICES,
             required=True,
@@ -486,10 +393,7 @@ class TurmaForm(forms.ModelForm):
             })
         )
 
-        
-        # Se estiver editando, preencher os valores iniciais para dias_semana
         if self.instance and self.instance.pk:
-            # Converter a string de dias_semana para lista
             if self.instance.dias_semana:
                 dias_lista = self.instance.dias_semana.split(',')
                 self.fields['dias_semana'].initial = [dia.strip() for dia in dias_lista]
@@ -497,14 +401,12 @@ class TurmaForm(forms.ModelForm):
     def clean_dias_semana(self):
         dias_semana = self.cleaned_data.get('dias_semana')
         if dias_semana:
-            # Converter lista para string separada por vírgulas
             return ','.join(dias_semana)
         return ''
 
     def save(self, commit=True):
         turma = super().save(commit=False)
         
-        # Garantir que dias_semana seja salvo como string
         if 'dias_semana' in self.cleaned_data:
             turma.dias_semana = self.cleaned_data['dias_semana']
         

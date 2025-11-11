@@ -1,6 +1,7 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.db import transaction
 from django.utils.decorators import method_decorator
 
 from .forms import AlunoUsuarioForm, ProfessorUsuarioForm, TurmaForm
@@ -95,6 +96,7 @@ class AlunoCreateView(CreateView):
     template_name = "secretaria/alunoAdd.html"
     success_url = reverse_lazy("secretaria:alunoList")
 
+    @transaction.atomic
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, 'Aluno cadastrado com sucesso!')
@@ -111,6 +113,7 @@ class AlunoUpdateView(UpdateView):
     template_name = "secretaria/alunoEdit.html"
     success_url = reverse_lazy("secretaria:alunoList")
 
+    @transaction.atomic
     def form_valid(self, form):
         messages.success(self.request, 'Aluno atualizado com sucesso!')
         return super().form_valid(form)
@@ -152,11 +155,13 @@ class ProfessorDetailView(DetailView):
 
 @method_decorator(secretaria_required, name='dispatch')
 class ProfessorCreateView(CreateView):
+    
     model = Professor
     form_class = ProfessorUsuarioForm
     template_name = "secretaria/profAdd.html"
     success_url = reverse_lazy("secretaria:profList")
 
+    @transaction.atomic
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, 'Professor cadastrado com sucesso!')
@@ -168,11 +173,13 @@ class ProfessorCreateView(CreateView):
 
 @method_decorator(secretaria_required, name='dispatch')
 class ProfessorUpdateView(UpdateView):
+    
     model = Professor
     form_class = ProfessorUsuarioForm
     template_name = "secretaria/profEdit.html"
     success_url = reverse_lazy("secretaria:profList")
 
+    @transaction.atomic
     def form_valid(self, form):
         response = super().form_valid(form)
         messages.success(self.request, 'Professor cadastrado com sucesso!')

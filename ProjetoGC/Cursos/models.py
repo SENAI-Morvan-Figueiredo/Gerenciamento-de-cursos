@@ -5,7 +5,7 @@ class Curso(models.Model):
     descricao = models.TextField(blank=True, verbose_name="Descrição")
     carga_horaria = models.PositiveIntegerField(verbose_name="Carga Horária (h)", default=40)
     ativo = models.BooleanField(default=True, verbose_name="Ativo")
-    disciplinas = models.ManyToManyField('Disciplina', blank=True, related_name='cursos')  # NOVO
+    disciplinas = models.ManyToManyField('Disciplina', through='GradeCurricular', blank=True, related_name='cursos')
 
     class Meta:
         verbose_name = "Curso"
