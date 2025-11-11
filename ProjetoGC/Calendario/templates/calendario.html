@@ -4,36 +4,188 @@
 <head>
   <meta charset="UTF-8">
   <title>Calendário</title>
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+  <!-- CSS do FullCalendar -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+
   <style>
-      body {
-          font-family: Arial, sans-serif;
-          margin: 40px;
-          background-color: #f8f9fa;
-      }
-      #calendar {
-          max-width: 900px;
-          margin: 0 auto;
-          background: white;
-          padding: 20px;
-          border-radius: 10px;
-          box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      }
+    body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        background-color: #f8f9fa;
+    }
+    #calendar {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    /* Empilha bolinhas verticalmente */
+    .fc-daygrid-day-events {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 4px;
+        padding: 4px;
+    }
+
+    /* Bolinhas azuis */
+    .fc-daygrid-event {
+        background-color: #007bff;
+        border-radius: 50%;
+        width: 12px;
+        height: 12px;
+        padding: 0;
+        border: none;
+        display: inline-block;
+        text-indent: -9999px;
+        cursor: pointer;
+    }
+
+    /* Remove texto padrão */
+    .fc-daygrid-event-dot,
+    .fc-event-title {
+        display: none !important;
+    }
+
+    /* Tooltip em forma de card */
+    .tooltip {
+        position: absolute;
+        background: rgb(70, 128, 255);
+        color: #000000; 
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 14px;
+        display: none;
+        z-index: 1000;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        width: 260px;
+        height: 180px;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .tooltip h4 {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 6px;
+        color: #ffffff;
+    }
+
+    .tooltip p {
+        font-size: 11px;
+        line-height: 1.4;
+        color: #ffffff;
+        width: 235px;
+        height: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        word-wrap: break-word;
+    }
   </style>
 </head>
+
 <body>
-  <h2 style="text-align:center;">📅 Calendário de Eventos</h2>
+  <h2 style="text-align:center;">📅 Calendário de Entregas</h2>
   <div id="calendar"></div>
+  <div id="tooltip" class="tooltip"></div>
+
+  <!-- JS do FullCalendar -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       var calendarEl = document.getElementById('calendar');
+      var tooltip = document.getElementById('tooltip');
+      var tooltipFixo = false;
+      var eventoAtivo = null;
+
       var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'pt-br',
-        events: '/calendario/eventos/', // Django API
+        events: '/calendario/eventos/',
+        displayEventTime: false,
+        eventDisplay: 'list-item',
+
+        eventDidMount: function(info) {
+          // Exibe tooltip no hover (sem fixar)
+          info.el.addEventListener('mouseenter', function(e) {
+            if (!tooltipFixo) {
+              tooltip.innerHTML = `
+                <h4>${info.event.title}</h4>
+                <p>${info.event.extendedProps.description || 'Sem descrição disponível.'}</p>
+              `;
+              tooltip.style.display = 'block';
+              tooltip.style.left = (e.pageX + 15) + 'px';
+              tooltip.style.top = (e.pageY - 10) + 'px';
+              tooltip.style.opacity = '1';
+              tooltip.dataset.url = `/atividades/${info.event.extendedProps.atividade_id}/`; // link da atividade
+            }
+          });
+
+          info.el.addEventListener('mousemove', function(e) {
+            if (!tooltipFixo) {
+              tooltip.style.left = (e.pageX + 15) + 'px';
+              tooltip.style.top = (e.pageY - 10) + 'px';
+            }
+          });
+
+          info.el.addEventListener('mouseleave', function() {
+            if (!tooltipFixo) {
+              tooltip.style.display = 'none';
+              tooltip.style.opacity = '0';
+            }
+          });
+
+          // Clique para fixar/desfixar tooltip
+          info.el.addEventListener('click', function(e) {
+            e.stopPropagation();
+
+            if (tooltipFixo && eventoAtivo === info.el) {
+              tooltipFixo = false;
+              tooltip.style.display = 'none';
+              eventoAtivo = null;
+            } else {
+              tooltipFixo = true;
+              eventoAtivo = info.el;
+              tooltip.innerHTML = `
+                <h4>${info.event.title}</h4>
+                <p>${info.event.extendedProps.description || 'Sem descrição disponível.'}</p>
+              `;
+              tooltip.style.display = 'block';
+              tooltip.style.left = (e.pageX + 15) + 'px';
+              tooltip.style.top = (e.pageY - 10) + 'px';
+              tooltip.style.opacity = '1';
+              tooltip.dataset.url = `/atividades/${info.event.id}/`;
+            }
+          });
+        },
+
+        eventContent: function() {
+          return { html: '<div class="fc-daygrid-event-dot"></div>' };
+        }
       });
+
+      // Clicar no tooltip = redirecionar para a atividade
+      tooltip.addEventListener('click', function() {
+        if (tooltip.dataset.url) {
+          window.location.href = tooltip.dataset.url;
+        }
+      });
+
+      // Clicar fora do tooltip = esconder se estiver fixo
+      document.addEventListener('click', function(e) {
+        if (tooltipFixo && !tooltip.contains(e.target)) {
+          tooltipFixo = false;
+          tooltip.style.display = 'none';
+          eventoAtivo = null;
+        }
+      });
+
       calendar.render();
     });
   </script>
