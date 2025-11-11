@@ -170,6 +170,7 @@ a {
     width: calc(25% - 4rem);
     max-width: 240px;
     min-width: 200px;
+    padding-top: 10px;
     background: var(--branco);
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.08);
     display: flex;
@@ -313,7 +314,6 @@ a {
 /* --- CARDS --- */
 .card {
     padding: 1.8rem;
-
     background: var(--bg-card);
     border-radius: 16px;
     border: 1px solid var(--cinza-borda);
@@ -598,3 +598,50 @@ a {
 
 
 
+/* --- SIDEBAR RESPONSIVA COM SLIDE --- */
+@media (max-width: 768px) {
+  .hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 240px;
+    background: var(--branco);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+    transform: translateX(-100%);
+    transition: transform 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    z-index: 105;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    padding-top: 70px;
+  }
+
+  /* Regras específicas para quando o menu está aberto */
+  .hamburger-btn.active {
+    background: transparent !important;
+  }
+
+  .hamburger-btn.active i,
+  .hamburger-btn.active svg {
+    color: var(--preto) !important;
+    stroke: var(--preto) !important;
+  }
+
+  /* Garantir que o ícone fique branco quando menu fechado */
+  .hamburger-btn:not(.active) i,
+  .hamburger-btn:not(.active) svg {
+    color: var(--branco) !important;
+    stroke: var(--branco) !important;
+  }
+}

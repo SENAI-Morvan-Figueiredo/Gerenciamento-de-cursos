@@ -12,7 +12,7 @@
 
     <div class="container-search">
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Pesquisar por nome, email, telefone ou turma...">
+            <input type="text" id="searchInput" placeholder="Pesquisar por nome, email ou turma...">
             <button type="button" id="searchBtn" class="btn btn-style">
                 <i data-lucide="search"></i>
             </button>
@@ -129,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const matches = nome.includes(term) || 
                            email.includes(term) || 
-                           telefone.includes(term) || 
                            turmas.includes(term);
             
             if (matches) {
