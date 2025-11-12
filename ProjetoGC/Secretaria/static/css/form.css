@@ -99,6 +99,7 @@ textarea:focus {
 
 /* --- CHECKBOX GROUP --- */
 .checkbox-group {
+    
     background: var(--bg-claro);
     border: 1.5px solid var(--cinza-borda);
     border-radius: 12px;

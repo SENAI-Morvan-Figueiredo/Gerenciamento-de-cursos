@@ -13,6 +13,21 @@ class UsuarioBaseForm(forms.ModelForm):
                     'email', 'contato',
                     'endereco'
                 ]
+        labels = {
+            'nome': 'Nome',
+            'sobrenome': 'Sobrenome',
+            'cpf': 'CPF',
+            'data_nascimento': 'Data de Nascimento',
+            'email': 'Email',
+            'contato': 'Contato',
+            'endereco': 'Endereço',
+        }
+
+    TIPO_USUARIO = [
+        ('aluno', 'Aluno'),
+        ('professor', 'Professor'),
+        ('secretaria', 'Secretaria'),
+    ]
         
     def clean(self):
         cleaned_data = super().clean()
@@ -30,22 +45,6 @@ class UsuarioBaseForm(forms.ModelForm):
         
         return cleaned_data
         
-        labels = {
-            'nome': 'Nome',
-            'sobrenome': 'Sobrenome',
-            'cpf': 'CPF',
-            'data_nascimento': 'Data de Nascimento',
-            'email': 'Email',
-            'contato': 'Contato',
-            'endereco': 'Endereço',
-        }
-        
-    TIPO_USUARIO = [
-        ('aluno', 'Aluno'),
-        ('professor', 'Professor'),
-        ('secretaria', 'Secretaria'),
-    ]
-    
     def __init__(self, *arg, **kwargs):
         super().__init__(*arg, **kwargs)
 
@@ -79,7 +78,7 @@ class AlunoUsuarioForm(UsuarioBaseForm):
         self.fields['turma'] = forms.ModelMultipleChoiceField(
             queryset=Turma.objects.all().exclude(status=False),
             required=False,
-            widget=forms.SelectMultiple(attrs={'class': 'form-control'})
+            widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input', 'data-select2': 'true'})
         )
         
         is_creating = self.instance.pk is None
@@ -187,28 +186,29 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        is_creating = self.instance.pk is None
-
-        if not is_creating:
-            self.fields['turma'] = forms.ModelMultipleChoiceField(
-                queryset=Turma.objects.all().exclude(status=False),
-                required=False,
-                widget=forms.SelectMultiple(attrs={'class': 'form-control'})
-            )
 
         self.fields['salario'] = forms.DecimalField(
             max_digits=10,
             decimal_places=2,
             required=True
         )
-        
+
+        is_creating = self.instance.pk is None
+
         if is_creating:
             self.fields.pop('status', None)
         else:
+            self.fields['turma'] = forms.ModelMultipleChoiceField(
+                queryset=Turma.objects.all().exclude(status=False),
+                required=False,
+                widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input', 'data-select2': 'true'}),
+            )
+
             self.fields['status'] = forms.BooleanField(
                 initial=True,
                 widget=forms.CheckboxInput(attrs={'class': 'form-control', 'label': 'Ativo'})
             )
+
 
         if self.instance and self.instance.pk:
             try:

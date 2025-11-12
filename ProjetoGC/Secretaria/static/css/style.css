@@ -220,6 +220,11 @@ a {
     height: 20px;
 }
 
+/* svg {
+    width: 24px;
+    height: 24px;
+} */
+
 /* --- CONTEÚDO --- */
 .main-content {
     flex: 1;
@@ -440,23 +445,6 @@ a {
     align-items: flex-start;
 }
 
-.status-badge {
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.status-active {
-    background: #D1FAE5;
-    color: #065F46;
-}
-
-.status-inactive {
-    background: #FEE2E2;
-    color: #991B1B;
-}
-
 
 /* --- ESTADO VAZIO --- */
 .no-data {
@@ -482,7 +470,7 @@ a {
 
 
 
-/* --- STATUS BADGES --- */
+/* --- STATUS BADGES --- solicitação/turmaList */
 .status-badge {
     padding: 0.4rem 0.8rem;
     border-radius: 20px;
