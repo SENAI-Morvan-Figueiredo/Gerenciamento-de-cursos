@@ -1,0 +1,147 @@
+{% extends 'Professor/base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo_pagina }} - Painel SENAI{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h2>{{ titulo_pagina }}</h2>
+    </div>
+
+    <div class="form-container">
+        <form method="post" enctype="multipart/form-data" class="form-avaliacao">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_turma">Turma:</label>
+                {{ form.turma }}
+                {% if form.turma.errors %}
+                    <div class="error-message">{{ form.turma.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_titulo">Título da Atividade:</label>
+                {{ form.titulo }}
+                {% if form.titulo.errors %}
+                    <div class="error-message">{{ form.titulo.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_descricao">Descrição:</label>
+                {{ form.descricao }}
+                {% if form.descricao.errors %}
+                    <div class="error-message">{{ form.descricao.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_arquivo">Anexar Arquivo (Imagem, PDF, etc):</label>
+                {{ form.arquivo }}
+                {% if form.arquivo.errors %}
+                    <div class="error-message">{{ form.arquivo.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_data_limite_entrega">Data Limite de Entrega:</label>
+                {{ form.data_limite_entrega }}
+                {% if form.data_limite_entrega.errors %}
+                    <div class="error-message">{{ form.data_limite_entrega.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Criar Avaliação</button>
+                <a href="{% url 'atividades:home' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-avaliacao {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .error-message {
+        color: #d32f2f;
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn-primary {
+        background-color: #1976d2;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #1565c0;
+    }
+
+    .btn-secondary {
+        background-color: #757575;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: #616161;
+    }
+</style>
+{% endblock %}

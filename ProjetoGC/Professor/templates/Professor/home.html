@@ -1,33 +1,166 @@
+{% extends 'Professor/base.html' %}
+
+{% block title %}Home - Painel SENAI{% endblock %}
+
 {% block content %}
-<div class="container">
-    <h2>Minhas Turmas</h2>
-    <table border="1" cellpadding="8">
-        <tbody>
-            {% for turma in turmas %}
-                <div class="turma-card">
-                    <h2>{{ turma.nome }}</h2>
-                    <p>Curso: {{ turma.curso.nome }}</p>
-                    <p>Professor: {{ turma.professor.usuario.first_name }}</p>
-                    <p>Tipo: {{ turma.tipo }}</p>
-                    <a href="{% url 'professor:dashboard_turma_detalhes' turma.turma_id %}">Ver detalhes</a>
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h2>Painel de Controle</h2>
+    </div>
+
+    <!-- CARDS GRID -->
+    <div class="cards-grid">
+        <!-- Card: Minhas Turmas -->
+        <div class="card minhas-turmas">
+            <div class="card-header">
+                <span>Minhas Turmas</span>
+                <i>👥</i>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <div class="card-count">{{ turmas_count }}</div>
+                    <div class="card-label">Turmas</div>
                 </div>
+                <div class="card-actions">
+                    <button class="card-btn" title="Visualizar">
+                        <i>👁️</i>
+                    </button>
+                    <button class="card-btn" title="Editar">
+                        <i>✏️</i>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-                <h1>Ver solicitacao</h1>
-                <li><a href="{% url 'solicitacao:solicitacaoList' %}"><button type="button">Solicitacoes Lista</button></a></li>
+        <!-- Card: Calendário -->
+        <div class="card calendario">
+            <div class="card-header">
+                <span>Calendário</span>
+                <i>📅</i>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <div class="card-count">{{ eventos_count }}</div>
+                    <div class="card-label">Eventos</div>
+                </div>
+                <div class="card-actions">
+                    <button class="card-btn" title="Visualizar">
+                        <i>👁️</i>
+                    </button>
+                    <button class="card-btn" title="Editar">
+                        <i>✏️</i>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-                <h1>Fazer solicitacao</h1>
-                <li><a href="{% url 'solicitacao:solicitacaoAdd' %}"><button type="button">Solicitacoes</button></a></li>
-            {% empty %}
-                <p>Nenhuma turma disponível.</p>
+        <!-- Card: Diário -->
+        <div class="card diario">
+            <div class="card-header">
+                <span>Diário</span>
+                <i>📖</i>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <div class="card-icon">📖</div>
+                </div>
+                <div class="card-actions">
+                    <button class="card-btn" title="Visualizar">
+                        <i>👁️</i>
+                    </button>
+                    <button class="card-btn" title="Editar">
+                        <i>✏️</i>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-                <h1>Ver solicitacao</h1>
-                <li><a href="{% url 'solicitacao:solicitacaoList' %}"><button type="button">Solicitacoes Lista</button></a></li>
+        <!-- Card: Materiais -->
+        <div class="card materiais">
+            <div class="card-header">
+                <span>Materiais</span>
+                <i>📁</i>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <div class="card-icon">📁</div>
+                </div>
+                <div class="card-actions">
+                    <button class="card-btn" title="Visualizar">
+                        <i>👁️</i>
+                    </button>
+                    <button class="card-btn" title="Editar">
+                        <i>✏️</i>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-                <h1>Fazer solicitacao</h1>
-                <li><a href="{% url 'solicitacao:solicitacaoAdd' %}"><button type="button">Solicitacoes</button></a></li>
-            {% endfor %}
+        <!-- Card: Atividades -->
+        <div class="card atividades">
+            <div class="card-header">
+                <span>Atividades</span>
+                <i>✓</i>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <div class="card-count">{{ atividades_count }}</div>
+                    <div class="card-label">Atividades</div>
+                </div>
+                <div class="card-actions">
+                    <a href="{% url 'atividades:home' %}" class="card-btn" title="Visualizar">
+                        <i>👁️</i>
+                    </a>
+                    <button class="card-btn" title="Editar">
+                        <i>✏️</i>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-        </tbody>
-    </table>
+        <!-- Card: Secretaria -->
+        <div class="card secretaria">
+            <div class="card-header">
+                <span>Secretaria</span>
+                <i>📋</i>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <div class="card-count">{{ requisicoes_count }}</div>
+                    <div class="card-label">Requisição</div>
+                </div>
+                <div class="card-actions">
+                    <button class="card-btn" title="Visualizar">
+                        <i>👁️</i>
+                    </button>
+                    <button class="card-btn" title="Editar">
+                        <i>✏️</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Relatórios -->
+        <div class="card relatorios">
+            <div class="card-header">
+                <span>Relatórios</span>
+                <i>📊</i>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <div class="card-icon">📊</div>
+                </div>
+                <div class="card-actions">
+                    <button class="card-btn" title="Visualizar">
+                        <i>👁️</i>
+                    </button>
+                    <button class="card-btn" title="Editar">
+                        <i>✏️</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
+

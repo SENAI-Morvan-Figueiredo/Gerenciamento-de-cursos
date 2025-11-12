@@ -1,0 +1,380 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: #f3f3f3;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* ===== HEADER ===== */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    border-bottom: 2px solid #004c97;
+    padding: 10px 30px;
+    z-index: 100;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.senai-logo {
+    height: 40px;
+}
+
+.welcome-text {
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #333;
+}
+
+.weekday, .date {
+    font-size: 14px;
+}
+
+.icons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+}
+
+/* ===== MAIN CONTAINER ===== */
+main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    width: 170px;
+    background-color: #004c97;
+    color: white;
+    padding: 20px 0;
+    transition: width 0.3s ease;
+    overflow-y: auto;
+    position: relative;
+}
+
+.sidebar.collapsed {
+    width: 70px;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    right: -15px;
+    top: 140px;
+    background-color: #004c97;
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    z-index: 101;
+}
+
+.sidebar.collapsed .sidebar-toggle {
+    right: -15px;
+}
+
+.sidebar-toggle:hover {
+    background-color: #003366;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.sidebar.collapsed .sidebar-menu a {
+    padding: 15px 10px;
+    justify-content: center;
+    gap: 0;
+}
+
+.sidebar-menu a:hover {
+    background-color: #003366;
+}
+
+.sidebar-menu a i {
+    font-size: 20px;
+    min-width: 20px;
+}
+
+.sidebar.collapsed .sidebar-menu a span {
+    display: none;
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.sidebar.collapsed .sidebar-footer {
+    padding: 0 10px;
+}
+
+.sidebar-footer a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    color: white;
+    text-decoration: none;
+    font-size: 12px;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-footer a span {
+    display: none;
+}
+
+.sidebar-footer a:hover {
+    background-color: #003366;
+    border-radius: 5px;
+}
+
+/* ===== DASHBOARD CONTENT ===== */
+.dashboard-container {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.dashboard-header {
+    margin-bottom: 30px;
+}
+
+.dashboard-header h2 {
+    font-size: 28px;
+    color: #333;
+    margin: 0;
+}
+
+/* ===== CARDS GRID ===== */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    padding: 15px 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.card-header i {
+    font-size: 20px;
+}
+
+/* Card Colors */
+.card.minhas-turmas .card-header {
+    background-color: #a41e4d;
+}
+
+.card.calendario .card-header {
+    background-color: #5eb3d6;
+}
+
+.card.diario .card-header {
+    background-color: #f5a623;
+}
+
+.card.materiais .card-header {
+    background-color: #4a4a4a;
+}
+
+.card.atividades .card-header {
+    background-color: #27ae60;
+}
+
+.card.secretaria .card-header {
+    background-color: #c0392b;
+}
+
+.card.relatorios .card-header {
+    background-color: #8b6914;
+}
+
+.card-body {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: #f9f9f9;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.card-icon {
+    font-size: 40px;
+    color: #999;
+}
+
+.card-count {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+}
+
+.card-label {
+    font-size: 12px;
+    color: #999;
+    text-transform: uppercase;
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.card-btn {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #666;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.card-btn i {
+    font-size: 16px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        height: 100vh;
+        left: 0;
+        top: 0;
+        z-index: 99;
+        margin-top: 60px;
+    }
+
+    .sidebar.collapsed {
+        transform: translateX(-100%);
+    }
+
+    .dashboard-container {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar-toggle {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 10px 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .welcome-text {
+        font-size: 12px;
+    }
+
+    .dashboard-header h2 {
+        font-size: 20px;
+    }
+
+    .cards-grid {
+        gap: 15px;
+    }
+}
+

@@ -1,0 +1,75 @@
+/* Estilos específicos para a tela de Atividades */
+
+/* O card base (atividade-card) deve herdar os estilos de .card, .cards-grid, etc. do style.css do Professor */
+/* Apenas estilos que sobrescrevem ou são específicos devem estar aqui. */
+
+.atividade-card {
+    /* Removendo estilos de tamanho fixo que conflitam com o grid do Professor/style.css */
+    /* width: 300px; */
+    /* height: 180px; */
+    /* margin: 15px; */
+    /* border-radius: 10px; */
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+    /* display: flex; */
+    /* flex-direction: column; */
+    /* overflow: hidden; */
+}
+
+/* O card-header e card-body agora devem seguir a estrutura do Professor/style.css */
+/* O card-header já tem o background-color definido inline no HTML, mas vamos garantir o estilo do texto */
+.atividade-card .card-header {
+    /* color: white; */
+    /* padding: 10px 15px; */
+    /* font-weight: bold; */
+    /* font-size: 1.1em; */
+    /* O estilo base do card-header já está em Professor/static/Professor/css/style.css */
+}
+
+/* O card-body deve seguir o estilo base, mas vamos garantir que o ícone principal fique centralizado */
+.atividade-card .card-body {
+    /* flex-grow: 1; */
+    /* padding: 15px; */
+    /* display: flex; */
+    /* justify-content: space-between; */
+    /* align-items: flex-end; */
+    /* background-color: #f8f8f8; */
+}
+
+.atividade-card .card-content {
+    /* Centraliza o conteúdo (ícone) verticalmente no espaço disponível */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    /* margin-bottom: 15px; (Já definido no style.css do Professor) */
+}
+
+/* Estilos para o ícone principal (substituindo card-count/card-label) */
+.card-icon-main {
+    font-size: 3em;
+    color: #5cb85c; /* Cor verde para o check - pode ser ajustada para a cor do card se necessário */
+}
+
+.card-icon-main .icon-text {
+    font-size: 2em;
+    font-weight: bold;
+    color: #555;
+    border: 2px solid #555;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Os estilos de card-actions e card-btn devem ser removidos pois serão herdados do style.css do Professor */
+/* Se houver necessidade de customização, ela deve ser mínima. */
+
+/* Ajuste para o link 'a' dentro do card-btn */
+.atividade-card .card-actions a.card-btn {
+    text-decoration: none; /* Remove sublinhado do link */
+    color: inherit; /* Mantém a cor do texto/ícone herdada */
+}
+
+/* Estilo para a borda superior (se for manter o visual da borda colorida) */
+/* O estilo original era border-top: 8px solid {{ card.cor }}; */
+/* Isso deve ser mantido inline no HTML, pois a cor é dinâmica. */
+
+/* O estilo .cards-grid já está no style.css do Professor */

@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Painel SENAI{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'Professor/css/style.css' %}">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <img src="{% static 'Professor/img/senai_logo.png' %}" alt="SENAI" class="senai-logo">
+            <span class="welcome-text">BEM-VINDO, PROFESSOR ANDERSON</span>
+        </div>
+
+        <div class="header-right">
+            <span class="weekday">Segunda-Feira</span>
+            <span class="date">23/02/2026</span>
+            <div class="icons">
+                <i class="mail-icon">📧</i>
+                <i class="bell-icon">🔔</i>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-chevron-left"></i></button>
+            
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#minhas-turmas">
+                        <i>👥</i>
+                        <span>Minhas Turmas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#calendario">
+                        <i>📅</i>
+                        <span>Calendário</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#diario">
+                        <i>📖</i>
+                        <span>Diário</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#materiais">
+                        <i>📁</i>
+                        <span>Materiais</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'atividades:home' %}">
+                        <i>✓</i>
+                        <span>Atividades</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#secretaria">
+                        <i>📋</i>
+                        <span>Secretaria</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#relatorios">
+                        <i>📊</i>
+                        <span>Relatórios</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="#settings">
+                    <i>⚙️</i>
+                    <span>SAIR</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- DASHBOARD CONTENT -->
+        <div class="dashboard-container">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <script>
+        // Sidebar Toggle
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const toggleIcon = sidebarToggle.querySelector('i');
+
+        sidebarToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+            if (sidebar.classList.contains('collapsed')) {
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
+            } else {
+                toggleIcon.classList.remove('fa-chevron-right');
+                toggleIcon.classList.add('fa-chevron-left');
+            }
+        });
+
+        // Salvar estado do sidebar no localStorage
+        window.addEventListener('load', function() {
+            const sidebarState = localStorage.getItem('sidebarCollapsed');
+            if (sidebarState === 'true') {
+                sidebar.classList.add('collapsed');
+                sidebarToggle.textContent = '›';
+            }
+        });
+
+        sidebar.addEventListener('click', function() {
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+        });
+    </script>
+
+</body>
+</html>
+
