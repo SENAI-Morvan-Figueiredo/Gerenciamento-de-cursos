@@ -591,6 +591,123 @@ a {
 }
 
 
+/* -- Calendário */
+#calendar {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Empilha bolinhas verticalmente */
+.fc-daygrid-day-events {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 4px;
+}
+
+/* Bolinhas azuis */
+.fc-daygrid-event {
+    background-color: #007bff;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: none;
+    display: inline-block;
+    text-indent: -9999px;
+    cursor: pointer;
+}
+
+/* Remove texto padrão */
+.fc-daygrid-event-dot,
+.fc-event-title {
+    display: none !important;
+}
+
+
+/* Tooltip em forma de card */
+.tooltip {
+    position: absolute;
+    background: linear-gradient(45deg, var(--azul) 0%, var(--azul-claro) 100%);
+    color: #000000; 
+    padding: 8px 14px 12px 14px; /* diminui o padding superior */
+    border-radius: 10px;
+    font-size: 14px;
+    display: none;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    width: 235px;
+    height: 140px;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.tooltip h4 {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0;              
+    padding-top: 10px;         
+    line-height: 1.1;       /* diminui altura da linha */
+    color: #ffffff;
+}
+
+
+.tooltip p {
+    font-size: 11px;
+    line-height: 1.4;
+    color: #ffffff;
+    width: 208px;
+    height: 92px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+}
+
+    /* Barra de navegação do calendário */
+.fc-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+/* Centraliza o título do mês */
+.fc-toolbar-title {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000000; /* cor estilizada */
+}
+
+/* Botões padrão */
+.fc-button {
+    background-color: #164193;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+/* Hover nos botões */
+.fc-button:hover {
+    background-color: #E7490F;
+}
+
+/* Remove sombra de foco */
+.fc-button:focus {
+    box-shadow: none;
+    outline: none;
+}
 
 
 

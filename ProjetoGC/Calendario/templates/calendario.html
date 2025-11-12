@@ -1,0 +1,112 @@
+{% extends "secretaria/Abase.html" %}
+{% load static %}
+
+{% block content %}
+<div id="calendar"></div>
+<div id="tooltip" class="tooltip"></div>
+
+<!-- CSS do FullCalendar -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
+
+<!-- JS do FullCalendar -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var tooltip = document.getElementById('tooltip');
+    var tooltipFixo = false;
+    var eventoAtivo = null;
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      locale: 'pt-br',
+      events: '/calendario/eventos/',
+      displayEventTime: false,
+      eventDisplay: 'list-item',
+
+      headerToolbar: {
+        left: 'prev',
+        center: 'title',
+        right: 'today next'  // "Hoje" antes de "Próximo"
+      },
+
+      buttonText: {
+        today: 'Hoje'
+      },
+
+      eventDidMount: function(info) {
+        info.el.addEventListener('mouseenter', function(e) {
+          if (!tooltipFixo) {
+            tooltip.innerHTML = `
+              <h4>${info.event.title}</h4>
+              <p>${info.event.extendedProps.description || 'Sem descrição disponível.'}</p>
+            `;
+            tooltip.style.display = 'block';
+            tooltip.style.left = (e.pageX - 130) + 'px';
+            tooltip.style.top = (e.pageY + 20) + 'px';
+            tooltip.style.opacity = '1';
+            tooltip.dataset.url = `/atividades/${info.event.extendedProps.atividade_id}/`;
+          }
+        });
+
+        info.el.addEventListener('mousemove', function(e) {
+          if (!tooltipFixo) {
+            tooltip.style.left = (e.pageX - 130) + 'px';
+            tooltip.style.top = (e.pageY + 20) + 'px';
+          }
+        });
+
+        info.el.addEventListener('mouseleave', function() {
+          if (!tooltipFixo) {
+            tooltip.style.display = 'none';
+            tooltip.style.opacity = '0';
+          }
+        });
+
+        info.el.addEventListener('click', function(e) {
+          e.stopPropagation();
+
+          if (tooltipFixo && eventoAtivo === info.el) {
+            tooltipFixo = false;
+            tooltip.style.display = 'none';
+            eventoAtivo = null;
+          } else {
+            tooltipFixo = true;
+            eventoAtivo = info.el;
+            tooltip.innerHTML = `
+              <h4>${info.event.title}</h4>
+              <p>${info.event.extendedProps.description || 'Sem descrição disponível.'}</p>
+            `;
+            tooltip.style.display = 'block';
+            tooltip.style.left = (e.pageX - 130) + 'px';
+            tooltip.style.top = (e.pageY + 20) + 'px';
+            tooltip.style.opacity = '1';
+            tooltip.dataset.url = `/atividades/${info.event.id}/`;
+          }
+        });
+      },
+
+      eventContent: function() {
+        return { html: '<div class="fc-daygrid-event-dot"></div>' };
+      }
+    });
+
+    tooltip.addEventListener('click', function() {
+      if (tooltip.dataset.url) {
+        window.location.href = tooltip.dataset.url;
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (tooltipFixo && !tooltip.contains(e.target)) {
+        tooltipFixo = false;
+        tooltip.style.display = 'none';
+        eventoAtivo = null;
+      }
+    });
+
+    calendar.render();
+  });
+</script>
+{% endblock %}

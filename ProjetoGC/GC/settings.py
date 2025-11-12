@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "Aluno",
     "Cursos",
     "Atividades",
+    "Calendario",
 ]
 
 MIDDLEWARE = [
@@ -138,21 +139,8 @@ AUTHENTICATION_BACKENDS = [
     'Login.backends.EmailAuthBackend',  # Backend customizado para email
 ]
 
-LOGIN_URL = '/login/'
+LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/home/'
-
-# # Configurações de e-mail
-# EMAIL_FILE_PATH = BASE_DIR / 'emails'  # Diretório onde os emails serão salvos
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = 'gerenciamentodecursossenai@gmail.com'
-# EMAIL_HOST_PASSWORD = 'jeahyztywprevkot' # alterar para env dps
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# # Tempo de expiração do token de reset de senha (em segundos)
-# PASSWORD_RESET_TIMEOUT = 3600  # 1 hora
-# ALLOWED_HOSTS = []
-# EMAIL_TIMEOUT = 20  # segundos
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -162,10 +150,6 @@ EMAIL_USE_TLS = False
 EMAIL_HOST_USER = 'gerenciamentodecursossenai@gmail.com'
 EMAIL_HOST_PASSWORD = 'jeahyztywprevkot'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-LANGUAGE_CODE = 'pt-br'
-
-USE_I18N = True
 USE_L10N = True
-USE_TZ = True
+
 

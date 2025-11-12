@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from .views import (
     TurmaListView, TurmaCreateView, TurmaUpdateView, TurmaDetailView,
     AlunoListView, AlunoCreateView, AlunoUpdateView, AlunoDetailView,
@@ -22,6 +22,8 @@ urlpatterns = [
     path('professores/add/', ProfessorCreateView.as_view(), name='profAdd'),
     path('professores/<int:pk>/update/', ProfessorUpdateView.as_view(), name='profUpdate'),
     path('professores/<int:pk>/detail/', ProfessorDetailView.as_view(), name='profDetail'),
+
+    path('calendario/', include('Calendario.urls', namespace='calendario_secretaria')),
 
     
 ]
