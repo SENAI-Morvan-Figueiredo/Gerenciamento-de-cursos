@@ -28,11 +28,10 @@ urlpatterns = [
     path('aluno/', include('Aluno.urls')),
     path('professor/', include(('Professor.urls', 'professor'), namespace='professor')),
     path('cursos/', include('Cursos.urls')),
-<<<<<<< HEAD
+    path('calendario/', include('Calendario.urls')),  # ← adiciona o novo app
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
-=======
-    path('calendario/', include('Calendario.urls')),  # ← adiciona o novo app
-]
->>>>>>> d8b39aaae428546ed20ee50e0f4df44ef79e50e5
+
+
+
