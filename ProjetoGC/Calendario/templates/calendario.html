@@ -36,8 +36,8 @@
     .fc-daygrid-event {
         background-color: #007bff;
         border-radius: 50%;
-        width: 12px;
-        height: 12px;
+        width: 14px;
+        height: 14px;
         padding: 0;
         border: none;
         display: inline-block;
@@ -51,41 +51,86 @@
         display: none !important;
     }
 
+
     /* Tooltip em forma de card */
     .tooltip {
         position: absolute;
         background: rgb(70, 128, 255);
         color: #000000; 
-        padding: 10px 14px;
+        padding: 8px 14px 12px 14px; /* diminui o padding superior */
         border-radius: 10px;
         font-size: 14px;
         display: none;
         z-index: 1000;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        width: 260px;
-        height: 180px;
+        width: 235px;
+        height: 140px;
         transition: opacity 0.2s ease-in-out;
     }
 
     .tooltip h4 {
         font-size: 14px;
         font-weight: bold;
-        margin-bottom: 6px;
+        margin: 0;              
+        padding-top: 10px;         
+        line-height: 1.1;       /* diminui altura da linha */
         color: #ffffff;
     }
+
 
     .tooltip p {
         font-size: 11px;
         line-height: 1.4;
         color: #ffffff;
-        width: 235px;
-        height: 120px;
+        width: 208px;
+        height: 92px;
         overflow: hidden;
         text-overflow: ellipsis;
         display: -webkit-box;
         -webkit-box-orient: vertical;
         word-wrap: break-word;
     }
+
+        /* Barra de navegação do calendário */
+    .fc-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    /* Centraliza o título do mês */
+    .fc-toolbar-title {
+      flex-grow: 1;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: #000000; /* cor estilizada */
+    }
+
+    /* Botões padrão */
+    .fc-button {
+      background-color: #164193;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 13px;
+      transition: background 0.2s;
+    }
+
+    /* Hover nos botões */
+    .fc-button:hover {
+      background-color: #E7490F;
+    }
+
+    /* Remove sombra de foco */
+    .fc-button:focus {
+      box-shadow: none;
+      outline: none;
+    }
+
   </style>
 </head>
 
@@ -111,6 +156,17 @@
         displayEventTime: false,
         eventDisplay: 'list-item',
 
+        headerToolbar: {
+          left: 'prev',
+          center: 'title',
+          right: 'today next'   // ✅ botão "Hoje" vem antes do "Próximo mês"
+        },
+
+ 
+        buttonText: {
+          today: 'Hoje'
+        },
+
         eventDidMount: function(info) {
           // Exibe tooltip no hover (sem fixar)
           info.el.addEventListener('mouseenter', function(e) {
@@ -120,17 +176,17 @@
                 <p>${info.event.extendedProps.description || 'Sem descrição disponível.'}</p>
               `;
               tooltip.style.display = 'block';
-              tooltip.style.left = (e.pageX + 15) + 'px';
-              tooltip.style.top = (e.pageY - 10) + 'px';
+              tooltip.style.left = (e.pageX - 130) + 'px';  // centraliza horizontalmente
+              tooltip.style.top = (e.pageY + 20) + 'px';    // aparece abaixo do mouse
               tooltip.style.opacity = '1';
-              tooltip.dataset.url = `/atividades/${info.event.extendedProps.atividade_id}/`; // link da atividade
+              tooltip.dataset.url = `/atividades/${info.event.extendedProps.atividade_id}/`;
             }
           });
 
           info.el.addEventListener('mousemove', function(e) {
             if (!tooltipFixo) {
-              tooltip.style.left = (e.pageX + 15) + 'px';
-              tooltip.style.top = (e.pageY - 10) + 'px';
+              tooltip.style.left = (e.pageX - 130) + 'px';
+              tooltip.style.top = (e.pageY + 20) + 'px';
             }
           });
 
@@ -157,8 +213,8 @@
                 <p>${info.event.extendedProps.description || 'Sem descrição disponível.'}</p>
               `;
               tooltip.style.display = 'block';
-              tooltip.style.left = (e.pageX + 15) + 'px';
-              tooltip.style.top = (e.pageY - 10) + 'px';
+              tooltip.style.left = (e.pageX - 130) + 'px';
+              tooltip.style.top = (e.pageY + 20) + 'px';
               tooltip.style.opacity = '1';
               tooltip.dataset.url = `/atividades/${info.event.id}/`;
             }

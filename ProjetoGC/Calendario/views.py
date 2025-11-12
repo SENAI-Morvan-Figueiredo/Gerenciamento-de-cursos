@@ -12,24 +12,34 @@ def calendario_view(request):
 
 # Calendario/views.py
 
+
 @login_required
 def listar_eventos(request):
     try:
-        eventos = Evento.objects.all()
+        eventos = Evento.objects.select_related('atividade').all()
         data = []
+
         for e in eventos:
+            # A data exibida no calendário será a data de entrega da atividade (data_fim)
+            data_fim = (
+                e.atividade.data_entrega if hasattr(e, 'atividade') and e.atividade else e.data_fim
+            )
+
             data.append({
                 "id": e.id,
                 "title": e.titulo,
-                "start": e.data_inicio.isoformat() if e.data_inicio else None,
-                "end": e.data_fim.isoformat() if e.data_fim else None,
+                "start": data_fim.isoformat() if data_fim else None,
+                "end": data_fim.isoformat() if data_fim else None,
                 "description": e.descricao or "",
             })
+
         return JsonResponse(data, safe=False)
+
     except Exception as e:
         print("=== ERRO AO LISTAR EVENTOS ===")
         traceback.print_exc()
         return JsonResponse({"erro": str(e)}, status=500)
+
 
 
 

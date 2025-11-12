@@ -15,7 +15,6 @@ def criar_evento_ao_criar_atividade(sender, instance, created, **kwargs):
     if created:
         # Tenta identificar o criador (por exemplo, professor)
         # Se não houver campo de usuário na Atividade, podemos definir um padrão
-        criador = User.objects.filter(is_superuser=True).first()  # usa admin como fallback
 
         Evento.objects.create(
             titulo=instance.titulo,
@@ -23,6 +22,5 @@ def criar_evento_ao_criar_atividade(sender, instance, created, **kwargs):
             data_inicio=instance.data_entrega,   # ou pode definir um horário inicial padrão
             data_fim=instance.data_entrega,       # usa a data de entrega como fim
             turma=instance.turma,
-            criado_por=criador,
             atividade=instance
         )
