@@ -1,41 +1,80 @@
 {% extends "secretaria/Abase.html" %}
 {% load static %}
 
-
-
 {% block content %}
 <div class="content-header">
-    <div class="cursos-header">
+    <div class="cursos-header container-search">
         <h2>Cursos Cadastrados</h2>
-        <a href="{% url 'curso_create' %}" class="btn-new-course">
-            <i data-lucide="plus"></i>
-            Novo Curso
-        </a>
     </div>
 </div>
 
+<!-- Barra de Pesquisa -->
+<div class="container-search">
+    <form method="get" class="search-bar">
+        <input type="text" name="q" placeholder="Pesquisar cursos..." value="{{ request.GET.q }}">
+        <button type="submit" class="btn btn-style">
+            <i data-lucide="search"></i>
+            Buscar
+        </button>
+    </form>
+    
+    {% if request.GET.q %}
+        <a href="{% url 'curso_list' %}" class="btn btn-style">
+            <i data-lucide="x"></i>
+            Limpar
+        </a>
+    {% endif %}
+</div>
+
 <div class="cards-container">
+    <!-- Card de Adição -->
+    <a href="{% url 'curso_create' %}">
+        <div class="card card-add">
+            <h3>Novo Curso</h3>
+            <i data-lucide="plus-circle" style="width: 32px; height: 32px;"></i>
+        </div>
+    </a>
+
     {% for curso in cursos %}
     <div class="card">
-        <h2>{{ curso.nome }}</h2>
+        <div class="card-header">
+            <h2>{{ curso.nome }}</h2>
+            <span class="status-badge {% if curso.ativo %}status-active{% else %}status-inactive{% endif %}">
+                {{ curso.ativo|yesno:"Ativo,Inativo" }}
+            </span>
+        </div>
+        
         <p>
             <i data-lucide="clock"></i>
             <strong>Carga Horária:</strong> {{ curso.carga_horaria }}h
         </p>
         
+        {% if curso.descricao %}
+        <p>
+            <i data-lucide="file-text"></i>
+            <strong>Descrição:</strong> {{ curso.descricao|truncatewords:15 }}
+        </p>
+        {% endif %}
+        
+        <p>
+            <i data-lucide="book-open"></i>
+            <strong>Disciplinas:</strong> {{ curso.disciplinas.count }}
+        </p>
+        
         <div class="card-actions">
-            <a href="{% url 'disciplina_list' curso.pk %}" class="btn-detail">
+            <a href="{% url 'disciplina_list' curso.pk %}" class="btn btn-style3">
                 <i data-lucide="book-open"></i>
                 Disciplinas
             </a>
-            <a href="{% url 'curso_update' curso.pk %}" class="btn-edit">
+            <a href="{% url 'curso_update' curso.pk %}" class="btn btn-style2">
                 <i data-lucide="edit"></i>
                 Editar
             </a>
         </div>
         
         <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--cinza-borda);">
-            <a href="{% url 'curso_delete' curso.pk %}" style="color: var(--error); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+            <a href="{% url 'curso_delete' curso.pk %}" class="btn-link" style="color: var(--laranja);" 
+               onclick="return confirm('Tem certeza que deseja excluir este curso?');">
                 <i data-lucide="trash-2"></i>
                 Excluir
             </a>

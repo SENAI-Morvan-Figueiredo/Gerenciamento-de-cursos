@@ -5,9 +5,9 @@
 
 {% block content %}
 <div class="content-header">
-    <div class="cursos-header">
+    <div class="cursos-header container-search">
         <h2>Disciplinas</h2>
-        <a href="{% url 'disciplina_create_global' %}" class="btn-new-course">
+        <a href="{% url 'disciplina_create_global' %}" class="btn btn-style3">
             <i data-lucide="plus"></i>
             Nova Disciplina
         </a>
@@ -30,15 +30,14 @@
         {% endif %}
         
         <div class="card-actions">
-            <a href="{% url 'disciplina_update' disciplina.pk %}" class="btn-edit">
+            <a href="{% url 'disciplina_update' disciplina.pk %}" class="btn btn-style2">
                 <i data-lucide="edit"></i>
                 Editar
             </a>
         </div>
         
         <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--cinza-borda);">
-            <a href="{% url 'disciplina_delete' disciplina.pk %}" style="color: var(--error); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;" 
-               onclick="return confirm('Tem certeza que deseja excluir esta disciplina?');">
+            <a href="{% url 'disciplina_delete' disciplina.pk %}" class="btn-link" style="color: var(--laranja);" onclick="return confirm('Tem certeza que deseja excluir esta disciplina?');">
                 <i data-lucide="trash-2"></i>
                 Excluir
             </a>

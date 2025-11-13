@@ -8,7 +8,11 @@ class CursoForm(forms.ModelForm):
         model = Curso
         fields = ["nome", "descricao", "carga_horaria", "ativo", "disciplinas"]
         widgets = {
-            "disciplinas": forms.CheckboxSelectMultiple,
+            "nome": forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome do curso'}),
+            "descricao": forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Descrição do curso'}),
+            "carga_horaria": forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Carga horária'}),
+            "ativo": forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            "disciplinas": forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input', 'data-select2': 'true'}),
         }
 
 class DisciplinaForm(forms.ModelForm):
@@ -18,4 +22,5 @@ class DisciplinaForm(forms.ModelForm):
         widgets = {
             'nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome da disciplina'}),
             'descricao': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Descrição da disciplina'}),
+            'carga_horaria': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Carga horária'}),
         }

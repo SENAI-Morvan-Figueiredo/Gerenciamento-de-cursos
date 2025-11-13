@@ -10,16 +10,6 @@
 </div>
 
 <div class="form-container">
-    {% if messages %}
-    <div class="messages-container">
-        {% for message in messages %}
-        <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
-            <i data-lucide="{% if message.tags == 'success' %}check-circle{% else %}alert-circle{% endif %}"></i>
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
 
     <form method="post" class="curso-form">
         {% csrf_token %}
@@ -67,11 +57,11 @@
         {% endif %}
 
         <div class="form-actions">
-            <a href="{% url 'curso_list' %}" class="btn-cancel">
+            <a href="{% url 'curso_list' %}" class="btn btn-style3">
                 <i data-lucide="arrow-left"></i>
                 Voltar para Lista
             </a>
-            <button type="submit" class="btn-submit">
+            <button type="submit" class="btn btn-style2">
                 <i data-lucide="{% if view.object %}save{% else %}plus{% endif %}"></i>
                 {% if view.object %}Atualizar Curso{% else %}Criar Curso{% endif %}
             </button>

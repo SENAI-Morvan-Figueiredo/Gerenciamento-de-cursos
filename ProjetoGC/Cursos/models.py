@@ -21,7 +21,6 @@ class Disciplina(models.Model):
     nome = models.CharField(max_length=150, verbose_name="Nome da Disciplina", default="Sem Nome")
     descricao = models.TextField(blank=True, verbose_name="Descrição")
     carga_horaria = models.PositiveIntegerField(verbose_name="Carga Horária (h)", default=40)
-    # Remova o campo curso
 
     def __str__(self):
         return self.nome if self.nome else "Disciplina sem nome"
