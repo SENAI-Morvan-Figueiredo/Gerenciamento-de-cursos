@@ -11,19 +11,22 @@
     gap: 2rem ;
 }
 
-.info-container button {
-    max-width: 130px;
-    padding: 0.6rem 1.2rem;
-
-    justify-content: center;
-    align-items: center;
-    gap: 0.4rem;
+.info-container .btn {
+    max-width: 150px;
+    padding: 0.6rem 1rem;
 
     border-radius: 10px;
-
+    
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    
     cursor: pointer;
+    
 }
-
 
 
 

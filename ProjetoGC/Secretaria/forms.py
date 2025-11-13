@@ -137,7 +137,7 @@ class AlunoUsuarioForm(UsuarioBaseForm):
             if is_creating:
                 aluno = Aluno.objects.create(usuario=usuario)
             else:
-                aluno = usuario.aluno
+                aluno = usuario
             
             if not is_creating and 'status_matricula' in self.cleaned_data:
                 status_matricula_geral = self.cleaned_data['status_matricula']
