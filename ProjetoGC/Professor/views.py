@@ -4,7 +4,7 @@ from django.shortcuts import render
 # Import do decorator específico do app login
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Avg
-from Cursos.models import Turma, Matricula
+from Cursos.models import Turma, Matricula, Curso
 from Login.models import Professor
 from Atividades.models import Atividade, AtividadeEntregue
 from Login.decorators import professor_required
@@ -57,3 +57,34 @@ def home(request):
         'turmas': turmas
     }
     return render(request, 'professor/home.html', context)
+
+
+@login_required
+@professor_required
+def listar_cursos(request):
+    professor = Professor.objects.get(usuario=request.user)
+    
+    # 1. Filtrar todas as turmas do professor
+    turmas_professor = Turma.objects.filter(
+        professor=professor,
+        status=True
+    ).select_related('curso')
+    
+    # 2. Pegar os cursos distintos dessas turmas
+    cursos_ids = turmas_professor.values_list('curso_id', flat=True).distinct()
+    cursos = Curso.objects.filter(id__in=cursos_ids, ativo=True).order_by('nome')
+    
+    # 3. Criar uma lista de tuplas (curso, turmas_do_curso)
+    cursos_com_turmas = []
+    for curso in cursos:
+        turmas_do_curso = turmas_professor.filter(curso=curso)
+        cursos_com_turmas.append({
+            'curso': curso,
+            'turmas': turmas_do_curso
+        })
+
+    context = {
+        'cursos_com_turmas': cursos_com_turmas
+    }
+    
+    return render(request, 'professor/listar_cursos.html', context)

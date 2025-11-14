@@ -1,0 +1,96 @@
+{% extends 'Professor/base.html' %}
+{% load static %}
+
+
+{% block title %}Solicitações - Painel SENAI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Solicitacao/css/list_prof.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+            <h2>Minhas Solicitações</h2>
+            <a  class="btn-add"href="{% url 'solicitacao:solicitacaoAdd' %}">Fazer uma solicitacao</a>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th>Status</th>
+                    {% if tipo_usuario == 'secretaria' %}
+                        <th>Turma Origem</th>
+                        <th>Turma Destino</th>
+                        <th>Ações</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for solicitacao in solicitacoes %}
+                    <tr>
+                        <td><strong>{{ solicitacao.solicitacao_id }}</strong></td>
+                        <td>{{ solicitacao.usuario.email }}</td>
+                        <td>{{ solicitacao.tipo|title }}</td>
+                        <td>
+                            <span class="status-badge status-{{ solicitacao.status|lower }}">
+                                {{ solicitacao.status }}
+                            </span>
+                        </td>
+                        
+                        {% if tipo_usuario == 'secretaria' %}
+                            <td>
+                                {% if solicitacao.tipo == 'realocacao' and solicitacao.turma_origem %}
+                                    <div class="turma-info">
+                                        {{ solicitacao.turma_origem.nome }}
+                                    </div>
+                                {% else %}
+                                    <span class="no-data">-</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if solicitacao.tipo == 'realocacao' and solicitacao.turma_destino %}
+                                    <div class="turma-info">
+                                        {{ solicitacao.turma_destino.nome }}
+                                    </div>
+                                {% else %}
+                                    <span class="no-data">-</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if solicitacao.status == 'pendente' %}
+                                    <div class="action-buttons">
+                                        <a href="{% url 'solicitacao:solicitacaoStatus' solicitacao.solicitacao_id 'aceitar' %}" class="btn-accept">
+                                            Aceitar
+                                        </a>
+                                        <a href="{% url 'solicitacao:solicitacaoStatus' solicitacao.solicitacao_id 'negar' %}" class="btn-deny">
+                                            Negar
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <span class="completed-text">
+                                        Concluído
+                                    </span>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="{% if tipo_usuario == 'secretaria' %}7{% else %}4{% endif %}" class="table-empty-state">
+                            Nenhuma solicitação encontrada
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

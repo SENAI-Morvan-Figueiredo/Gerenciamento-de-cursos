@@ -1,0 +1,154 @@
+/* Estilos específicos para a página de solicitações */
+.table-container {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background-color: #004c97;
+    color: white;
+    padding: 15px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+}
+
+tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Status badges */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-pendente {
+    background-color: #f5a623;
+    color: white;
+}
+
+.status-aceito, .status-aprovado {
+    background-color: #27ae60;
+    color: white;
+}
+
+.status-negado, .status-rejeitado {
+    background-color: #c0392b;
+    color: white;
+}
+
+/* Action buttons */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-accept, .btn-deny {
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.btn-accept {
+    background-color: #27ae60;
+    color: white;
+}
+
+.btn-accept:hover {
+    background-color: #219653;
+}
+
+.btn-deny {
+    background-color: #c0392b;
+    color: white;
+}
+
+.btn-deny:hover {
+    background-color: #a93226;
+}
+
+/* Estados vazios e dados ausentes */
+.table-empty-state {
+    text-align: center;
+    color: #999;
+    padding: 40px;
+    font-style: italic;
+}
+
+.no-data {
+    color: #999;
+    font-style: italic;
+}
+
+.completed-text {
+    color: #999;
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+.turma-info {
+    background-color: #f0f0f0;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    table {
+        min-width: 600px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .btn-accept, .btn-deny {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-header h2 {
+        font-size: 20px;
+    }
+    
+    th, td {
+        padding: 10px 15px;
+    }
+}
+
+
+

@@ -1,0 +1,59 @@
+<!-- professor/listar_cursos.html -->
+{% extends 'Professor/base.html' %}
+{% load static %}
+
+{% block title %}Meus Cursos e Turmas{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h2>Meus Cursos e Turmas</h2>
+    </div>
+
+    {% for item in cursos_com_turmas %}
+    <div class="curso-container" style="margin-bottom: 30px;">
+        <div class="curso-header" style="background: #004c97; color: white; padding: 15px; border-radius: 8px 8px 0 0;">
+            <h3 style="margin: 0;">{{ item.curso.nome }}</h3>
+            <p style="margin: 5px 0 0 0; opacity: 0.8;">{{ item.curso.descricao }}</p>
+        </div>
+        
+        {% if item.turmas %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Turma</th>
+                        <th>Data Início</th>
+                        <th>Data Fim</th>
+                        <th>Dias</th>
+                        <th>Horário</th>
+                        <th>Tipo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for turma in item.turmas %}
+                    <tr>
+                        <td><strong>{{ turma.nome }}</strong></td>
+                        <td>{{ turma.data_inicio|date:"d/m/Y" }}</td>
+                        <td>{{ turma.data_fim|date:"d/m/Y"|default:"-" }}</td>
+                        <td>{{ turma.dias_semana }}</td>
+                        <td>{{ turma.entrada_horas }} - {{ turma.saida_horas }}</td>
+                        <td>{{ turma.get_tipo_display }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="padding: 20px; text-align: center; background: #f8f9fa;">
+            Nenhuma turma encontrada para este curso
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div class="table-empty-state">
+        Nenhum curso encontrado
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

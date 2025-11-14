@@ -19,8 +19,18 @@ from Login.decorators import aluno_required, secretaria_required, professor_requ
 
 class SolicitacaoListView(ListView):
     model = Solicitacao
-    template_name = 'Solicitacao/solicitacaoList.html'
     context_object_name = 'solicitacoes'
+
+    def get_template_names(self):
+        user = self.request.user
+        
+        if user.tipo == 'professor':
+            return ['Solicitacao/solicitacaoList_professor.html']
+        elif user.tipo == 'secretaria':
+            return ['Solicitacao/solicitacaoList_secretaria.html']
+        else:
+            # Para alunos ou outros tipos, usa o template padrão
+            return ['Solicitacao/solicitacaoList_secretaria.html']
 
     def get_queryset(self):
         user = self.request.user
