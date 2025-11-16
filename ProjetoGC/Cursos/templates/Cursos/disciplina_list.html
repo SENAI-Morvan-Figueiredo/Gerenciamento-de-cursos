@@ -1,13 +1,11 @@
 {% extends "secretaria/Abase.html" %}
 {% load static %}
 
-
-
 {% block content %}
 <div class="content-header">
     <div class="cursos-header container-search">
-        <h2>Disciplinas</h2>
-        <a href="{% url 'disciplina_create_global' %}" class="btn btn-style3">
+        <h2>Disciplinas do Curso: {{ curso.nome }}</h2>
+        <a href="{% url 'disciplina_create' curso.id %}" class="btn btn-style3">
             <i data-lucide="plus"></i>
             Nova Disciplina
         </a>
@@ -15,13 +13,25 @@
 </div>
 
 <div class="cards-container">
+    <!-- Card de Adição -->
+    <a href="{% url 'disciplina_create' curso.id %}">
+        <div class="card card-add">
+            <h3>Nova Disciplina</h3>
+            <i data-lucide="plus-circle" style="width: 32px; height: 32px;"></i>
+        </div>
+    </a>
+
     {% for disciplina in disciplinas %}
     <div class="card">
-        <h2>{{ disciplina.nome }}</h2>
+        <div class="card-header">
+            <h2>{{ disciplina.nome }}</h2>
+        </div>
+        
         <p>
             <i data-lucide="clock"></i>
             <strong>Carga Horária:</strong> {{ disciplina.carga_horaria }}h
         </p>
+        
         {% if disciplina.descricao %}
         <p>
             <i data-lucide="file-text"></i>
@@ -37,7 +47,8 @@
         </div>
         
         <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--cinza-borda);">
-            <a href="{% url 'disciplina_delete' disciplina.pk %}" class="btn-link" style="color: var(--laranja);" onclick="return confirm('Tem certeza que deseja excluir esta disciplina?');">
+            <a href="{% url 'disciplina_delete' disciplina.pk %}" class="btn-link" style="color: var(--laranja);" 
+               onclick="return confirm('Tem certeza que deseja excluir esta disciplina?');">
                 <i data-lucide="trash-2"></i>
                 Excluir
             </a>
@@ -49,6 +60,13 @@
         <p>Clique em "Nova Disciplina" para adicionar a primeira disciplina.</p>
     </div>
     {% endfor %}
+</div>
+
+<div class="form-actions" style="margin-top: 2rem;">
+    <a href="{% url 'curso_list' %}" class="btn btn-style3">
+        <i data-lucide="arrow-left"></i>
+        Voltar para Cursos
+    </a>
 </div>
 
 <script>

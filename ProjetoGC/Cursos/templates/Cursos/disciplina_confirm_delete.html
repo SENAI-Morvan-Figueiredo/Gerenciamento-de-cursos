@@ -1,6 +1,3 @@
-<!-- ProjetoGC/Cursos/templates/Cursos/disciplina_confirm_delete.html -->
-
- <!-- Secretaria/Abase.html/disciplina_confirm_delete.html -->
 {% extends "secretaria/Abase.html" %}
 {% load static %}
 
@@ -27,7 +24,7 @@
         </button>
     </form>
     
-    <a href="{% url 'disciplina_list' curso.pk %}" class="btn btn-style3" style="margin-left: 1rem;">
+    <a href="{% if curso %}{% url 'disciplina_list' curso.id %}{% else %}{% url 'curso_list' %}{% endif %}" class="btn btn-style3" style="margin-left: 1rem;">
         <i data-lucide="arrow-left"></i>
         Cancelar
     </a>

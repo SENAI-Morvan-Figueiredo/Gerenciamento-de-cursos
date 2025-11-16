@@ -59,32 +59,43 @@ class DisciplinaListView(ListView):
     template_name = "Cursos/disciplina_list.html"
     context_object_name = "disciplinas"
 
+    def get_queryset(self):
+        curso_id = self.kwargs.get('curso_id')
+        if curso_id:
+            curso = get_object_or_404(Curso, pk=curso_id)
+            return curso.disciplinas.all()
+        return Disciplina.objects.none()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['curso_id'] = self.kwargs.get('curso_id', 0)
-        context['diciplinas'] = Disciplina.objects.filter()
+        curso_id = self.kwargs.get('curso_id')
+        if curso_id:
+            context['curso'] = get_object_or_404(Curso, pk=curso_id)
+            context['curso_id'] = curso_id
         return context
-
 
 class DisciplinaCreateView(CreateView):
     model = Disciplina
     form_class = DisciplinaForm
     template_name = "Cursos/disciplina_form.html"
 
-    def form_valid(self, form):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         curso_id = self.kwargs.get("curso_id")
         if curso_id:
-            form.instance.curso = get_object_or_404(Curso, pk=curso_id)
-        else:
-            form.instance.curso = None
-        messages.success(self.request, "Disciplina adicionada com sucesso!")
+            context['curso'] = get_object_or_404(Curso, pk=curso_id)
+            context['curso_id'] = curso_id
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, "Disciplina criada com sucesso!")
         return super().form_valid(form)
 
     def get_success_url(self):
-        if self.object.curso:
-            return reverse_lazy("disciplina_list", kwargs={"curso_id": self.object.curso.id})
+        curso_id = self.kwargs.get("curso_id")
+        if curso_id:
+            return reverse_lazy("disciplina_list", kwargs={"curso_id": curso_id})
         return reverse_lazy("curso_list")
-
 
 class DisciplinaUpdateView(UpdateView):
     model = Disciplina
@@ -93,23 +104,39 @@ class DisciplinaUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Exemplo: pega todos os cursos associados à disciplina
-        context['cursos'] = self.object.cursos.all()
+        # Encontrar o curso associado (primeiro curso que contém esta disciplina)
+        disciplina = self.get_object()
+        cursos_associados = disciplina.cursos.all()
+        if cursos_associados.exists():
+            context['curso'] = cursos_associados.first()
         return context
 
     def get_success_url(self):
-        # Redirecione para a lista de disciplinas ou cursos
+        disciplina = self.get_object()
+        cursos_associados = disciplina.cursos.all()
+        if cursos_associados.exists():
+            return reverse_lazy("disciplina_list", kwargs={"curso_id": cursos_associados.first().id})
         return reverse_lazy("curso_list")
-
 
 class DisciplinaDeleteView(DeleteView):
     model = Disciplina
     template_name = "Cursos/disciplina_confirm_delete.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        disciplina = self.get_object()
+        cursos_associados = disciplina.cursos.all()
+        if cursos_associados.exists():
+            context['curso'] = cursos_associados.first()
+        return context
 
     def delete(self, request, *args, **kwargs):
         messages.success(request, "Disciplina removida com sucesso.")
         return super().delete(request, *args, **kwargs)
 
     def get_success_url(self):
-        curso = self.object.curso
-        return reverse_lazy("disciplina_list", kwargs={"curso_id": curso.id})
+        disciplina = self.get_object()
+        cursos_associados = disciplina.cursos.all()
+        if cursos_associados.exists():
+            return reverse_lazy("disciplina_list", kwargs={"curso_id": cursos_associados.first().id})
+        return reverse_lazy("curso_list")

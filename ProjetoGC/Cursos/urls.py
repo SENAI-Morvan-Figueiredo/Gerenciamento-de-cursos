@@ -13,9 +13,8 @@ urlpatterns = [
 
     # Disciplinas
     path("disciplinas/<int:curso_id>/", DisciplinaListView.as_view(), name="disciplina_list"),
-    path("disciplinas/nova/", DisciplinaCreateView.as_view(), name="disciplina_create_global"),
+    path("disciplinas/<int:curso_id>/nova/", DisciplinaCreateView.as_view(), name="disciplina_create"),
     path("disciplinas/<int:pk>/editar/", DisciplinaUpdateView.as_view(), name="disciplina_update"),
     path("disciplinas/<int:pk>/deletar/", DisciplinaDeleteView.as_view(), name="disciplina_delete"),
-
-    
+    path("disciplinas/nova/", DisciplinaCreateView.as_view(), name="disciplina_create_global"),
 ]
