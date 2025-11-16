@@ -8,16 +8,6 @@
 </div>
 
 <div class="form-container">
-    {% if messages %}
-    <div class="messages-container">
-        {% for message in messages %}
-        <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
-            <i data-lucide="{% if message.tags == 'success' %}check-circle{% else %}alert-circle{% endif %}"></i>
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
 
     <form method="post" class="curso-form">
         {% csrf_token %}

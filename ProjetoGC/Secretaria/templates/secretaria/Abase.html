@@ -30,7 +30,7 @@
                     <i data-lucide="layers"></i>
                     <span>Turmas</span>
                 </a>
-                <a href="{% url 'curso_list' %}" class="menu-item {% if 'curso' in request.resolver_match.url_name %}active{% endif %}">
+                <a href="{% url 'curso_list' %}" class="menu-item {% if 'curso' or 'disciplina' in request.resolver_match.url_name %}active{% endif %}">
                     <i data-lucide="layers-2"></i>
                     <span>Cursos</span>
                 </a>

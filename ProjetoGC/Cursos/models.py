@@ -29,6 +29,13 @@ class Disciplina(models.Model):
 class AlocacaoProfessor(models.Model):
     professor = models.ForeignKey('Login.Professor', on_delete=models.CASCADE)
     Curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
+    class Meta:
+        db_table = 'Cursos_alocacaoprofessor'  # Adicione esta linha
+        verbose_name = "Alocação de Professor"
+        verbose_name_plural = "Alocações de Professores"
+
+    def __str__(self):
+        return f"{self.professor} - {self.curso}"
 
 class GradeCurricular(models.Model):
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
