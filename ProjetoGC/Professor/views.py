@@ -64,27 +64,48 @@ def home(request):
 def listar_cursos(request):
     professor = Professor.objects.get(usuario=request.user)
     
-    # 1. Filtrar todas as turmas do professor
+    # Filtrar todas as turmas do professor
     turmas_professor = Turma.objects.filter(
         professor=professor,
         status=True
     ).select_related('curso')
     
-    # 2. Pegar os cursos distintos dessas turmas
+    # Pegar os cursos distintos dessas turmas
     cursos_ids = turmas_professor.values_list('curso_id', flat=True).distinct()
     cursos = Curso.objects.filter(id__in=cursos_ids, ativo=True).order_by('nome')
     
-    # 3. Criar uma lista de tuplas (curso, turmas_do_curso)
-    cursos_com_turmas = []
+    # Contar turmas por curso
+    cursos_com_contagem = []
     for curso in cursos:
-        turmas_do_curso = turmas_professor.filter(curso=curso)
-        cursos_com_turmas.append({
+        
+        turmas_count = turmas_professor.filter(curso=curso).count()
+        cursos_com_contagem.append({
             'curso': curso,
-            'turmas': turmas_do_curso
+            'turmas_count': turmas_count
         })
 
     context = {
-        'cursos_com_turmas': cursos_com_turmas
+        'cursos_com_contagem': cursos_com_contagem
     }
     
     return render(request, 'professor/listar_cursos.html', context)
+
+@login_required
+@professor_required
+def turmas_por_curso(request, curso_id):
+    professor = Professor.objects.get(usuario=request.user)
+    curso = get_object_or_404(Curso, id=curso_id, ativo=True)
+    
+    # Buscar turmas do professor para este curso específico
+    turmas = Turma.objects.filter(
+        professor=professor,
+        curso=curso,
+        status=True
+    ).order_by('nome')
+    
+    context = {
+        'curso': curso,
+        'turmas': turmas
+    }
+    
+    return render(request, 'professor/turmas_por_curso.html', context)

@@ -130,6 +130,7 @@ class AlunoUsuarioForm(UsuarioBaseForm):
             usuario.tipo = 'aluno'
             usuario.status = True
             usuario.username = self.cleaned_data.get('username')
+            usuario.set_password=self.cleaned_data["cpf"]
 
         if commit:
             usuario.save()
@@ -245,6 +246,7 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
         if is_creating:
             usuario.tipo = 'professor'
             usuario.username = self.cleaned_data.get('username')
+            usuario.set_password(self.cleaned_data["cpf"])
             
         if commit:
             usuario.save()

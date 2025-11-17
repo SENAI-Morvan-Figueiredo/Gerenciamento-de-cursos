@@ -37,7 +37,7 @@ class Avaliacao(models.Model):
     arquivo = models.FileField(upload_to='avaliacoes_anexos/', blank=True, null=True)
     
     class Meta:
-        db_table = 'Avaliacoes'
+        db_table = 'Avaliacao'
         verbose_name = 'Avaliação'
         verbose_name_plural = 'Avaliações'
 

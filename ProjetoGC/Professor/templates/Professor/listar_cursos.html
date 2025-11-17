@@ -7,53 +7,35 @@
 {% block content %}
 <div class="dashboard">
     <div class="dashboard-header">
-        <h2>Meus Cursos e Turmas</h2>
+        <h2>Meus Cursos</h2>
+        <p>Selecione um curso para visualizar as turmas</p>
     </div>
 
-    {% for item in cursos_com_turmas %}
-    <div class="curso-container" style="margin-bottom: 30px;">
-        <div class="curso-header" style="background: #004c97; color: white; padding: 15px; border-radius: 8px 8px 0 0;">
-            <h3 style="margin: 0;">{{ item.curso.nome }}</h3>
-            <p style="margin: 5px 0 0 0; opacity: 0.8;">{{ item.curso.descricao }}</p>
+    <div class="cards-grid">
+        {% for item in cursos_com_contagem %}
+        <div class="card curso-card">
+            <div class="card-header">
+                <span style="color: black;">{{ item.curso.nome }}</span>
+                <i>📚</i>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <div class="card-count">{{ item.turmas_count }}</div>
+                    <div class="card-label">Turmas</div>
+                    <p class="curso-descricao">{{ item.curso.descricao|truncatewords:15 }}</p>
+                </div>
+                <div class="card-actions">
+                    <a href="{% url 'professor:turmas_por_curso' item.curso.id %}" class="card-btn" title="Ver Turmas">
+                        <i>👁️</i> Ver Turmas
+                    </a>
+                </div>
+            </div>
         </div>
-        
-        {% if item.turmas %}
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Turma</th>
-                        <th>Data Início</th>
-                        <th>Data Fim</th>
-                        <th>Dias</th>
-                        <th>Horário</th>
-                        <th>Tipo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for turma in item.turmas %}
-                    <tr>
-                        <td><strong>{{ turma.nome }}</strong></td>
-                        <td>{{ turma.data_inicio|date:"d/m/Y" }}</td>
-                        <td>{{ turma.data_fim|date:"d/m/Y"|default:"-" }}</td>
-                        <td>{{ turma.dias_semana }}</td>
-                        <td>{{ turma.entrada_horas }} - {{ turma.saida_horas }}</td>
-                        <td>{{ turma.get_tipo_display }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        {% empty %}
+        <div class="table-empty-state">
+            Nenhum curso encontrado
         </div>
-        {% else %}
-        <div style="padding: 20px; text-align: center; background: #f8f9fa;">
-            Nenhuma turma encontrada para este curso
-        </div>
-        {% endif %}
+        {% endfor %}
     </div>
-    {% empty %}
-    <div class="table-empty-state">
-        Nenhum curso encontrado
-    </div>
-    {% endfor %}
 </div>
 {% endblock %}
