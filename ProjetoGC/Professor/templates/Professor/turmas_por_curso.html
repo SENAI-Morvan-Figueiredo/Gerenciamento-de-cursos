@@ -1,0 +1,56 @@
+<!-- professor/turmas_por_curso.html -->
+{% extends 'Professor/base.html' %}
+{% load static %}
+
+{% block title %}Turmas - {{ curso.nome }}{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2>Turmas - {{ curso.nome }}</h2>
+                <p>{{ curso.descricao }}</p>
+            </div>
+            <a href="{% url 'professor:listar_cursos' %}" class="btn btn-secondary">
+                ← Voltar para Cursos
+            </a>
+        </div>
+    </div>
+
+    <div class="cards-grid">
+        {% for turma in turmas %}
+        <div class="card turma-card">
+            <div class="card-header">
+                <span>{{ turma.nome }}</span>
+                <i>👥</i>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <div class="turma-info">
+                        <p><strong>Período:</strong> {{ turma.data_inicio|date:"d/m/Y" }} 
+                           {% if turma.data_fim %} - {{ turma.data_fim|date:"d/m/Y" }}{% endif %}
+                        </p>
+                        <p><strong>Dias:</strong> {{ turma.dias_semana }}</p>
+                        <p><strong>Horário:</strong> {{ turma.entrada_horas }} - {{ turma.saida_horas }}</p>
+                        <p><strong>Tipo:</strong> {{ turma.get_tipo_display }}</p>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <a href="{% url 'professor:dashboard_turma_detalhes' turma.turma_id %}" class="card-btn" title="Dashboard">
+                        <i>📊</i> Dashboard
+                    </a>
+                    <button class="card-btn" title="Editar">
+                        <i>✏️</i> Editar
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="table-empty-state">
+            Nenhuma turma encontrada para este curso
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

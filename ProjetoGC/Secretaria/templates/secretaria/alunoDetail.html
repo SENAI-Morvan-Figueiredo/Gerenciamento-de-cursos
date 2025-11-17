@@ -1,1 +1,237 @@
-<!-- Secretaria/templates/secretaria/alunoDetail.html -->
+{% extends 'Secretaria/Abase.html' %}
+{% load static %}
+
+{% block title %}Detalhes do Aluno - {{ aluno.usuario.nome }}{% endblock %}
+
+{% block content %}
+<style>
+    .academic-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .history-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+    
+    .history-table th,
+    .history-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--cinza-borda);
+    }
+    
+    .history-table th {
+        background: var(--azul-suave);
+        color: var(--azul);
+        font-weight: 600;
+    }
+    
+    .current-courses {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .detail-full {
+        grid-column: 1 / -1;
+    }
+    
+    .card-info p {
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .card-info strong {
+        color: var(--preto);
+        min-width: 120px;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+        background: var(--azul-suave);
+        border-radius: 8px;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--azul);
+        display: block;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--cinza-claro);
+    }
+</style>
+
+<div class="content-header">
+    <h1>{{ aluno.usuario.nome }} {{ aluno.usuario.sobrenome }}</h1>
+    <p class="text-muted">Perfil acadêmico do aluno</p>
+</div>
+
+<div class="detail-grid">
+    <!-- Informações Pessoais -->
+    <div class="card">
+        <h2>Informações Pessoais</h2>
+        <div class="card-info">
+            <p><strong>Email:</strong> {{ aluno.usuario.email }}</p>
+            <p><strong>CPF:</strong> {{ aluno.usuario.cpf }}</p>
+            <p><strong>Contato:</strong> {{ aluno.usuario.contato|default:"-" }}</p>
+            <p><strong>Nascimento:</strong> {{ aluno.usuario.data_nascimento|default:"-" }}</p>
+            <p><strong>Endereço:</strong> {{ aluno.usuario.endereco|default:"-" }}</p>
+            <p><strong>Status Geral:</strong> 
+                <span class="status-badge {% if matricula_ativa %}status-active{% else %}status-inactive{% endif %}">
+                    {{ matricula_ativa|yesno:"Ativo,Inativo" }}
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Estatísticas Acadêmicas -->
+    <div class="card">
+        <h2>Estatísticas Acadêmicas</h2>
+        <div class="academic-stats">
+            <div class="stat-item">
+                <span class="stat-value">{{ total_turmas }}</span>
+                <span class="stat-label">Total Turmas</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ turmas_ativas }}</span>
+                <span class="stat-label">Turmas Ativas</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ cursos_count }}</span>
+                <span class="stat-label">Cursos</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Turmas Atuais -->
+    <div class="card detail-full">
+        <h2>Turmas Atuais ({{ turmas_ativas }})</h2>
+        
+        {% if turmas_atuais %}
+        <div class="current-courses">
+            {% for matricula in turmas_atuais %}
+            <div class="card">
+                <div class="card-header">
+                    <h3>{{ matricula.turma.nome }}</h3>
+                    <span class="status-badge status-active">Ativa</span>
+                </div>
+                
+                <div class="card-info">
+                    <p><strong>Curso:</strong> {{ matricula.turma.curso.nome }}</p>
+                    <p><strong>Professor:</strong> 
+                        {% if matricula.turma.professor %}
+                            {{ matricula.turma.professor.usuario.nome }}
+                        {% else %}
+                            <span class="text-muted">Não atribuído</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Ingresso:</strong> {{ matricula.data_ingresso }}</p>
+                    <p><strong>Horário:</strong> {{ matricula.turma.entrada_horas }} - {{ matricula.turma.saida_horas }}</p>
+                    <p><strong>Dias:</strong> {{ matricula.turma.dias_semana }}</p>
+                </div>
+                
+                <div class="card-actions">
+                    <a href="{% url 'secretaria:turmaDetail' matricula.turma.turma_id %}" class="btn btn-style4">
+                        <i data-lucide="eye"></i>
+                        Ver Turma
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-data">
+            <p>Aluno não está matriculado em nenhuma turma ativa</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Histórico Completo -->
+    <div class="card detail-full">
+        <h2>Histórico Acadêmico ({{ total_turmas }})</h2>
+        
+        {% if historico_turmas %}
+        <div style="overflow-x: auto;">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Turma</th>
+                        <th>Curso</th>
+                        <th>Data Ingresso</th>
+                        <th>Data Término</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for matricula in historico_turmas %}
+                    <tr>
+                        <td>{{ matricula.turma.nome }}</td>
+                        <td>{{ matricula.turma.curso.nome }}</td>
+                        <td>{{ matricula.data_ingresso }}</td>
+                        <td>
+                            {% if matricula.turma.data_fim %}
+                                {{ matricula.turma.data_fim }}
+                            {% else %}
+                                <span class="text-muted">Em andamento</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="status-badge {% if matricula.status_matricula %}status-active{% else %}status-inactive{% endif %}">
+                                {{ matricula.status_matricula|yesno:"Ativa,Concluída" }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <p>Nenhum histórico acadêmico encontrado</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card-actions" style="margin-top: 2rem; justify-content: center;">
+    <a href="{% url 'secretaria:alunoList' %}" class="btn btn-style3">
+        <i data-lucide="arrow-left"></i>
+        Voltar para Alunos
+    </a>
+    <a href="{% url 'secretaria:alunoUpdate' aluno.aluno_id %}" class="btn btn-style2">
+        <i data-lucide="edit"></i>
+        Editar Aluno
+    </a>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}

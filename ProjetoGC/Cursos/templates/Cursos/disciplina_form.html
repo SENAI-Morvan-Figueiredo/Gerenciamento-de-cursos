@@ -1,8 +1,6 @@
 {% extends "secretaria/Abase.html" %}
 {% load static %}
 
-
-
 {% block content %}
 <div class="content-header">
     <h1>{% if view.object %}Editar Disciplina{% else %}Nova Disciplina{% endif %}</h1>
@@ -10,47 +8,29 @@
 </div>
 
 <div class="form-container">
-    {% if messages %}
-    <div class="messages-container">
-        {% for message in messages %}
-        <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
-            <i data-lucide="{% if message.tags == 'success' %}check-circle{% else %}alert-circle{% endif %}"></i>
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
 
     <form method="post" class="curso-form">
         {% csrf_token %}
         {{ form.non_field_errors }}
 
         <div class="form-group">
-            <div class="form-field">
-                {{ form.nome.label_tag }}
-                {{ form.nome }}
-                {{ form.nome.errors }}
-            </div>
-
-            <div class="form-field">
-                {{ form.carga_horaria.label_tag }}
-                {{ form.carga_horaria }}
-                {{ form.carga_horaria.errors }}
-            </div>
-        </div>
-
-        <div class="form-field">
-            {{ form.descricao.label_tag }}
-            {{ form.descricao }}
-            {{ form.descricao.errors }}
+            {% for field in form %}
+                <div class="form-field">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <ul class="errorlist">{{ field.errors }}</ul>
+                    {% endif %}
+                </div>
+            {% endfor %}
         </div>
 
         <div class="form-actions">
-            <a href="{% if curso_id %}{% url 'disciplina_list' curso_id %}{% else %}{% url 'curso_list' %}{% endif %}" class="btn-cancel">
+            <a href="{% if curso %}{% url 'disciplina_list' curso.id %}{% else %}{% url 'curso_list' %}{% endif %}" class="btn btn-style3">
                 <i data-lucide="arrow-left"></i>
                 Voltar
             </a>
-            <button type="submit" class="btn-submit">
+            <button type="submit" class="btn btn-style2">
                 <i data-lucide="{% if view.object %}save{% else %}plus{% endif %}"></i>
                 {% if view.object %}Atualizar Disciplina{% else %}Criar Disciplina{% endif %}
             </button>

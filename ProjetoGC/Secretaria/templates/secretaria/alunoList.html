@@ -8,7 +8,7 @@
     <p>Gerencie os alunos do sistema</p>
 </div>
 
-<div class="table-container"> 
+<div class="table-container">
 
     <div class="container-search">
         <div class="search-bar">
@@ -18,7 +18,7 @@
             </button>
 
             <button type="button" id="clearFilter" class="btn-style" style="display: none;">
-                <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                <i data-lucide="x"></i>
                 Limpar
             </button>
         </div>
@@ -26,9 +26,19 @@
         
     </div>
 
-    <div id="searchResultsInfo" class="search-results-info" style="display: none;">
-        <p id="resultsText"></p>
+    <div class="info-container">
+        <button type="button" class="btn btn-style3">
+            <a href="{% url 'secretaria:alunoAdd' %}">
+                <i data-lucide="plus-circle"></i>
+                Aluno
+            </a>
+        </button>
+
+        <div id="searchResultsInfo" class="search-results-info" style="display: none;">
+            <p id="resultsText"></p>
+        </div>
     </div>
+
 
     <table id="alunosTable">
         <thead>
@@ -53,12 +63,12 @@
                     <td>{{ aluno.usuario.email }}</td>
                     <td>{{ aluno.usuario.contato|default:"Não informado" }}</td>
                     <td>
-                        <a href="{% url 'secretaria:alunoDetail' aluno.aluno_id %}" class="btn-link">
+                        <a href="{% url 'secretaria:alunoDetail' aluno.aluno_id %}" class="btn-link btn-style4">
                             <i data-lucide="eye"></i>
                         </a>
                     </td>
                     <td>
-                        <a href="{% url 'secretaria:alunoUpdate' aluno.aluno_id %}" class="btn-link">
+                        <a href="{% url 'secretaria:alunoUpdate' aluno.aluno_id %}" class="btn-link btn-style4">
                             <i data-lucide="edit"></i> Editar
                         </a>
                     </td>

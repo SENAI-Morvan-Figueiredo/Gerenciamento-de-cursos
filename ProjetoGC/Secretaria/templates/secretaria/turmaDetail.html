@@ -1,17 +1,208 @@
-<!-- Secretaria/templates/secretaria/turmaDetail.html -->
+{% extends 'Secretaria/Abase.html' %}
+{% load static %}
 
-{% extends "secretaria/Abase.html" %}
-
-
+{% block title %}Detalhes da Turma - {{ turma.nome }}{% endblock %}
 
 {% block content %}
-    <h2>Turma: {{ turma.nome }}</h2>
-    <p><strong>Curso:</strong> {{ turma.curso.nome }}</p>
-    <p><strong>Professor:</strong> {{ turma.professor.usuario.nome }}</p>
-    <p><strong>Tipo:</strong> {{ turma.tipo }}</p>
-    <p><strong>Alunos:</strong>
-        {% for aluno in usuarios.matricula_set.all %}
-            {{ aluno.usuario.nome }}
-        {% endfor %}
-    </p>
+
+<style>
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .detail-full {
+        grid-column: 1 / -1;
+    }
+    
+    .card-info p {
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .card-info strong {
+        color: var(--preto);
+        min-width: 120px;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+        background: var(--azul-suave);
+        border-radius: 8px;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--azul);
+        display: block;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--cinza-claro);
+    }
+    
+    .disciplinas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .disciplina-card {
+        padding: 1.2rem;
+        background: var(--branco);
+        border: 1px solid var(--cinza-borda);
+        border-radius: 8px;
+    }
+</style>
+
+<div class="content-header">
+    <h1>{{ turma.nome }}</h1>
+    <p class="text-muted">Detalhes completos da turma</p>
+</div>
+
+<div class="detail-grid">
+    <!-- Informações Principais -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Informações da Turma</h2>
+            <span class="status-badge {% if turma.status %}status-active{% else %}status-inactive{% endif %}">
+                {{ turma.status|yesno:"Ativa,Inativa" }}
+            </span>
+        </div>
+        
+        <div class="card-info">
+            <p><strong>Curso:</strong> {{ turma.curso.nome }}</p>
+            <p><strong>Professor:</strong> 
+                {% if turma.professor %}
+                    {{ turma.professor.usuario.nome }} {{ turma.professor.usuario.sobrenome }}
+                {% else %}
+                    <span class="text-muted">Não atribuído</span>
+                {% endif %}
+            </p>
+            <p><strong>Tipo:</strong> {{ turma.get_tipo_display }}</p>
+            <p><strong>Período:</strong> {{ turma.data_inicio }} a {{ turma.data_fim|default:"-" }}</p>
+            <p><strong>Horário:</strong> {{ turma.entrada_horas }} - {{ turma.saida_horas }}</p>
+            <p><strong>Dias:</strong> {{ turma.dias_semana }}</p>
+        </div>
+    </div>
+
+    <!-- Estatísticas -->
+    <div class="card">
+        <h2>Estatísticas</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-value">{{ total_alunos }}</span>
+                <span class="stat-label">Total de Alunos</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ alunos_ativos }}</span>
+                <span class="stat-label">Alunos Ativos</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ turma.curso.carga_horaria }}h</span>
+                <span class="stat-label">Carga Horária</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Alunos -->
+    <div class="card detail-full">
+        <div class="card-header">
+            <h2>Alunos Matriculados ({{ total_alunos }})</h2>
+        </div>
+        
+        {% if turma.matricula_set.all %}
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--cinza-borda);">
+                        <th style="padding: 1rem; text-align: left;">Aluno</th>
+                        <th style="padding: 1rem; text-align: left;">Email</th>
+                        <th style="padding: 1rem; text-align: left;">Status</th>
+                        <th style="padding: 1rem; text-align: left;">Data de Ingresso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for matricula in turma.matricula_set.all %}
+                    <tr style="border-bottom: 1px solid var(--cinza-borda);">
+                        <td style="padding: 1rem;">
+                            {{ matricula.aluno.usuario.nome }} {{ matricula.aluno.usuario.sobrenome }}
+                        </td>
+                        <td style="padding: 1rem;">{{ matricula.aluno.usuario.email }}</td>
+                        <td style="padding: 1rem;">
+                            <span class="status-badge {% if matricula.status_matricula %}status-active{% else %}status-inactive{% endif %}">
+                                {{ matricula.status_matricula|yesno:"Ativo,Inativo" }}
+                            </span>
+                        </td>
+                        <td style="padding: 1rem;">{{ matricula.data_ingresso }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <p>Nenhum aluno matriculado nesta turma</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Disciplinas do Curso -->
+    <div class="card detail-full">
+        <h2>Disciplinas do Curso</h2>
+        
+        {% if turma.curso.disciplinas.all %}
+        <div class="disciplinas-grid">
+            {% for disciplina in turma.curso.disciplinas.all %}
+            <div class="disciplina-card">
+                <h3 style="font-size: 1.1rem; margin-bottom: 0.8rem; color: var(--azul);">
+                    {{ disciplina.nome }}
+                </h3>
+                <p style="font-size: 0.9rem; color: var(--cinza-claro); margin-bottom: 0.8rem;">
+                    {{ disciplina.descricao|default:"Sem descrição" }}
+                </p>
+                <p style="font-size: 0.85rem; color: var(--cinza-claro);">
+                    <strong>Carga horária:</strong> {{ disciplina.carga_horaria }}h
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-data">
+            <p>Nenhuma disciplina cadastrada para este curso</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card-actions">
+    <a href="{% url 'secretaria:turmaList' %}" class="btn btn-style3">
+        <i data-lucide="arrow-left"></i>
+        Voltar para Turmas
+    </a>
+    <a href="{% url 'secretaria:turmaUpdate' turma.turma_id %}" class="btn btn-style2">
+        <i data-lucide="edit"></i>
+        Editar Turma
+    </a>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+
 {% endblock %}

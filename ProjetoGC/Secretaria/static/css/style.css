@@ -42,6 +42,13 @@ a {
     color: inherit;
 }
 
+svg {
+    min-width: 20px;
+    min-height: 20px;
+    vertical-align: middle;
+}
+
+
 .layout {
     min-height: 100vh;
     display: flex;
@@ -219,6 +226,8 @@ a {
     width: 20px;
     height: 20px;
 }
+
+
 
 /* --- CONTEÚDO --- */
 .main-content {
@@ -424,13 +433,23 @@ a {
 .card-actions .btn {
     padding: 0.7rem 1.2rem;
 
-    flex: 1;
-    text-align: center;
-
     border-radius: 10px;
+    
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    
+    cursor: pointer;
+    
 }
 
-
+.card-actions .btn svg{
+    min-width: 18px;
+    min-height: 18px;
+    vertical-align: middle;
+}
 
 .card-header {
     margin-bottom: 1rem;
@@ -438,23 +457,6 @@ a {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-}
-
-.status-badge {
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.status-active {
-    background: #D1FAE5;
-    color: #065F46;
-}
-
-.status-inactive {
-    background: #FEE2E2;
-    color: #991B1B;
 }
 
 
@@ -482,7 +484,7 @@ a {
 
 
 
-/* --- STATUS BADGES --- */
+/* --- STATUS BADGES --- solicitação/turmaList */
 .status-badge {
     padding: 0.4rem 0.8rem;
     border-radius: 20px;

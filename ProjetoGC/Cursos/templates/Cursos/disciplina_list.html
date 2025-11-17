@@ -1,27 +1,40 @@
 {% extends "secretaria/Abase.html" %}
 {% load static %}
 
-
-
 {% block content %}
 <div class="content-header">
-    <div class="cursos-header">
-        <h2>Disciplinas</h2>
-        <a href="{% url 'disciplina_create_global' %}" class="btn-new-course">
-            <i data-lucide="plus"></i>
-            Nova Disciplina
-        </a>
+    <div class="cursos-header container-search">
+        <h2>Disciplinas do Curso: {{ curso.nome }}</h2>
     </div>
 </div>
 
+<div class="card-actions" style="margin-top: 2rem; justify-content: flex-start; max-width: 200px;">
+    <a href="{% url 'curso_list' %}" class="btn btn-style3">
+        <i data-lucide="arrow-left"></i>
+        Voltar para Cursos
+    </a>
+</div>
+
 <div class="cards-container">
+    <!-- Card de Adição de Nova Disciplina -->
+    <a href="{% url 'disciplina_create' curso.id %}">
+        <div class="card card-add">
+            <h3>Nova Disciplina</h3>
+            <i data-lucide="plus-circle" style="width: 32px; height: 32px;"></i>
+        </div>
+    </a>
+
     {% for disciplina in disciplinas %}
     <div class="card">
-        <h2>{{ disciplina.nome }}</h2>
+        <div class="card-header">
+            <h2>{{ disciplina.nome }}</h2>
+        </div>
+        
         <p>
             <i data-lucide="clock"></i>
             <strong>Carga Horária:</strong> {{ disciplina.carga_horaria }}h
         </p>
+        
         {% if disciplina.descricao %}
         <p>
             <i data-lucide="file-text"></i>
@@ -30,27 +43,64 @@
         {% endif %}
         
         <div class="card-actions">
-            <a href="{% url 'disciplina_update' disciplina.pk %}" class="btn-edit">
+            <a href="{% url 'disciplina_update' disciplina.pk %}" class="btn btn-style2">
                 <i data-lucide="edit"></i>
                 Editar
             </a>
-        </div>
-        
-        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--cinza-borda);">
-            <a href="{% url 'disciplina_delete' disciplina.pk %}" style="color: var(--error); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;" 
-               onclick="return confirm('Tem certeza que deseja excluir esta disciplina?');">
-                <i data-lucide="trash-2"></i>
-                Excluir
+            <a href="{% url 'remover_disciplina_curso' curso.id disciplina.id %}" class="btn" style="background: var(--laranja-suave); color: var(--laranja); border: 1px solid var(--laranja-escuro);" 
+               onclick="return confirm('Remover esta disciplina do curso?');">
+                <i data-lucide="x"></i>
+                Remover
             </a>
         </div>
     </div>
     {% empty %}
     <div class="no-data">
-        <h3>Nenhuma disciplina cadastrada</h3>
-        <p>Clique em "Nova Disciplina" para adicionar a primeira disciplina.</p>
+        <h3>Nenhuma disciplina neste curso</h3>
+        <p>Adicione disciplinas existentes ou crie uma nova.</p>
     </div>
     {% endfor %}
 </div>
+
+<!-- Seção para adicionar disciplinas existentes -->
+{% if disciplinas_disponiveis %}
+<div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--cinza-borda);">
+    <div class="content-header">
+        <h3>Adicionar Disciplinas Existentes</h3>
+        <p>Disciplinas disponíveis para adicionar ao curso</p>
+    </div>
+
+    <div class="cards-container">
+        {% for disciplina in disciplinas_disponiveis %}
+        <div class="card">
+            <div class="card-header">
+                <h2>{{ disciplina.nome }}</h2>
+            </div>
+            
+            <p>
+                <i data-lucide="clock"></i>
+                <strong>Carga Horária:</strong> {{ disciplina.carga_horaria }}h
+            </p>
+            
+            {% if disciplina.descricao %}
+            <p>
+                <i data-lucide="file-text"></i>
+                <strong>Descrição:</strong> {{ disciplina.descricao|truncatewords:8 }}
+            </p>
+            {% endif %}
+            
+            <div class="card-actions">
+                <a href="{% url 'adicionar_disciplina_curso' curso.id disciplina.id %}" class="btn btn-style3">
+                    <i data-lucide="plus"></i>
+                    Adicionar ao Curso
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 
 <script>
     lucide.createIcons();

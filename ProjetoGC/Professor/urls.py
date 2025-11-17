@@ -10,6 +10,7 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('dashboard/turma/<int:turma_id>/', views.dashboard_turma_detalhes, name='dashboard_turma_detalhes'),
     path('turmas/', views.listar_cursos, name='listar_cursos'),
+    path('turmas/curso/<int:curso_id>/', views.turmas_por_curso, name='turmas_por_curso'),
     # Top-level calendar page for professors: /professor/calendario/
     path('calendario/', calendario_views.calendario_professor, name='calendario'),
     # API endpoints (eventos/) mounted under the same prefix: /professor/calendario/eventos/

@@ -3,6 +3,7 @@ from .views import (
     TurmaListView, TurmaCreateView, TurmaUpdateView, TurmaDetailView,
     AlunoListView, AlunoCreateView, AlunoUpdateView, AlunoDetailView,
     ProfessorListView, ProfessorCreateView, ProfessorUpdateView, ProfessorDetailView,
+    config_view
 )
 from Calendario import views as calendario_views
 
@@ -30,4 +31,5 @@ urlpatterns = [
     # /secretaria/calendario/eventos/
     path('calendario/', include(('Calendario.urls', 'calendario'), namespace='calendario_secretaria_api')),
 
+    path('config/', config_view, name='config'),
 ]
