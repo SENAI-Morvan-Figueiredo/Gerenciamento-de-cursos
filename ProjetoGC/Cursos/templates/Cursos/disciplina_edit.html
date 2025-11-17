@@ -1,8 +1,6 @@
 {% extends "secretaria/Abase.html" %}
 {% load static %}
 
-
-
 {% block content %}
 <div class="content-header">
     <h1>Editar Disciplina</h1>
@@ -15,49 +13,37 @@
         {{ form.non_field_errors }}
 
         <div class="form-group">
-            <div class="form-field">
-                {{ form.nome.label_tag }}
-                {{ form.nome }}
-                {{ form.nome.errors }}
-            </div>
-
-            <div class="form-field">
-                {{ form.carga_horaria.label_tag }}
-                {{ form.carga_horaria }}
-                {{ form.carga_horaria.errors }}
-            </div>
-        </div>
-
-        <div class="form-field">
-            {{ form.descricao.label_tag }}
-            {{ form.descricao }}
-            {{ form.descricao.errors }}
+            {% for field in form %}
+                <div class="form-field">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <ul class="errorlist">{{ field.errors }}</ul>
+                    {% endif %}
+                </div>
+            {% endfor %}
         </div>
 
         <div class="form-actions">
-            <a href="{% url 'disciplina_list' curso.pk  %}" class="btn-cancel">
+            <a href="{% if curso %}{% url 'disciplina_list' curso.id %}{% else %}{% url 'curso_list' %}{% endif %}" class="btn btn-style3">
                 <i data-lucide="arrow-left"></i>
                 Voltar para Lista
             </a>
-            <button type="submit" class="btn-submit">
+            <button type="submit" class="btn btn-style2">
                 <i data-lucide="save"></i>
                 Salvar Alterações
             </button>
         </div>
     </form>
 
-    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--cinza-borda);">
-        <form method="post" action="{% url 'disciplina_delete' pk=form.instance.pk %}">
-            {% csrf_token %}
-            <button type="submit" 
-                    class="btn-cancel" 
-                    style="background: var(--error); color: var(--branco); border-color: var(--error);"
-                    onclick="return confirm('Tem certeza que deseja excluir esta disciplina? Esta ação não pode ser desfeita.');">
-                <i data-lucide="trash-2"></i>
-                Excluir Disciplina
-            </button>
-        </form>
+    {% if curso %}
+    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--cinza-borda); text-align: center;">
+        <a href="{% url 'disciplina_delete' form.instance.pk %}" class="btn" style="background: var(--laranja); color: var(--branco);">
+            <i data-lucide="trash-2"></i>
+            Excluir Disciplina
+        </a>
     </div>
+    {% endif %}
 </div>
 
 <script>

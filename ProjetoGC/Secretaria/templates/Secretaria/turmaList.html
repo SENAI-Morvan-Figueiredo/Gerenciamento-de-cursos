@@ -10,7 +10,7 @@
 
 <div class="container-search">
     <form method="get" class="search-bar">
-        <input type="text" name="q" placeholder="Pesquisar turma, curso ou professor..." value="{{ query }}">
+        <input type="text" name="q" placeholder="Pesquisar Nome da turma..." value="{{ query }}">
         <button type="submit" class="btn btn-style">
             <i data-lucide="search"></i>
         </button>
@@ -76,33 +76,71 @@
 </div>
 
 <script>
-    // Atualizar ícones após o carregamento
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
-    });
-
-    // Função para filtrar turmas
-    function filtrarTurmas() {
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const cards = document.querySelectorAll('.turma-card');
         
-        cards.forEach(card => {
-            const nome = card.getAttribute('data-nome');
-            if (nome.includes(searchTerm)) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
+        // Busca avançada - procura em campos específicos
+        function buscaAvancada() {
+            const searchTerm = document.querySelector('input[name="q"]').value.toLowerCase();
+            const cards = document.querySelectorAll('.card-turma');
+            
+            cards.forEach(card => {
+                let encontrou = false;
+                
+                // Buscar no nome do curso
+                const nomeCurso = card.querySelector('h2').textContent.toLowerCase();
+                if (nomeCurso.includes(searchTerm)) encontrou = true;
+                
+                // Buscar no nome do professor
+                const professor = card.querySelector('p:nth-child(2)').textContent.toLowerCase();
+                if (professor.includes(searchTerm)) encontrou = true;
+                
+                // Buscar no tipo da turma
+                const tipo = card.querySelector('p:nth-child(4)').textContent.toLowerCase();
+                if (tipo.includes(searchTerm)) encontrou = true;
+                
+                // Buscar no status
+                const status = card.querySelector('.status-badge').textContent.toLowerCase();
+                if (status.includes(searchTerm)) encontrou = true;
+                
+                card.style.display = encontrou ? 'block' : 'none';
+            });
+            
+            atualizarMensagemNenhumResultado();
+        }
+        
+        function atualizarMensagemNenhumResultado() {
+            const searchTerm = document.querySelector('input[name="q"]').value;
+            const cardsVisiveis = document.querySelectorAll('.card-turma[style="display: block"]');
+            const cardsContainer = document.querySelector('.cards-container');
+            let noDataMessage = document.querySelector('.no-data-search');
+            
+            if (cardsVisiveis.length === 0 && searchTerm !== '') {
+                if (!noDataMessage) {
+                    noDataMessage = document.createElement('div');
+                    noDataMessage.className = 'no-data no-data-search';
+                    noDataMessage.innerHTML = `
+                        <h3>Nenhuma turma encontrada</h3>
+                        <p>Tente alterar os termos da pesquisa</p>
+                    `;
+                    cardsContainer.appendChild(noDataMessage);
+                }
+            } else if (noDataMessage) {
+                noDataMessage.remove();
             }
-        });
-    }
-    
-    // Permitir busca ao pressionar Enter
-    document.getElementById('searchInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            filtrarTurmas();
+        }
+        
+        // Adicionar eventos
+        const searchInput = document.querySelector('input[name="q"]');
+        if (searchInput) {
+            searchInput.addEventListener('input', buscaAvancada);
+            
+            // Executar busca inicial se houver texto
+            if (searchInput.value) {
+                buscaAvancada();
+            }
         }
     });
-    
 </script>
 
 {% endblock content %}

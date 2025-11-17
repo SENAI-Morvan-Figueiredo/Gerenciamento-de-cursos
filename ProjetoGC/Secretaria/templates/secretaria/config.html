@@ -1,0 +1,308 @@
+<!-- config.html -->
+{% extends "secretaria/Abase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-header">
+    <h1>Configurações Pessoais</h1>
+    <p>Gerencie suas informações e preferências</p>
+</div>
+
+<div class="config-container">
+    <!-- Perfil do Usuário -->
+    <div class="config-section">
+        <h3>
+            <i data-lucide="user" style="width: 20px; height: 20px;"></i>
+            Perfil do Usuário
+        </h3>
+        <div class="config-grid">
+            <div class="config-item">
+                <label>Nome</label>
+                <input type="text" value="{{ user.nome }}" readonly>
+                <small class="text-muted">Entre em contato com a administração para alterar</small>
+            </div>
+            
+            <div class="config-item">
+                <label>E-mail</label>
+                <input type="email" value="{{ user.email }}" readonly>
+                <small class="text-muted">E-mail de acesso ao sistema</small>
+            </div>
+            
+            <div class="config-item">
+                <label>Tipo de Usuário</label>
+                <input type="text" value="{{ user.get_tipo_display }}" readonly>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alteração de Senha -->
+    <div class="config-section">
+        <h3>
+            <i data-lucide="lock" style="width: 20px; height: 20px;"></i>
+            Segurança e Senha
+        </h3>
+        <form method="post" class="config-grid">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="password_change">
+            
+            <div class="config-item">
+                <label for="current_password">Senha Atual</label>
+                <input type="password" id="current_password" name="current_password" required>
+            </div>
+            
+            <div class="config-item">
+                <label for="new_password1">Nova Senha</label>
+                <input type="password" id="new_password1" name="new_password1" required>
+                <small class="text-muted">Mínimo 8 caracteres</small>
+            </div>
+            
+            <div class="config-item">
+                <label for="new_password2">Confirmar Nova Senha</label>
+                <input type="password" id="new_password2" name="new_password2" required>
+            </div>
+            
+            <div class="config-actions">
+                <button type="submit" class="btn btn-style3">
+                    <i data-lucide="key"></i>
+                    Alterar Senha
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Preferências do Sistema -->
+    <div class="config-section">
+        <h3>
+            <i data-lucide="settings" style="width: 20px; height: 20px;"></i>
+            Preferências
+        </h3>
+        <form method="post" class="config-grid">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="preferences">
+            
+            <div class="config-item checkbox-config">
+                <label>
+                    <input type="checkbox" name="email_notifications" checked>
+                    Receber notificações por e-mail
+                </label>
+            </div>
+            
+            <div class="config-item checkbox-config">
+                <label>
+                    <input type="checkbox" name="browser_notifications" checked>
+                    Notificações no navegador
+                </label>
+            </div>
+            
+            <div class="config-item">
+                <label for="items_per_page">Itens por página</label>
+                <select id="items_per_page" name="items_per_page">
+                    <option value="10">10 itens</option>
+                    <option value="25" selected>25 itens</option>
+                    <option value="50">50 itens</option>
+                    <option value="100">100 itens</option>
+                </select>
+            </div>
+            
+            <div class="config-actions">
+                <button type="submit" class="btn btn-style3">
+                    <i data-lucide="save"></i>
+                    Salvar Preferências
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Informações de Contato -->
+    <div class="config-section">
+        <h3>
+            <i data-lucide="phone" style="width: 20px; height: 20px;"></i>
+            Informações de Contato
+        </h3>
+        <div class="config-grid">
+            <div class="config-item">
+                <label>Telefone/Contato</label>
+                <input type="text" value="{{ user.contato|default:'Não informado' }}" readonly>
+            </div>
+            
+            <div class="config-item">
+                <label>Data de Nascimento</label>
+                <input type="text" value="{{ user.data_nascimento|default:'Não informada' }}" readonly>
+            </div>
+            
+            <div class="config-item">
+                <label>Endereço</label>
+                <textarea readonly style="height: 80px; resize: vertical;">{{ user.endereco|default:'Não informado' }}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dados da Sessão -->
+    <div class="config-section">
+        <h3>
+            <i data-lucide="monitor" style="width: 20px; height: 20px;"></i>
+            Sessão Atual
+        </h3>
+        <div class="config-grid">
+            <div class="config-item">
+                <label>Último Acesso</label>
+                <input type="text" value="{{ user.last_login|date:'d/m/Y H:i'|default:'Primeiro acesso' }}" readonly>
+            </div>
+            
+            <div class="config-item">
+                <label>Data de Cadastro</label>
+                <input type="text" value="{{ user.date_joined|date:'d/m/Y' }}" readonly>
+            </div>
+            
+            <div class="config-item">
+                <label>Ações</label>
+                <div class="action-buttons">
+                    <a href="{% url 'logout' %}" class="btn btn-style2">
+                        <i data-lucide="log-out"></i>
+                        Sair do Sistema
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+    
+    // Validação de senha em tempo real
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form[action*="password_change"]');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const password1 = document.getElementById('new_password1').value;
+                const password2 = document.getElementById('new_password2').value;
+                
+                if (password1 !== password2) {
+                    e.preventDefault();
+                    alert('As senhas não coincidem!');
+                    return false;
+                }
+                
+                if (password1.length < 8) {
+                    e.preventDefault();
+                    alert('A senha deve ter pelo menos 8 caracteres!');
+                    return false;
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    .config-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .config-section {
+        background: var(--branco);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border-radius: 16px;
+        box-shadow: var(--sombra);
+    }
+    
+    .config-section h3 {
+        color: var(--azul);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--azul-suave);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .config-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .config-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .config-item label {
+        font-weight: 600;
+        color: var(--preto);
+        font-size: 0.9rem;
+    }
+    
+    .config-item input,
+    .config-item select,
+    .config-item textarea {
+        padding: 0.8rem;
+        border: 1px solid var(--cinza-borda);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        background: var(--bg-claro);
+    }
+    
+    .config-item input:read-only,
+    .config-item textarea:read-only {
+        background: #f8f9fa;
+        color: #6c757d;
+        cursor: not-allowed;
+    }
+    
+    .checkbox-config label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: normal;
+        cursor: pointer;
+    }
+    
+    .checkbox-config input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .config-actions {
+        grid-column: 1 / -1;
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--cinza-borda);
+    }
+    
+    .btn {
+        max-width: 150px;
+        padding: 0.6rem 1rem;
+
+        border-radius: 10px;
+        
+        display: flex;
+        flex-direction: row;
+        flex: 1;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        
+        cursor: pointer;
+    }
+
+    
+    
+    .text-muted {
+        color: var(--cinza-claro);
+        font-size: 0.8rem;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+</style>
+{% endblock %}

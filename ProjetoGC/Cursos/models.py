@@ -5,7 +5,7 @@ class Curso(models.Model):
     descricao = models.TextField(blank=True, verbose_name="Descrição")
     carga_horaria = models.PositiveIntegerField(verbose_name="Carga Horária (h)", default=40)
     ativo = models.BooleanField(default=True, verbose_name="Ativo")
-    disciplinas = models.ManyToManyField('Disciplina', blank=True, related_name='cursos')  # NOVO
+    disciplinas = models.ManyToManyField('Disciplina', through='GradeCurricular', blank=True, related_name='cursos')
 
     class Meta:
         verbose_name = "Curso"
@@ -13,7 +13,7 @@ class Curso(models.Model):
         ordering = ["nome"]
 
     def __str__(self):
-        return self.nome
+        return self.nome if self.nome else "Curso sem nome"
 
     
 
@@ -21,12 +21,21 @@ class Disciplina(models.Model):
     nome = models.CharField(max_length=150, verbose_name="Nome da Disciplina", default="Sem Nome")
     descricao = models.TextField(blank=True, verbose_name="Descrição")
     carga_horaria = models.PositiveIntegerField(verbose_name="Carga Horária (h)", default=40)
-    # Remova o campo curso
 
     def __str__(self):
-        return self.nome
+        return self.nome if self.nome else "Disciplina sem nome"
 
     
+class AlocacaoProfessor(models.Model):
+    professor = models.ForeignKey('Login.Professor', on_delete=models.CASCADE)
+    Curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
+    class Meta:
+        db_table = 'Cursos_alocacaoprofessor'  # Adicione esta linha
+        verbose_name = "Alocação de Professor"
+        verbose_name_plural = "Alocações de Professores"
+
+    def __str__(self):
+        return f"{self.professor} - {self.curso}"
 
 class GradeCurricular(models.Model):
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
@@ -46,7 +55,12 @@ class Turma(models.Model):
     turma_id = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=100, null=True, blank=True)
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
-    professor = models.ForeignKey('Login.Professor', on_delete=models.CASCADE, null=True, blank=True, default=None)
+
+    professor = models.ForeignKey('Login.Professor', on_delete=models.SET_NULL,  # Ou models.SET_DEFAULT
+        null=True,                  # Permite NULL
+        blank=True,
+        default=None)
+
 
     data_inicio = models.DateField()
     data_fim = models.DateField( null=True, blank=True)
@@ -63,7 +77,14 @@ class Turma(models.Model):
         db_table = 'Turma'
     
     def __str__(self):
-        return self.nome
+        if self.nome and self.curso:
+            return f"{self.nome} - {self.curso.nome}"
+        elif self.nome:
+            return self.nome
+        elif self.curso:
+            return f"Turma - {self.curso.nome}"
+        else:
+            return "Turma sem nome"  # Fallback seguro
 
     
 
