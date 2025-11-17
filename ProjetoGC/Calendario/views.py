@@ -5,23 +5,51 @@ from django.http import JsonResponse
 from .models import Evento
 import traceback
 
+
+def get_base_template(user):
+    """Retorna o template base correto conforme o tipo de usuário."""
+
+    tipo = getattr(user, "tipo", None)
+
+    if tipo == "secretaria":
+        return "secretaria/Abase.html"
+
+    elif tipo == "professor":
+        return "professor/base.html"
+
+    elif tipo == "aluno":
+        return "aluno/base.html"
+
+    return "base.html"  # fallback
+
+
+
+
 @login_required
 @professor_required
 def calendario_professor(request):
-    """Calendário acessível para professores (com controle total)."""
-    return render(request, 'calendario.html')
+    base_template = get_base_template(request.user)
+    return render(request, 'calendario.html', {
+        "base_template": base_template
+    })
+
 
 @login_required
 @aluno_required
 def calendario_aluno(request):
-    """Calendário acessível para alunos (somente visualização)."""
-    return render(request, 'calendario.html')
+    base_template = get_base_template(request.user)
+    return render(request, 'calendario.html', {
+        "base_template": base_template
+    })
+
 
 @login_required
 @secretaria_required
 def calendario_secretaria(request):
-    """Calendário acessível para secretarias (somente visualização)."""
-    return render(request, 'calendario.html')
+    base_template = get_base_template(request.user)
+    return render(request, 'calendario.html', {
+        "base_template": base_template
+    })
 
 
 @login_required
