@@ -8,6 +8,13 @@
     </div>
 </div>
 
+<div class="card-actions" style="margin-top: 2rem; justify-content: flex-start; max-width: 200px;">
+    <a href="{% url 'curso_list' %}" class="btn btn-style3">
+        <i data-lucide="arrow-left"></i>
+        Voltar para Cursos
+    </a>
+</div>
+
 <div class="cards-container">
     <!-- Card de Adição de Nova Disciplina -->
     <a href="{% url 'disciplina_create' curso.id %}">
@@ -94,12 +101,6 @@
 </div>
 {% endif %}
 
-<div class="form-actions" style="margin-top: 2rem;">
-    <a href="{% url 'curso_list' %}" class="btn btn-style3">
-        <i data-lucide="arrow-left"></i>
-        Voltar para Cursos
-    </a>
-</div>
 
 <script>
     lucide.createIcons();

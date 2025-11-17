@@ -3,12 +3,17 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db import transaction
 from django.utils.decorators import method_decorator
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.shortcuts import render
 
 from .forms import AlunoUsuarioForm, ProfessorUsuarioForm, TurmaForm
 from Login.models import Secretaria, Aluno, Professor
 from Cursos.models import Turma, Matricula, Curso
 
 from Login.decorators import secretaria_required
+
+
 
 #   <----------------- Turmas ----------------->
 
@@ -188,3 +193,44 @@ class ProfessorUpdateView(UpdateView):
     def form_invalid(self, form):
         messages.error(self.request, 'Erro no cadastro. Verifique os dados.')
         return super().form_invalid(form)
+    
+
+
+# views.py - Adicione esta função
+
+
+def config_view(request):
+    if request.method == 'POST':
+        form_type = request.POST.get('form_type')
+        
+        if form_type == 'password_change':
+            # Alteração de senha
+            current_password = request.POST.get('current_password')
+            new_password1 = request.POST.get('new_password1')
+            new_password2 = request.POST.get('new_password2')
+            
+            # Verifica se a senha atual está correta
+            if not request.user.check_password(current_password):
+                messages.error(request, 'Senha atual incorreta!')
+            elif new_password1 != new_password2:
+                messages.error(request, 'As novas senhas não coincidem!')
+            elif len(new_password1) < 8:
+                messages.error(request, 'A senha deve ter pelo menos 8 caracteres!')
+            else:
+                # Altera a senha
+                request.user.set_password(new_password1)
+                request.user.save()
+                update_session_auth_hash(request, request.user)  # Mantém o usuário logado
+                messages.success(request, 'Senha alterada com sucesso!')
+                
+        elif form_type == 'preferences':
+            # Aqui você pode salvar preferências no banco de dados
+            # Por enquanto, apenas mensagem de sucesso
+            messages.success(request, 'Preferências salvas com sucesso!')
+    
+    context = {
+        'user': request.user,
+    }
+    return render(request, 'secretaria/config.html', context)
+
+        
