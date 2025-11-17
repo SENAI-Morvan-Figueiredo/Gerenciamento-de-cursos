@@ -4,6 +4,7 @@ from .views import (
     AlunoListView, AlunoCreateView, AlunoUpdateView, AlunoDetailView,
     ProfessorListView, ProfessorCreateView, ProfessorUpdateView, ProfessorDetailView,
 )
+from Calendario import views as calendario_views
 
 app_name = 'secretaria'
 
@@ -22,8 +23,11 @@ urlpatterns = [
     path('professores/add/', ProfessorCreateView.as_view(), name='profAdd'),
     path('professores/<int:pk>/update/', ProfessorUpdateView.as_view(), name='profUpdate'),
     path('professores/<int:pk>/detail/', ProfessorDetailView.as_view(), name='profDetail'),
+    # Top-level calendar page for secretaria: /secretaria/calendario/
+    path('calendario/', calendario_views.calendario_secretaria, name='calendario'),
 
-    path('calendario/', include('Calendario.urls', namespace='calendario_secretaria')),
+    # API endpoints (eventos/) mounted under the same prefix:
+    # /secretaria/calendario/eventos/
+    path('calendario/', include(('Calendario.urls', 'calendario'), namespace='calendario_secretaria_api')),
 
-    
 ]
