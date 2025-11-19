@@ -203,7 +203,7 @@ main {
 /* ===== CARDS GRID ===== */
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
     gap: 20px;
     margin-bottom: 30px;
 }
@@ -221,6 +221,31 @@ main {
 .card:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos específicos para turma-card e curso-card */
+.turma-card,
+.curso-card {
+    width: 380px;
+    height: 290px;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.turma-card:hover,
+.curso-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.turma-card .card-header,
+.curso-card .card-header {
+    background-color: #5eb3d6;
 }
 
 .card-header {
@@ -267,12 +292,6 @@ main {
     background-color: #8b6914;
 }
 
-
-
-
-
-
-
 /* -- Calendário */
 #calendar {
     max-width: 900px;
@@ -311,13 +330,12 @@ main {
     display: none !important;
 }
 
-
 /* Tooltip em forma de card */
 .tooltip {
     position: absolute;
     background: linear-gradient(45deg, var(--azul) 0%, var(--azul-claro) 100%);
     color: #000000; 
-    padding: 8px 14px 12px 14px; /* diminui o padding superior */
+    padding: 8px 14px 12px 14px;
     border-radius: 10px;
     font-size: 14px;
     display: none;
@@ -333,10 +351,9 @@ main {
     font-weight: bold;
     margin: 0;              
     padding-top: 10px;         
-    line-height: 1.1;       /* diminui altura da linha */
+    line-height: 1.1;
     color: #ffffff;
 }
-
 
 .tooltip p {
     font-size: 11px;
@@ -351,7 +368,7 @@ main {
     word-wrap: break-word;
 }
 
-    /* Barra de navegação do calendário */
+/* Barra de navegação do calendário */
 .fc-toolbar {
     display: flex;
     justify-content: space-between;
@@ -366,7 +383,7 @@ main {
     text-align: center;
     font-size: 18px;
     font-weight: bold;
-    color: #000000; /* cor estilizada */
+    color: #000000;
 }
 
 /* Botões padrão */
@@ -391,16 +408,6 @@ main {
     outline: none;
 }
 
-
-
-
-
-
-
-
-
-
-
 .card-body {
     padding: 20px;
     flex: 1;
@@ -416,6 +423,29 @@ main {
     align-items: center;
     gap: 15px;
     margin-bottom: 15px;
+}
+
+.turma-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #666;
+}
+
+.turma-info p {
+    margin: 0;
+    word-break: break-word;
+}
+
+.curso-descricao {
+    font-size: 12px;
+    line-height: 1.4;
+    color: #666;
+    margin: 0;
+    text-align: center;
 }
 
 .card-icon {
@@ -463,10 +493,63 @@ main {
     font-size: 16px;
 }
 
+/* ===== TURMA DETAIL / DASHBOARD ===== */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
 
+.detail-grid .card {
+    min-height: 110px;
+}
 
+.status-badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 18px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
 
+.status-active {
+    background: #dff4ea;
+    color: #0b702a;
+    border: 1px solid rgba(11,112,42,0.12);
+}
 
+.status-inactive {
+    background: #f5f5f7;
+    color: #666;
+    border: 1px solid rgba(0,0,0,0.06);
+}
+
+.table-wrap {
+    overflow-x: auto;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    background: white;
+}
+
+.table-wrap table thead th {
+    background: #164193;
+    color: #fff;
+}
+
+.no-data {
+    padding: 16px;
+    background: #fff;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+.detail-actions {
+    display:flex;
+    gap:0.75rem;
+    justify-content:flex-end;
+    margin-top:1rem;
+}
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
@@ -497,6 +580,35 @@ main {
     }
 }
 
+/* Empilha detail-grid em telas médias/pequenas */
+@media (max-width: 900px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-grid .card {
+        width: 100%;
+    }
+
+    .detail-actions {
+        justify-content: center;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .detail-actions .btn {
+        width: 100%;
+    }
+
+    .table-wrap {
+        padding: 0 8px;
+    }
+
+    table thead th, table tbody td {
+        padding: 10px 8px;
+    }
+}
+
 @media (max-width: 480px) {
     .header {
         padding: 10px 15px;
@@ -516,26 +628,6 @@ main {
         gap: 15px;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* --- TABELAS --- */
 table {
