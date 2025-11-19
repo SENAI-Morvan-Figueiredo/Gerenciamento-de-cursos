@@ -257,15 +257,29 @@
     background: #d1d5db;
   }
 
-  /* Material input fields */
+  /* Material input fields and layout */
+  .material-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .material-inputs-wrapper {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 180px;
+  }
+
   .material-inputs {
     display: none;
-    flex-direction: column;
+    width: 100%;
     gap: 0.75rem;
+    flex-direction: column;
   }
 
   .material-inputs.active {
-    display: flex;
+    display: block;
   }
 
   .material-inputs input[type="text"],
@@ -284,6 +298,11 @@
   .material-inputs input[type="file"] {
     padding: 0.6rem 0.75rem;
     cursor: pointer;
+  }
+
+  @media (max-width: 600px) {
+    .material-row { flex-direction: column; align-items: stretch; }
+    .btn-add-material { width: 100%; }
   }
 
   /* Form actions */
@@ -344,10 +363,16 @@
       {% csrf_token %}
 
       <div class="form-group">
-        <div class="form-field">
-          <label for="id_turma">Turma:</label>
-          {{ form.turma }}
-          {{ form.turma.errors }}
+        <div class="row-turma-date" style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
+          <div class="form-field" style="flex:1;min-width:260px;">
+            <label for="id_turma">Turma:</label>
+            {{ form.turma }}
+            {{ form.turma.errors }}
+          </div>
+          <div class="form-field" style="min-width:220px;flex:0 0 260px;">
+            <label for="id_data_entrega">Data Limite de Entrega:</label>
+            <input type="datetime-local" name="data_entrega" id="id_data_entrega" />
+          </div>
         </div>
 
         <div class="form-field">
@@ -369,27 +394,24 @@
         </div>
 
         <!-- Material Type Selector -->
-        <div class="form-field material-section">
-          <label>Adicionar Material:</label>
+        <div class="form-field material-row">
           <button type="button" class="btn-add-material" id="btnAddMaterial">+ Adicionar</button>
-          <div class="material-inputs" id="materialInputsLink">
-            <input type="text" name="url_material" id="id_url_material" placeholder="Cole o link aqui..." />
-          </div>
-          <div class="material-inputs" id="materialInputsFile">
-            <input type="file" name="arquivo" id="id_arquivo" />
+          <div class="material-inputs-wrapper">
+            <div class="material-inputs" id="materialInputsLink">
+              <input type="text" name="url_material" id="id_url_material" placeholder="Cole o link aqui..." />
+            </div>
+            <div class="material-inputs" id="materialInputsFile">
+              <input type="file" name="arquivo" id="id_arquivo" />
+            </div>
           </div>
         </div>
-
-        <div class="form-field">
-          <label for="id_data_entrega">Data Limite de Entrega:</label>
-          <input type="datetime-local" name="data_entrega" id="id_data_entrega" />
-        </div>
-      </div>
 
       <div class="form-actions">
         <a href="{% url 'atividades:listar_atividades' %}" class="btn">Cancelar</a>
         <button type="submit" class="btn btn-primary">Criar Atividade</button>
       </div>
+      
+      
     </form>
 
     <!-- Material Type Modal -->
