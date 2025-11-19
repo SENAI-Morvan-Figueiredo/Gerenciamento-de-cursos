@@ -60,6 +60,7 @@ class Atividade(models.Model):
     descricao = models.TextField(blank=True, null=True)
     tipo_material = models.CharField(max_length=10, choices=TIPO_ARQUIVO, blank=True, null=True)
     url_material = models.URLField(blank=True, null=True)
+    arquivo = models.FileField(upload_to='atividades_files/', blank=True, null=True)
     data_entrega = models.DateTimeField(blank=True, null=True)
     
     # Adicionar o campo de professor para a Atividade, caso seja necessário no futuro,

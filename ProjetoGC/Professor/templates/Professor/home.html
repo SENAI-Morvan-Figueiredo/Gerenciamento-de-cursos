@@ -108,12 +108,12 @@
                     <div class="card-label">Atividades</div>
                 </div>
                 <div class="card-actions">
-                    <a href="{% url 'atividades:home' %}" class="card-btn" title="Visualizar">
+                    <a href="{% url 'atividades:listar_atividades' %}" class="card-btn" title="Ver Atividades">
                         <i>👁️</i>
                     </a>
-                    <button class="card-btn" title="Editar">
+                    <a href="{% url 'atividades:adicionar_atividade' %}" class="card-btn" title="Adicionar Atividade">
                         <i>✏️</i>
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>

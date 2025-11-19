@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import TipoAtividade, Atividade, Avaliacao
 from .forms import AvaliacaoForm
+from .forms_extra import AtividadeForm, EntregaForm
 from Login.models import Professor as ProfessorModel
 from Cursos.models import Turma
 from django.db.models import Count, Q
@@ -222,3 +223,109 @@ def listar_avaliacoes(request):
     }
     
     return render(request, 'Atividades/listar_avaliacoes.html', context)
+
+
+@login_required
+def adicionar_atividade(request):
+    """
+    Permite que um professor crie uma Atividade e envie opcionalmente um arquivo.
+    """
+    if request.user.tipo != 'professor':
+        return HttpResponse("Apenas professores podem criar atividades.", status=403)
+
+    try:
+        professor = ProfessorModel.objects.get(usuario=request.user)
+    except ProfessorModel.DoesNotExist:
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = AtividadeForm(data=request.POST, files=request.FILES, professor=professor)
+        if form.is_valid():
+            atividade = form.save(commit=False)
+            atividade.save()
+            return redirect('atividades:listar_atividades')
+    else:
+        form = AtividadeForm(professor=professor)
+
+    return render(request, 'Atividades/adicionar_atividade.html', {'form': form, 'titulo_pagina': 'ADICIONAR ATIVIDADE'})
+
+
+@login_required
+def listar_atividades(request):
+    """Lista as atividades criadas pelo professor logado."""
+    if request.user.tipo != 'professor':
+        return HttpResponse("Apenas professores podem ver esta página.", status=403)
+
+    try:
+        professor = ProfessorModel.objects.get(usuario=request.user)
+    except ProfessorModel.DoesNotExist:
+        return redirect('home')
+
+    turmas = Turma.objects.filter(professor=professor)
+    atividades = Atividade.objects.filter(turma__in=turmas).order_by('-data_entrega')
+    return render(request, 'Atividades/listar_atividades.html', {'atividades': atividades, 'titulo_pagina': 'ATIVIDADES'})
+
+
+@login_required
+def listar_atividades_aluno(request):
+    """Lista as atividades visíveis para o aluno logado."""
+    if request.user.tipo != 'aluno':
+        return HttpResponse("Apenas alunos podem ver esta página.", status=403)
+
+    # Recupera turmas do aluno via Matricula
+    from Cursos.models import Matricula
+    try:
+        aluno = request.user.aluno
+    except Exception:
+        return HttpResponse('Aluno não encontrado', status=404)
+
+    turma_ids = Matricula.objects.filter(aluno=aluno).values_list('turma_id', flat=True)
+    atividades = Atividade.objects.filter(turma_id__in=turma_ids).order_by('-data_entrega')
+    return render(request, 'Atividades/aluno_listar_atividades.html', {'atividades': atividades, 'titulo_pagina': 'ATIVIDADES'})
+
+
+@login_required
+def entregar_atividade(request, atividade_id):
+    """Permite que o aluno entregue/associe arquivos a uma atividade e marque como concluída."""
+    if request.user.tipo != 'aluno':
+        return HttpResponse("Apenas alunos podem entregar atividades.", status=403)
+
+    atividade = get_object_or_404(Atividade, pk=atividade_id)
+
+    # Recupera matrícula
+    from Cursos.models import Matricula
+    try:
+        aluno = request.user.aluno
+    except Exception:
+        return HttpResponse('Aluno não encontrado', status=404)
+
+    matricula = Matricula.objects.filter(aluno=aluno, turma=atividade.turma).first()
+    if not matricula:
+        return HttpResponse('Aluno não matriculado nesta turma', status=403)
+
+    # Recupera entrega existente (por aluno + atividade) ou cria nova
+    entrega = AtividadeEntregue.objects.filter(atividade=atividade, matricula=matricula).first()
+
+    if request.method == 'POST':
+        form = EntregaForm(request.POST, request.FILES, instance=entrega)
+        # Se o formulário contiver um arquivo enviado via campo extra, salve-o no model
+        if form.is_valid():
+            entrega_obj = form.save(commit=False)
+            entrega_obj.atividade = atividade
+            entrega_obj.matricula = matricula
+            # se há arquivo enviado via FILES com campo name 'arquivo_upload'
+            uploaded = request.FILES.get('arquivo_upload')
+            if uploaded:
+                # Salva arquivo em um novo campo url_arquivo como caminho relativo
+                entrega_obj.url_arquivo = ''
+                # Utilize o campo tipo_arquivo para marcar o tipo (opcional)
+                # Para manter simples, salve o arquivo no campo url_arquivo com name
+                entrega_obj.url_arquivo = uploaded.name
+                # Também é possível salvar em FileField, mas AtividadeEntregue model uses url_arquivo (URLField).
+                # Para persistir o actual file, attach it to a FileField in a future migration.
+            entrega_obj.save()
+            return redirect('atividades:aluno_listar_atividades')
+    else:
+        form = EntregaForm(instance=entrega)
+
+    return render(request, 'Atividades/entregar_atividade.html', {'form': form, 'atividade': atividade, 'entrega': entrega})

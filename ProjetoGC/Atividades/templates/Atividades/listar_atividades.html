@@ -1,0 +1,32 @@
+{% extends 'Professor/base.html' %}
+{% block title %}Atividades criadas{% endblock %}
+{% block content %}
+<h1>{{ titulo_pagina }}</h1>
+<!-- Card para adicionar nova atividade (mesmo estilo dos cards do dashboard) -->
+<div class="card add-activity" style="margin-bottom:1rem; padding:1rem; border:1px solid #ddd;">
+  <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+    <span>Adicionar Atividade</span>
+    <i>✏️</i>
+  </div>
+  <div class="card-body" style="margin-top:.75rem;">
+    <a href="{% url 'atividades:adicionar_atividade' %}" class="btn" style="padding:.5rem 1rem;background:#0b5ed7;color:#fff;text-decoration:none;border-radius:4px;">Criar Atividade</a>
+  </div>
+</div>
+<table>
+  <thead><tr><th>Título</th><th>Turma</th><th>Entrega</th><th>Ações</th></tr></thead>
+  <tbody>
+    {% for a in atividades %}
+    <tr>
+      <td>{{ a.titulo }}</td>
+      <td>{{ a.turma }}</td>
+      <td>{{ a.data_entrega }}</td>
+      <td>
+        {% if a.arquivo %}<a href="{{ a.arquivo.url }}">Arquivo</a>{% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">Nenhuma atividade encontrada.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
