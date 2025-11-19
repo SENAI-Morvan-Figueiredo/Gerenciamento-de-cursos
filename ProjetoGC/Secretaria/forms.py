@@ -3,6 +3,9 @@ from Login.models import Usuario, Aluno, Professor
 from Cursos.models import Matricula, Turma, Curso
 from django.db import transaction
 from django.utils.text import slugify
+from .widgets import DataNascimentoWidget
+from datetime import datetime
+from django.core.exceptions import ValidationError
 
 class UsuarioBaseForm(forms.ModelForm):
     class Meta:
@@ -28,6 +31,27 @@ class UsuarioBaseForm(forms.ModelForm):
         ('professor', 'Professor'),
         ('secretaria', 'Secretaria'),
     ]
+    
+    def clean_data_nascimento(self):
+        """Valida e converte a data de nascimento"""
+        data_nascimento = self.cleaned_data.get('data_nascimento')
+        
+        if not data_nascimento:
+            return data_nascimento
+        
+        # Se já for um objeto date, retorna
+        if hasattr(data_nascimento, 'year'):
+            return data_nascimento
+        
+        # Se for string, tenta converter
+        if isinstance(data_nascimento, str):
+            try:
+                # Tenta formato YYYY-MM-DD
+                return datetime.strptime(data_nascimento, '%Y-%m-%d').date()
+            except ValueError:
+                raise ValidationError('Data de nascimento inválida. Use o formato DD/MM/YYYY.')
+        
+        return data_nascimento
         
     def clean(self):
         cleaned_data = super().clean()
@@ -52,7 +76,7 @@ class UsuarioBaseForm(forms.ModelForm):
         self.fields['sobrenome'].widget.attrs.update({'class': 'form-control', 'required': True})
 
         self.fields['cpf'].widget.attrs.update({'class': 'form-control', 'required': True})
-        self.fields['data_nascimento'].widget.attrs.update({'class': 'form-control', 'type': 'date', 'required': True})
+        self.fields['data_nascimento'].widget = DataNascimentoWidget(attrs={'class': 'form-control', 'required': True})
 
         self.fields['email'].widget.attrs.update({'class': 'form-control', 'required': True})
         self.fields['contato'].widget.attrs.update({'class': 'form-control', 'required': True})

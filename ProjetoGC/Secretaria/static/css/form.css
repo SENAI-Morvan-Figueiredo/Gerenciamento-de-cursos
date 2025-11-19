@@ -296,3 +296,19 @@ select.form-control:focus {
     font-size: 0.8rem;
     font-weight: bold;
 }
+
+/* --- CAMPO DE DATA COM MÁSCARA --- */
+input[data-date-mask="true"] {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.1em;
+    font-size: 1rem;
+}
+
+input[data-date-mask="true"].is-invalid {
+    border-color: #dc3545 !important;
+    background-color: #fff5f5;
+}
+
+input[data-date-mask="true"].is-invalid::placeholder {
+    color: #dc3545;
+}

@@ -1,6 +1,6 @@
 <!-- Secretaria/templates/secretaria/profAdd.html -->
 {% extends "secretaria/Abase.html" %}
-
+{% load static %}
 
 {% block content %}
 <div class="form-container">
@@ -40,7 +40,7 @@
           </div>
 
         <!-- Campo status como checkbox customizado -->
-        {% elif field.name == "status_matricula"%}
+        {% elif field.name == "status"%}
           <div class="checkbox-field">
             <label class="checkbox-label">
               {{ field }}
@@ -67,9 +67,13 @@
     </div>
 
     <div class="form-actions">
-      <button type="submit" class="btn btn-style3">Salvar Turma</button>
-      <a href="{% url 'secretaria:turmaList' %}" class="btn btn-style2">Cancelar</a>
+      <button type="submit" class="btn btn-style3">Salvar Professor</button>
+      <a href="{% url 'secretaria:profList' %}" class="btn btn-style2">Cancelar</a>
     </div>
   </form>
 </div>
+
+<!-- Script para máscara de data de nascimento -->
+<script src="{% static 'js/data-nascimento-mask.js' %}"></script>
+
 {% endblock %}

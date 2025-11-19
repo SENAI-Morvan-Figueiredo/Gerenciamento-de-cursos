@@ -1,4 +1,4 @@
-<!-- Secretaria/templates/secretaria/turmaAdd.html -->
+<!-- Secretaria/templates/secretaria/alunoEdit.html -->
 {% extends "secretaria/abase.html" %}
 {% load static %}
 
@@ -67,9 +67,13 @@
     </div>
 
     <div class="form-actions">
-      <button type="submit" class="btn btn-style3">Salvar Turma</button>
-      <a href="{% url 'secretaria:turmaList' %}" class="btn btn-style2">Cancelar</a>
+      <button type="submit" class="btn btn-style3">Salvar Aluno</button>
+      <a href="{% url 'secretaria:alunoList' %}" class="btn btn-style2">Cancelar</a>
     </div>
   </form>
 </div>
+
+<!-- Script para máscara de data de nascimento -->
+<script src="{% static 'js/data-nascimento-mask.js' %}"></script>
+
 {% endblock %}
