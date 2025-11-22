@@ -8,6 +8,8 @@ from Cursos.models import Turma, Matricula, Curso
 from Login.models import Professor
 from Atividades.models import Atividade, AtividadeEntregue
 from Login.decorators import professor_required
+from django.utils import timezone
+import datetime
 
 
 # --- DASHBOARD DETALHADO DE UMA TURMA ---
@@ -115,18 +117,35 @@ def turmas_por_curso(request, curso_id):
 def listar_atividades(request, turma_id):
     professor = Professor.objects.get(usuario=request.user)
     turma = get_object_or_404(Turma, turma_id=turma_id, professor=professor)
-    # Recuperar atividades da turma e informações de entregas
+
     atividades = Atividade.objects.filter(turma=turma).order_by('-atividade_id')
 
     atividades_info = []
     total_alunos = Matricula.objects.filter(turma=turma).count()
+
     for atividade in atividades:
         entregues_qs = AtividadeEntregue.objects.filter(atividade=atividade)
         entregues_count = entregues_qs.count()
+
+        # --- Verificar atraso ---
+        hoje = timezone.now().date()
+
+        # data_entrega pode ser datetime ou date → normalizar
+        data_entrega = None
+        if atividade.data_entrega:
+            if isinstance(atividade.data_entrega, datetime.datetime):
+                data_entrega = atividade.data_entrega.date()
+            else:
+                data_entrega = atividade.data_entrega
+
+        atrasada = data_entrega and data_entrega < hoje
+
+
         atividades_info.append({
             'atividade': atividade,
             'entregues_count': entregues_count,
             'total_alunos': total_alunos,
+            'atrasada': atrasada,      # <- adicionamos isso
         })
 
     context = {
