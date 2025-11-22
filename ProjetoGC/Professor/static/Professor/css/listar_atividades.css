@@ -1,0 +1,169 @@
+/* Professor/static/Professor/css/listar_atividades.css */
+
+/* Container de atividades - flex layout responsivo */
+.atividades-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-start;
+}
+
+/* Card de atividade - estrutura base */
+.atividade-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.atividade-card {
+    width: 374px;
+    height: 319px;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Seção superior - contém título e descrição */
+.atividade-card-top {
+    display: flex;
+    flex-direction: column;
+
+    min-height: 0;
+}
+
+/* Título - máximo 2 linhas */
+.atividade-card-titulo {
+    margin: 0 0 12px 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Descrição - OCUPAR TODO O ESPAÇO DISPONÍVEL */
+.atividade-card-descricao {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+    padding: 8px;
+    border-radius: 4px;
+
+    /* Clamp — controla a quantidade de linhas exibidas */
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 6;   /* ajuste: quantas linhas quer mostrar */
+    line-clamp: 6;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+    white-space: normal;
+}
+
+
+
+/* Seção inferior - data e contagem */
+.atividade-card-bottom {
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+.atividade-card-data {
+    color: #666;
+    font-size: 13px;
+}
+
+.atividade-card-badge {
+    background: #f1f7f3;
+    color: #27ae60;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+/* Responsividade - telas pequenas */
+@media (max-width: 420px) {
+    .atividade-card {
+        width: calc(100% - 2rem);
+        height: auto;
+        min-height: 240px;
+    }
+}
+
+@media (max-width: 768px) {
+    .atividade-card {
+        width: calc(50% - 0.5rem);
+    }
+}
+
+/* Hover effect */
+.atividade-card-link:hover .atividade-card {
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+
+/* Button styles */
+.btn-primary-green,
+.btn-secondary-gray {
+    display: inline-block;
+    padding: 10px 16px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-green {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-primary-green:hover {
+    background: #229954;
+    transform: translateY(-1px);
+}
+
+.btn-secondary-gray {
+    background: #95a5a6;
+    color: white;
+    margin-left: 8px;
+}
+
+.btn-secondary-gray:hover {
+    background: #7f8c8d;
+    transform: translateY(-1px);
+}
+
+/* Empty state */
+.empty-state {
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    text-align: center;
+    color: #6c757d;
+}
+
+.empty-state p {
+    margin: 0 0 1rem 0;
+}
+
+.empty-state .btn-primary-green {
+    margin-top: 1rem;
+}

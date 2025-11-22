@@ -229,6 +229,7 @@ def listar_avaliacoes(request):
 def adicionar_atividade(request):
     """
     Permite que um professor crie uma Atividade e envie opcionalmente um arquivo.
+    Se um parâmetro 'turma' for passado via GET, pré-seleciona essa turma.
     """
     if request.user.tipo != 'professor':
         return HttpResponse("Apenas professores podem criar atividades.", status=403)
@@ -238,16 +239,39 @@ def adicionar_atividade(request):
     except ProfessorModel.DoesNotExist:
         return redirect('home')
 
+    # Tentar obter turma do parâmetro GET (se fornecido)
+    turma_id = request.GET.get('turma')
+    turma_inicial = None
+    if turma_id:
+        try:
+            turma_inicial = Turma.objects.get(turma_id=turma_id, professor=professor)
+        except Turma.DoesNotExist:
+            turma_inicial = None
+
     if request.method == 'POST':
         form = AtividadeForm(data=request.POST, files=request.FILES, professor=professor)
         if form.is_valid():
             atividade = form.save(commit=False)
             atividade.save()
-            return redirect('atividades:listar_atividades')
+            # Se criamos a atividade a partir de uma turma específica, redirecionar
+            # para a listagem de atividades daquela turma no app Professor.
+            if turma_inicial:
+                return redirect('professor:listar_atividades', turma_inicial.turma_id)
+            # Caso contrário, voltar à home de Atividades
+            return redirect('atividades:home')
     else:
         form = AtividadeForm(professor=professor)
+        # Pré-selecionar a turma se foi fornecida
+        if turma_inicial:
+            form.fields['turma'].initial = turma_inicial
 
-    return render(request, 'Atividades/adicionar_atividade.html', {'form': form, 'titulo_pagina': 'ADICIONAR ATIVIDADE'})
+    context = {
+        'form': form,
+        'titulo_pagina': 'ADICIONAR ATIVIDADE',
+        'turma': turma_inicial
+    }
+    
+    return render(request, 'Atividades/adicionar_atividade.html', context)
 
 
 @login_required

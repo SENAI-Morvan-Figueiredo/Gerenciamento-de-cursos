@@ -307,9 +307,9 @@
 
   /* Form actions */
   .form-actions {
-    margin-top: 2rem;
+    margin-top: 1rem;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     gap: 1rem;
   }
 
@@ -407,8 +407,12 @@
         </div>
 
       <div class="form-actions">
-        <a href="{% url 'atividades:listar_atividades' %}" class="btn">Cancelar</a>
         <button type="submit" class="btn btn-primary">Criar Atividade</button>
+        {% if turma %}
+          <a href="{% url 'professor:listar_atividades' turma.turma_id %}" class="btn">Cancelar</a>
+        {% else %}
+          <a href="{% url 'atividades:home' %}" class="btn">Cancelar</a>
+        {% endif %}
       </div>
       
       

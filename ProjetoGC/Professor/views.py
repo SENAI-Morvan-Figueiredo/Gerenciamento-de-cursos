@@ -107,3 +107,89 @@ def turmas_por_curso(request, curso_id):
     }
     
     return render(request, 'professor/turmas_por_curso.html', context)
+
+
+# --- LISTAR ATIVIDADES DA TURMA ---
+@login_required
+@professor_required
+def listar_atividades(request, turma_id):
+    professor = Professor.objects.get(usuario=request.user)
+    turma = get_object_or_404(Turma, turma_id=turma_id, professor=professor)
+    # Recuperar atividades da turma e informações de entregas
+    atividades = Atividade.objects.filter(turma=turma).order_by('-atividade_id')
+
+    atividades_info = []
+    total_alunos = Matricula.objects.filter(turma=turma).count()
+    for atividade in atividades:
+        entregues_qs = AtividadeEntregue.objects.filter(atividade=atividade)
+        entregues_count = entregues_qs.count()
+        atividades_info.append({
+            'atividade': atividade,
+            'entregues_count': entregues_count,
+            'total_alunos': total_alunos,
+        })
+
+    context = {
+        'turma': turma,
+        'atividades_info': atividades_info
+    }
+
+    return render(request, 'professor/listar_atividades.html', context)
+
+
+@login_required
+@professor_required
+def atividade_detalhe(request, turma_id, atividade_id):
+    """
+    Página detalhada da atividade com estatísticas e lista de entregas.
+    """
+    professor = Professor.objects.get(usuario=request.user)
+    turma = get_object_or_404(Turma, turma_id=turma_id, professor=professor)
+    atividade = get_object_or_404(Atividade, pk=atividade_id, turma=turma)
+
+    entregues = AtividadeEntregue.objects.filter(atividade=atividade).select_related('matricula__aluno__usuario').order_by('-data_entrega')
+    total_alunos = Matricula.objects.filter(turma=turma).count()
+    total_entregues = entregues.count()
+    porcentagem = (total_entregues / total_alunos * 100) if total_alunos > 0 else 0
+
+    # Construir lista de entregas com informações úteis
+    entregas_info = []
+    for e in entregues:
+        aluno = getattr(e.matricula, 'aluno', None)
+        usuario = getattr(aluno, 'usuario', None)
+        nome_aluno = usuario.nome if usuario else str(aluno)
+        entregas_info.append({
+            'aluno_nome': nome_aluno,
+            'data_entrega': e.data_entrega,
+            'nota': e.nota,
+            'texto': e.texto,
+            'url_arquivo': e.url_arquivo,
+        })
+
+    context = {
+        'turma': turma,
+        'atividade': atividade,
+        'total_alunos': total_alunos,
+        'total_entregues': total_entregues,
+        'porcentagem': round(porcentagem, 2),
+        'entregas_info': entregas_info,
+    }
+
+    return render(request, 'Professor/atividade_detalhe.html', context)
+
+
+# --- LISTAR ALUNOS DA TURMA ---
+@login_required
+@professor_required
+def listar_alunos_turma(request, turma_id):
+    professor = Professor.objects.get(usuario=request.user)
+    turma = get_object_or_404(Turma, turma_id=turma_id, professor=professor)
+    
+    matriculas = Matricula.objects.filter(turma=turma).select_related('aluno__usuario').order_by('aluno__usuario__nome')
+    
+    context = {
+        'turma': turma,
+        'matriculas': matriculas
+    }
+    
+    return render(request, 'professor/listar_alunos_turma.html', context)

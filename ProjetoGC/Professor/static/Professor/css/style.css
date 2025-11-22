@@ -1,3 +1,28 @@
+/* --- Cores principais --- */
+:root {
+    --azul: #164193;
+    --azul-claro: #3D7AFF;
+    --azul-suave: #E8EFFD;
+    --xanadu: #C4D0E9;
+
+    --laranja: #E7490F;
+    --laranja-escuro: #e7490f33;
+    --laranja-suave: #FFF2EE;
+
+    --cinza: #3C3C3C;
+    --cinza-claro: #6B7280;
+    --cinza-borda: #E5E7EB;
+    
+    --bg-claro: #F8FAFC;
+    --bg-card: #FFFFFF;
+
+    --preto: #1F2937;
+    --branco: #FFFFFF;
+
+    --sombra: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --sombra-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
 * {
     margin: 0;
     padding: 0;

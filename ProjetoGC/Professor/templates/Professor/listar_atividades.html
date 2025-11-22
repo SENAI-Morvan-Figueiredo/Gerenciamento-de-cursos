@@ -1,0 +1,54 @@
+{% extends 'Professor/base.html' %}
+{% load static %}
+
+{% block title %}Atividades - {{ turma.nome }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Professor/css/listar_atividades.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="content-header">
+        <h2>{{ turma.nome }}</h2>
+        <p class="text-muted">{{ turma.curso.descricao }}</p>
+    </div>
+
+    <div style="margin-bottom: 1.5rem;">
+        <a href="{% url 'atividades:adicionar_atividade' %}?turma={{ turma.turma_id }}" class="btn-primary-green">
+            ✏️ Criar Nova Atividade
+        </a>
+        <a href="{% url 'professor:turmas_por_curso' turma.curso.id %}" class="btn-secondary-gray">
+            ← Voltar às Turmas
+        </a>
+    </div>
+
+    {% if atividades_info %}
+    <div class="atividades-container">
+        {% for info in atividades_info %}
+        {% with atividade=info.atividade %}
+        <a href="{% url 'professor:atividade_detalhe' turma.turma_id atividade.atividade_id %}" class="atividade-card-link">
+            <div class="atividade-card">
+                <div class="atividade-card-top">
+                    <h3 class="atividade-card-titulo">{{ atividade.titulo }}</h3>
+                    <p class="atividade-card-descricao">{{ atividade.descricao }}</p>
+                </div>
+                <div class="atividade-card-bottom">
+                    <small class="atividade-card-data">Entrega: {% if atividade.data_entrega %}{{ atividade.data_entrega|date:"d/m/Y" }}{% else %}—{% endif %}</small>
+                    <span class="atividade-card-badge">{{ info.entregues_count }} / {{ info.total_alunos }}</span>
+                </div>
+            </div>
+        </a>
+        {% endwith %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>Nenhuma atividade criada para esta turma ainda.</p>
+        <a href="{% url 'atividades:adicionar_atividade' %}?turma={{ turma.turma_id }}" class="btn-primary-green">
+            ✏️ Criar Primeira Atividade
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
