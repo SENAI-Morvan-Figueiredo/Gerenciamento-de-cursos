@@ -86,11 +86,13 @@ class SolicitacaoCreateView(CreateView):
             solicitacao.turma_origem = form.cleaned_data.get('turma_origem')
             solicitacao.turma_destino = form.cleaned_data.get('turma_destino')
 
-        try:
-            secretaria = Secretaria.objects.first()
+        # Agora vai funcionar!
+        secretaria = Secretaria.objects.first()
+        if secretaria:
             solicitacao.secretaria = secretaria
-        except Secretaria.DoesNotExist:
-            pass
+        else:
+            messages.error(self.request, "Não há secretarias cadastradas.")
+            return self.form_invalid(form)
 
         solicitacao.save()
         return super().form_valid(form)

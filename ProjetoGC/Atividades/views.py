@@ -275,7 +275,7 @@ def adicionar_atividade(request):
 
 
 @login_required
-def listar_atividades(request):
+def lista_de_atividades(request):
     """Lista as atividades criadas pelo professor logado."""
     if request.user.tipo != 'professor':
         return HttpResponse("Apenas professores podem ver esta página.", status=403)
@@ -287,7 +287,7 @@ def listar_atividades(request):
 
     turmas = Turma.objects.filter(professor=professor)
     atividades = Atividade.objects.filter(turma__in=turmas).order_by('-data_entrega')
-    return render(request, 'Atividades/listar_atividades.html', {'atividades': atividades, 'titulo_pagina': 'ATIVIDADES'})
+    return render(request, 'Atividades/lista_de_atividades.html', {'atividades': atividades, 'titulo_pagina': 'ATIVIDADES'})
 
 
 @login_required

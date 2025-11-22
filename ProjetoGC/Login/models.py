@@ -27,6 +27,17 @@ class Usuario(AbstractUser):
     
     def __str__(self):
         return self.email
+    
+    def save(self, *args, **kwargs):
+        created = not self.pk  # Verifica se é uma nova instância
+        super().save(*args, **kwargs)  # Salva primeiro o Usuario
+        
+        # Se for do tipo secretaria e for uma nova instância, cria a Secretaria
+        if created and self.tipo == 'secretaria':
+            Secretaria.objects.get_or_create(
+                usuario=self,
+                defaults={'salario': 0.00}  # Defina um salário padrão
+            )
 
 
 class Aluno(models.Model):
