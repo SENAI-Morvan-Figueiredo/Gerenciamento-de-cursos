@@ -4,14 +4,23 @@
 {% block content %}
 <div class="content-header">
     <div class="cursos-header container-search">
-        <h2>Cursos Cadastrados</h2>
+        <h2>Gerenciar Cursos e Disciplinas</h2>
     </div>
 </div>
 
-<!-- Barra de Pesquisa -->
+<!-- Abas de Navegação -->
+<div class="tabs-container" style="margin-bottom: 2rem;">
+    <div class="tabs">
+        <button class="tab-button active" data-tab="cursos-tab">Cursos</button>
+        <button class="tab-button" data-tab="disciplinas-tab">Disciplinas</button>
+    </div>
+</div>
+
+<!-- Barra de Pesquisa (funciona para ambas as abas) -->
 <div class="container-search">
     <form method="get" class="search-bar">
-        <input type="text" name="q" placeholder="Pesquisar cursos..." value="{{ request.GET.q }}">
+        <input type="hidden" name="tab" id="current-tab" value="{{ request.GET.tab|default:'cursos' }}">
+        <input type="text" name="q" placeholder="Pesquisar..." value="{{ request.GET.q }}">
         <button type="submit" class="btn btn-style">
             <i data-lucide="search"></i>
             Buscar
@@ -26,75 +35,73 @@
     {% endif %}
 </div>
 
-<div class="cards-container">
-    <!-- Card de Adição de Curso -->
-    <a href="{% url 'curso_create' %}">
-        <div class="card card-add">
-            <h3>Novo Curso</h3>
-            <i data-lucide="plus-circle" style="width: 32px; height: 32px;"></i>
-        </div>
-    </a>
+<!-- Conteúdo da Aba Cursos -->
+<div id="cursos-tab" class="tab-content active">
+    <div class="cards-container">
+        <!-- Card de Adição de Curso -->
+        <a href="{% url 'curso_create' %}">
+            <div class="card card-add">
+                <h3>Novo Curso</h3>
+                <i data-lucide="plus-circle" style="width: 32px; height: 32px;"></i>
+            </div>
+        </a>
 
-    {% for curso in cursos %}
-    <div class="card">
-        <div class="card-header">
-            <h2>{{ curso.nome }}</h2>
-            <span class="status-badge {% if curso.ativo %}status-active{% else %}status-inactive{% endif %}">
-                {{ curso.ativo|yesno:"Ativo,Inativo" }}
-            </span>
-        </div>
-        
-        <p>
-            <i data-lucide="clock"></i>
-            <strong>Carga Horária:</strong> {{ curso.carga_horaria }}h
-        </p>
-        
-        {% if curso.descricao %}
-        <p>
-            <i data-lucide="file-text"></i>
-            <strong>Descrição:</strong> {{ curso.descricao|truncatewords:15 }}
-        </p>
-        {% endif %}
-        
-        <p>
-            <i data-lucide="book-open"></i>
-            <strong>Disciplinas:</strong> {{ curso.disciplinas.count }}
-        </p>
-        
-        <div class="card-actions">
-            <a href="{% url 'disciplina_list' curso.pk %}" class="btn btn-style3">
+        {% for curso in cursos %}
+        <div class="card">
+            <div class="card-header">
+                <h2>{{ curso.nome }}</h2>
+                <span class="status-badge {% if curso.ativo %}status-active{% else %}status-inactive{% endif %}">
+                    {{ curso.ativo|yesno:"Ativo,Inativo" }}
+                </span>
+            </div>
+            
+            <p>
+                <i data-lucide="clock"></i>
+                <strong>Carga Horária:</strong> {{ curso.carga_horaria }}h
+            </p>
+            
+            {% if curso.descricao %}
+            <p>
+                <i data-lucide="file-text"></i>
+                <strong>Descrição:</strong> {{ curso.descricao|truncatewords:15 }}
+            </p>
+            {% endif %}
+            
+            <p>
                 <i data-lucide="book-open"></i>
-                Ver Disciplinas
-            </a>
-            <a href="{% url 'curso_update' curso.pk %}" class="btn btn-style2">
-                <i data-lucide="edit"></i>
-                Editar
-            </a>
+                <strong>Disciplinas:</strong> {{ curso.disciplinas.count }}
+            </p>
+            
+            <div class="card-actions">
+                <a href="{% url 'disciplina_list' curso.pk %}" class="btn btn-style3">
+                    <i data-lucide="book-open"></i>
+                    Ver Disciplinas
+                </a>
+                <a href="{% url 'curso_update' curso.pk %}" class="btn btn-style2">
+                    <i data-lucide="edit"></i>
+                    Editar
+                </a>
+            </div>
+            
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--cinza-borda);">
+                <a href="{% url 'curso_delete' curso.pk %}" class="btn-link" style="color: var(--laranja);" 
+                   onclick="return confirm('Tem certeza que deseja excluir este curso?');">
+                    <i data-lucide="trash-2"></i>
+                    Excluir
+                </a>
+            </div>
         </div>
-        
-        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--cinza-borda);">
-            <a href="{% url 'curso_delete' curso.pk %}" class="btn-link" style="color: var(--laranja);" 
-               onclick="return confirm('Tem certeza que deseja excluir este curso?');">
-                <i data-lucide="trash-2"></i>
-                Excluir
-            </a>
+        {% empty %}
+        <div class="no-data">
+            <h3>Nenhum curso cadastrado</h3>
+            <p>Clique em "Novo Curso" para adicionar o primeiro curso.</p>
         </div>
+        {% endfor %}
     </div>
-    {% empty %}
-    <div class="no-data">
-        <h3>Nenhum curso cadastrado</h3>
-        <p>Clique em "Novo Curso" para adicionar o primeiro curso.</p>
-    </div>
-    {% endfor %}
 </div>
 
-<!-- Seção de Todas as Disciplinas -->
-<div style="margin-top: 4rem; padding-top: 2rem; border-top: 2px solid var(--cinza-borda);">
-    <div class="content-header">
-        <h2>Todas as Disciplinas</h2>
-        <p>Disciplinas disponíveis no sistema</p>
-    </div>
-
+<!-- Conteúdo da Aba Disciplinas -->
+<div id="disciplinas-tab" class="tab-content">
     <div class="cards-container">
         <!-- Card de Adição de Disciplina Global -->
         <a href="{% url 'disciplina_create_global' %}">
@@ -151,7 +158,98 @@
     </div>
 </div>
 
+<style>
+.tabs-container {
+    border-bottom: 2px solid var(--cinza-borda);
+}
+
+.tabs {
+    display: flex;
+    gap: 0;
+}
+
+.tab-button {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--cinza-claro);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+    color: var(--laranja);
+}
+
+.tab-button.active {
+    color: var(--laranja);
+    border-bottom-color: var(--laranja);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+</style>
+
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sistema de abas
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const currentTabInput = document.getElementById('current-tab');
+    
+    // Restaurar aba ativa da URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeTabFromUrl = urlParams.get('tab') || 'cursos';
+    
+    function activateTab(tabName) {
+        // Atualizar botões
+        tabButtons.forEach(button => {
+            if (button.dataset.tab === tabName) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+        });
+        
+        // Atualizar conteúdos
+        tabContents.forEach(content => {
+            if (content.id === tabName) {
+                content.classList.add('active');
+            } else {
+                content.classList.remove('active');
+            }
+        });
+        
+        // Atualizar input hidden para formulário de pesquisa
+        if (currentTabInput) {
+            currentTabInput.value = tabName.replace('-tab', '');
+        }
+    }
+    
+    // Ativar aba inicial
+    activateTab(activeTabFromUrl + '-tab');
+    
+    // Event listeners para os botões das abas
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const tabName = this.dataset.tab;
+            activateTab(tabName);
+            
+            // Atualizar URL sem recarregar a página
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('tab', tabName.replace('-tab', ''));
+            window.history.replaceState({}, '', newUrl);
+        });
+    });
+    
     lucide.createIcons();
+});
 </script>
 {% endblock content %}

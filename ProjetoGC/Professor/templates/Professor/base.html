@@ -34,7 +34,7 @@
             
             <ul class="sidebar-menu">
                 <li>
-                    <a href="#minhas-turmas">
+                    <a href="{% url 'professor:listar_cursos' %}">
                         <i>👥</i>
                         <span>Minhas Turmas</span>
                     </a>
@@ -46,15 +46,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#diario">
+                    <a href="{% url 'diario:lista_turmas_diario' %}">
                         <i>📖</i>
                         <span>Diário</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#materiais">
-                        <i>📁</i>
-                        <span>Materiais</span>
                     </a>
                 </li>
                 <li>
@@ -69,12 +63,12 @@
                         <span>Secretaria</span>
                     </a>
                 </li>
-                <li>
+                <!-- <li>
                     <a href="#relatorios">
                         <i>📊</i>
                         <span>Relatórios</span>
                     </a>
-                </li>
+                </li> -->
             </ul>
 
             <div class="sidebar-footer">

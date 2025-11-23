@@ -16,14 +16,6 @@
 </div>
 
 <div class="cards-container">
-    <!-- Card de Adição de Nova Disciplina -->
-    <a href="{% url 'disciplina_create' curso.id %}">
-        <div class="card card-add">
-            <h3>Nova Disciplina</h3>
-            <i data-lucide="plus-circle" style="width: 32px; height: 32px;"></i>
-        </div>
-    </a>
-
     {% for disciplina in disciplinas %}
     <div class="card">
         <div class="card-header">
@@ -57,7 +49,7 @@
     {% empty %}
     <div class="no-data">
         <h3>Nenhuma disciplina neste curso</h3>
-        <p>Adicione disciplinas existentes ou crie uma nova.</p>
+        <p>Adicione disciplinas existentes na seção abaixo.</p>
     </div>
     {% endfor %}
 </div>
@@ -99,8 +91,15 @@
         {% endfor %}
     </div>
 </div>
+{% else %}
+<div class="form-container" style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--cinza-borda); text-align: center;">
+    <p>Não há disciplinas disponíveis para adicionar ao curso.</p>
+    <a href="{% url 'curso_list' %}?tab=disciplinas" class="btn btn-style2">
+        <i data-lucide="plus"></i>
+        Criar Nova Disciplina
+    </a>
+</div>
 {% endif %}
-
 
 <script>
     lucide.createIcons();

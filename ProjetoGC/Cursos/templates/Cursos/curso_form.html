@@ -33,7 +33,8 @@
                     </fieldset>
 
                 {% elif field.name == "ativo" %}
-                    <!-- Campo ativo como checkbox customizado -->
+                    <!-- Campo ativo como checkbox customizado (só aparece na edição) -->
+                    {% if view.object %}  {# Só mostra se estiver editando #}
                     <div class="checkbox-field">
                         <label class="checkbox-label">
                             {{ field }}
@@ -44,6 +45,9 @@
                             <ul class="errorlist">{{ field.errors }}</ul>
                         {% endif %}
                     </div>
+                    {% endif %}
+
+                
 
                 {% else %}
                     <!-- Inputs normais -->

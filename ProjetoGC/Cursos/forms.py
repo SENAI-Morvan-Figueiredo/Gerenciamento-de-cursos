@@ -5,7 +5,7 @@ from Login.models import Professor, Aluno
 class CursoForm(forms.ModelForm):
     class Meta:
         model = Curso
-        fields = ["nome", "descricao", "carga_horaria", "ativo", "disciplinas"]
+        fields = ["nome", "carga_horaria", "descricao", "disciplinas", "ativo"]
         labels = {
             'nome': 'Nome do Curso',
             'descricao': 'Descrição',
@@ -37,9 +37,14 @@ class CursoForm(forms.ModelForm):
             'required': True
         })
         
-        self.fields['ativo'].widget.attrs.update({
-            'class': 'form-check-input'
-        })
+        is_creating = self.instance.pk is None
+        
+        if is_creating:
+            self.fields.pop('ativo', None)
+        else:
+            self.fields['ativo'].widget.attrs.update({
+                'class': 'form-check-input'
+            })
         
         self.fields['disciplinas'].widget.attrs.update({
             'class': 'form-check-input',
@@ -61,7 +66,7 @@ class CursoForm(forms.ModelForm):
 class DisciplinaForm(forms.ModelForm):
     class Meta:
         model = Disciplina
-        fields = ['nome', 'descricao', 'carga_horaria']
+        fields = ['nome', 'carga_horaria', 'descricao']
         labels = {
             'nome': 'Nome da Disciplina',
             'descricao': 'Descrição',
