@@ -212,3 +212,4 @@ def listar_alunos_turma(request, turma_id):
     }
     
     return render(request, 'professor/listar_alunos_turma.html', context)
+

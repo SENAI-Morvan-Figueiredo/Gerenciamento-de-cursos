@@ -28,7 +28,8 @@ urlpatterns = [
     path('aluno/', include('Aluno.urls')),
     path('professor/', include(('Professor.urls', 'professor'), namespace='professor')),
     path('cursos/', include('Cursos.urls')),
-    path('calendario/', include('Calendario.urls')),  # ← adiciona o novo app
+    path('calendario/', include('Calendario.urls')), 
+    path('diario/', include('Diario.urls', namespace='diario')),  
 ] 
 
 

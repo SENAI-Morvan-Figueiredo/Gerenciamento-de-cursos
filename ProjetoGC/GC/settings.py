@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "Cursos",
     "Atividades",
     "Calendario",
+    "Diario",
 ]
 
 MIDDLEWARE = [

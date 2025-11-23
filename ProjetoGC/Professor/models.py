@@ -20,7 +20,7 @@ class Frequencia(models.Model):
     aula = models.ForeignKey(Aula, on_delete=models.CASCADE)
     matricula = models.ForeignKey('Cursos.Matricula', on_delete=models.CASCADE)
     presenca = models.BooleanField(default=False)
-    
+    observacao = models.TextField(blank=True, null=True)  
     class Meta:
         db_table = 'Frequencia'
         unique_together = ['aula', 'matricula']

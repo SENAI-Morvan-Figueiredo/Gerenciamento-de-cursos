@@ -1,0 +1,294 @@
+{% extends 'Professor/base.html' %}
+
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'Diario/css/styles.css' %}">
+{% endblock %}
+
+{% block title %}Relatório de Frequência - {{ turma.nome }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-container" data-total-presencas="{{ total_presencas|default:0 }}" data-total-faltas="{{ total_faltas|default:0 }}" data-total-possivel="{{ total_possivel|default:0 }}">
+    <div class="dashboard-header">
+        <div class="d-flex justify-content-between align-items-start flex-wrap">
+            <div class="mb-3 mb-md-0">
+                <h2><i class="fas fa-chart-bar me-2"></i>Relatório de Frequência</h2>
+                <p class="text-muted mb-0">{{ turma.nome }} - {{ turma.curso.nome }}</p>
+            </div>
+            <div class="header-actions">
+                <a href="{% url 'diario:lista_turmas_diario' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-1"></i>Voltar para Turmas
+                </a>
+                <button onclick="window.print()" class="btn btn-primary">
+                    <i class="fas fa-print me-1"></i>Imprimir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card de Resumo -->
+    <div class="card card-spaced">
+        <div class="card-header bg-primary">
+            <h5 class="mb-0 text-white"><i class="fas fa-chart-pie me-2"></i>Resumo da Turma</h5>
+        </div>
+        <div class="card-body">
+            <div class="row text-center g-4">
+                <div class="col-md-3">
+                    <div class="p-4 bg-light-primary rounded-3 border">
+                        <h3 class="mb-2 text-primary">{{ matriculas.count }}</h3>
+                        <p class="mb-0 text-muted fw-bold">Total de Alunos</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-4 bg-light-primary rounded-3 border">
+                        <h3 class="mb-2 text-primary">{{ aulas_total }}</h3>
+                        <p class="mb-0 text-muted fw-bold">Total de Aulas</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-4 bg-light-success rounded-3 border">
+                        <h3 class="mb-2 text-success">
+                            {% if total_possivel > 0 %}
+                                {{ total_presencas|floatformat:0 }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </h3>
+                        <p class="mb-0 text-muted fw-bold">Total Presenças</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-4 bg-light-danger rounded-3 border">
+                        <h3 class="mb-2 text-danger">
+                            {% if total_possivel > 0 %}
+                                {{ total_faltas|floatformat:0 }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </h3>
+                        <p class="mb-0 text-muted fw-bold">Total Faltas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Frequência por Aluno -->
+    <div class="card card-spaced">
+        <div class="card-header bg-warning d-flex justify-content-between align-items-center flex-wrap">
+            <h5 class="mb-0 text-white"><i class="fas fa-user-graduate me-2"></i>Frequência por Aluno</h5>
+            <div class="mt-2 mt-md-0">
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar aluno...">
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-wrap">
+                <table id="frequenciaTable">
+                    <thead>
+                        <tr>
+                            <th>Aluno</th>
+                            <th class="text-center">Presenças</th>
+                            <th class="text-center">Faltas</th>
+                            <th class="text-center">Total de Aulas</th>
+                            <th class="text-center">Frequência</th>
+                            <th class="text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for matricula in matriculas %}
+                        <tr data-percentual="{{ matricula.percentual }}">
+                            <td>
+                                <strong>{{ matricula.aluno.usuario.nome }} {{ matricula.aluno.usuario.sobrenome }}</strong>
+                                <br>
+                                <small class="text-muted">{{ matricula.aluno.usuario.email }}</small>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge status-excellent">{{ matricula.presencas }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge status-danger">{{ matricula.faltas }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary">{{ aulas_total }}</span>
+                            </td>
+                            <td class="text-center">
+                                <div class="progress" style="height: 25px;">
+                                    <div class="progress-bar fw-bold" 
+                                         role="progressbar" 
+                                         aria-valuenow="{{ matricula.percentual }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                        {{ matricula.percentual|floatformat:1 }}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                {% if matricula.percentual >= 75 %}
+                                    <span class="badge status-excellent">Regular</span>
+                                {% elif matricula.percentual >= 50 %}
+                                    <span class="badge status-warning">Atenção</span>
+                                {% else %}
+                                    <span class="badge status-danger">Crítico</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="fas fa-users-slash fa-2x mb-2"></i><br>
+                                    Nenhum aluno matriculado nesta turma.
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legenda -->
+    <div class="row mt-4 g-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-secondary">
+                    <h6 class="mb-0 text-white"><i class="fas fa-info-circle me-2"></i>Legenda de Status</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="d-flex align-items-center p-2 bg-light-success rounded">
+                                <div class="status-excellent me-3" style="width: 20px; height: 20px; border-radius: 4px;"></div>
+                                <div>
+                                    <strong class="text-success">≥ 75% - Regular</strong>
+                                    <br>
+                                    <small class="text-muted">Frequência satisfatória</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex align-items-center p-2 bg-light-warning rounded">
+                                <div class="status-warning me-3" style="width: 20px; height: 20px; border-radius: 4px;"></div>
+                                <div>
+                                    <strong class="text-warning">50-74% - Atenção</strong>
+                                    <br>
+                                    <small class="text-muted">Frequência abaixo do ideal</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex align-items-center p-2 bg-light-danger rounded">
+                                <div class="status-danger me-3" style="width: 20px; height: 20px; border-radius: 4px;"></div>
+                                <div>
+                                    <strong class="text-danger">&lt; 50% - Crítico</strong>
+                                    <br>
+                                    <small class="text-muted">Frequência insuficiente</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-secondary">
+                    <h6 class="mb-0 text-white"><i class="fas fa-calendar-alt me-2"></i>Informações da Turma</h6>
+                </div>
+                <div class="card-body">
+                    <div class="info-item mb-3">
+                        <strong><i class="fas fa-users me-2 text-primary"></i>Turma:</strong> 
+                        <span class="float-end">{{ turma.nome }}</span>
+                    </div>
+                    <div class="info-item mb-3">
+                        <strong><i class="fas fa-book me-2 text-primary"></i>Curso:</strong> 
+                        <span class="float-end">{{ turma.curso.nome }}</span>
+                    </div>
+                    <div class="info-item mb-3">
+                        <strong><i class="fas fa-calendar me-2 text-primary"></i>Período:</strong> 
+                        <span class="float-end">{{ turma.data_inicio|date:"d/m/Y" }}{% if turma.data_fim %} - {{ turma.data_fim|date:"d/m/Y" }}{% endif %}</span>
+                    </div>
+                    <div class="info-item">
+                        <strong><i class="fas fa-clock me-2 text-primary"></i>Data do Relatório:</strong> 
+                        <span class="float-end">{% now "d/m/Y H:i" %}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ... script mantido ... -->
+
+<style>
+.card-spaced {
+    margin-bottom: 2rem;
+}
+
+.header-actions {
+    gap: 0.75rem;
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--azul);
+    color: var(--azul);
+    font-weight: 600;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--azul);
+    color: white;
+}
+
+.bg-light-primary { background-color: #e8effd !important; }
+.bg-light-success { background-color: #dff4ea !important; }
+.bg-light-warning { background-color: #fff3cd !important; }
+.bg-light-danger { background-color: #fde8e8 !important; }
+
+.info-item {
+    border-bottom: 1px solid var(--cinza-borda);
+    padding-bottom: 0.75rem;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.progress {
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .header-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .card-header.bg-warning .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    #searchInput {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
