@@ -50,6 +50,15 @@ class Aluno(models.Model):
 
     def __str__(self):
         return self.usuario.email
+    
+    @property
+    def turmas_matriculadas(self):
+        """Retorna as turmas ativas do aluno"""
+        from Cursos.models import  Turma
+        return Turma.objects.filter(
+            matricula__aluno=self,
+            matricula__status_matricula=True
+        ).distinct()
 
 
 class Professor(models.Model):
