@@ -363,23 +363,34 @@
       {% csrf_token %}
 
       <div class="form-group">
+        <!-- **CORREÇÃO: Mostrar qual turma está selecionada (apenas informação) -->
+        {% if turma %}
+        <div class="form-field" style="background: #f0f8ff; padding: 1rem; border-radius: 6px; border-left: 4px solid #3b82f6;">
+          <p style="color: #1e40af; font-weight: 700;">📚 Turma Selecionada:</p>
+          <p style="margin: 0.5rem 0 0 0; color: #374151; font-size: 0.95rem;">
+            <strong>{{ turma.nome }}</strong> - {{ turma.curso.nome }}
+          </p>
+          <p style="margin: 0; color: #6b7280; font-size: 0.85rem;">
+            Período: {{ turma.data_inicio|date:"d/m/Y" }} 
+            {% if turma.data_fim %} - {{ turma.data_fim|date:"d/m/Y" }}{% endif %}
+          </p>
+        </div>
+        {% endif %}
+
         <div class="row-turma-date" style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
           <div class="form-field" style="flex:1;min-width:260px;">
-            <label for="id_turma">Turma:</label>
-            {{ form.turma }}
-            {{ form.turma.errors }}
+            <label for="id_tipo">Tipo da Atividade:</label>
+            {{ form.tipo }}
+            {{ form.tipo.errors }}
           </div>
           <div class="form-field" style="min-width:220px;flex:0 0 260px;">
             <label for="id_data_entrega">Data Limite de Entrega:</label>
-            <input type="datetime-local" name="data_entrega" id="id_data_entrega" />
+            {{ form.data_entrega }}
+            {{ form.data_entrega.errors }}
           </div>
         </div>
 
-        <div class="form-field">
-          <label for="id_tipo">Tipo da Atividade:</label>
-          {{ form.tipo }}
-          {{ form.tipo.errors }}
-        </div>
+        
 
         <div class="form-field">
           <label for="id_titulo">Título da Atividade:</label>

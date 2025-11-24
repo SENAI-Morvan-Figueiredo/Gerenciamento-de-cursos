@@ -6,7 +6,7 @@ from Cursos.models import Turma
 class AvaliacaoForm(forms.ModelForm):
     class Meta:
         model = Avaliacao
-        fields = ['turma', 'titulo', 'descricao', 'data_limite_entrega', 'arquivo']
+        fields = ['titulo', 'descricao', 'data_limite_entrega', 'arquivo']
         widgets = {
             'data_limite_entrega': DateTimeInput(attrs={'type': 'datetime-local'}),
         }
