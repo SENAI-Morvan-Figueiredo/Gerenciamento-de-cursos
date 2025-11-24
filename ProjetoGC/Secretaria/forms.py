@@ -154,7 +154,7 @@ class AlunoUsuarioForm(UsuarioBaseForm):
             usuario.tipo = 'aluno'
             usuario.status = True
             usuario.username = self.cleaned_data.get('username')
-            usuario.set_password=self.cleaned_data["cpf"]
+            usuario.set_password(self.cleaned_data["cpf"])
 
         if commit:
             usuario.save()
@@ -201,7 +201,6 @@ class AlunoUsuarioForm(UsuarioBaseForm):
                         turma=turma, 
                         status_matricula=True
                     )
-        
         return usuario
 
 class ProfessorUsuarioForm(UsuarioBaseForm):

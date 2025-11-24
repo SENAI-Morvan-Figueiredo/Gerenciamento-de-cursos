@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class TipoAtividade(models.Model):
     """
     Modelo para representar os tipos de atividades (Fixação, Avaliações, Relatórios),
