@@ -6,6 +6,7 @@ from django.shortcuts import render, get_object_or_404
 from django.db.models import Avg
 from Cursos.models import Turma, Matricula, Curso
 from Login.models import Professor
+from .models import Aula, Frequencia
 from Atividades.models import Atividade, AtividadeEntregue
 from Login.decorators import professor_required
 from django.utils import timezone
@@ -213,3 +214,102 @@ def listar_alunos_turma(request, turma_id):
     
     return render(request, 'professor/listar_alunos_turma.html', context)
 
+
+# --- BOLETIM ESCOLAR ---
+@login_required
+@professor_required
+def boletim_turma(request, turma_id):
+    professor = Professor.objects.get(usuario=request.user)
+    turma = get_object_or_404(Turma, turma_id=turma_id, professor=professor)
+    
+    # Buscar todos os alunos matriculados na turma
+    matriculas = Matricula.objects.filter(turma=turma).select_related('aluno__usuario')
+    
+    alunos_boletim = []
+    soma_notas_turma = 0
+    
+    for matricula in matriculas:
+        aluno = matricula.aluno
+        usuario = aluno.usuario
+        
+        # Buscar todas as atividades da turma
+        atividades = Atividade.objects.filter(turma=turma)
+        total_atividades = atividades.count()
+        
+        # Calcular notas do aluno
+        atividades_entregues = AtividadeEntregue.objects.filter(
+            atividade__turma=turma,
+            matricula=matricula
+        )
+        
+        # Média das notas
+        notas = atividades_entregues.exclude(nota__isnull=True).values_list('nota', flat=True)
+        if notas:
+            media_notas = sum(notas) / len(notas)
+        else:
+            media_notas = 0
+        
+        # Porcentagem de atividades entregues
+        if total_atividades > 0:
+            porcentagem_entregas = (atividades_entregues.count() / total_atividades * 100)
+        else:
+            porcentagem_entregas = 0
+        
+        # Calcular frequência (presença em aulas)
+        total_aulas = Aula.objects.filter(turma=turma).count()
+        presencas = Frequencia.objects.filter(
+            aula__turma=turma,
+            matricula=matricula,
+            presenca=True
+        ).count()
+        
+        if total_aulas > 0:
+            frequencia_percent = (presencas / total_aulas * 100)
+        else:
+            frequencia_percent = 0
+        
+        # Calcular nota final (média ponderada: 70% notas + 30% frequência)
+        nota_final = (media_notas * 0.7) + (frequencia_percent * 0.3)
+        soma_notas_turma += nota_final
+        
+        # Determinar situação
+        if nota_final >= 70 and frequencia_percent >= 75:
+            situacao = "Aprovado"
+            situacao_cor = "success"
+        elif nota_final >= 50 and frequencia_percent >= 75:
+            situacao = "Recuperação"
+            situacao_cor = "warning"
+        else:
+            situacao = "Reprovado"
+            situacao_cor = "danger"
+        
+        alunos_boletim.append({
+            'matricula': matricula,
+            'aluno_nome': f"{usuario.nome} {usuario.sobrenome}" if usuario.nome else usuario.email,
+            'media_notas': round(media_notas, 1),
+            'porcentagem_entregas': round(porcentagem_entregas, 1),
+            'frequencia': round(frequencia_percent, 1),
+            'nota_final': round(nota_final, 1),
+            'situacao': situacao,
+            'situacao_cor': situacao_cor,
+            'total_atividades': total_atividades,
+            'atividades_entregues': atividades_entregues.count(),
+            'total_aulas': total_aulas,
+            'presencas': presencas,
+        })
+    
+    # Calcular média da turma
+    media_turma = soma_notas_turma / len(alunos_boletim) if alunos_boletim else 0
+    
+    # Ordenar alunos por nota final (decrescente)
+    alunos_boletim.sort(key=lambda x: x['nota_final'], reverse=True)
+    
+    context = {
+        'turma': turma,
+        'alunos_boletim': alunos_boletim,
+        'media_turma': round(media_turma, 1),
+        'melhor_nota': max([aluno['nota_final'] for aluno in alunos_boletim]) if alunos_boletim else 0,
+        'pior_nota': min([aluno['nota_final'] for aluno in alunos_boletim]) if alunos_boletim else 0,
+    }
+    
+    return render(request, 'professor/boletim_turma.html', context)
