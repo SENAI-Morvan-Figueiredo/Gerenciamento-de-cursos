@@ -6,19 +6,21 @@ from Cursos.models import Turma
 class AtividadeForm(forms.ModelForm):
     class Meta:
         model = Atividade
-        fields = ['turma', 'tipo', 'titulo', 'descricao', 'tipo_material', 'arquivo', 'url_material', 'data_entrega']
-
+        fields = ['tipo', 'titulo', 'descricao', 'data_entrega', 'url_material', 'arquivo']
+    
     def __init__(self, *args, **kwargs):
         professor = kwargs.pop('professor', None)
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
+        
+        # Campo data_entrega como datetime-local
+        self.fields['data_entrega'].widget = forms.DateTimeInput(
+            attrs={'type': 'datetime-local'}
+        )
+
+        # Estilização
+        for field_name, field in self.fields.items():
             field.widget.attrs.update({'class': 'form-control'})
 
-        # Filtrar turmas pelo professor quando fornecido
-        if professor is not None:
-            self.fields['turma'].queryset = Turma.objects.filter(professor=professor)
-        else:
-            self.fields['turma'].queryset = Turma.objects.none()
 
 
 class EntregaForm(forms.ModelForm):
