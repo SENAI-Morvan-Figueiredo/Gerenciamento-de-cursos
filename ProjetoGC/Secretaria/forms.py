@@ -118,30 +118,35 @@ class AlunoUsuarioForm(UsuarioBaseForm):
 
         if self.instance and self.instance.pk:
             try:
-                aluno = self.instance
+                # CORREÇÃO: Buscar o objeto Aluno relacionado ao Usuario
+                aluno = Aluno.objects.get(usuario=self.instance)
                 turmas_atuais = Turma.objects.filter(
                     matricula__aluno=aluno, 
                     matricula__status_matricula=True
                 )
                 
                 tem_matriculas_ativas = Matricula.objects.filter(
-                        aluno=aluno, 
-                        status_matricula=True
-                    ).exists()
-                self.fields['status_matricula'].initial = tem_matriculas_ativas
+                    aluno=aluno, 
+                    status_matricula=True
+                ).exists()
+                
+                if not is_creating:
+                    self.fields['status_matricula'].initial = tem_matriculas_ativas
                 
                 self.fields['turma'].initial = turmas_atuais
                 self.fields['tipo'].initial = 'aluno'
 
-                self.fields['nome'].initial = aluno.usuario.nome
-                self.fields['email'].initial = aluno.usuario.email
-                self.fields['cpf'].initial = aluno.usuario.cpf
-                self.fields['sobrenome'].initial = aluno.usuario.sobrenome
-                self.fields['contato'].initial = aluno.usuario.contato
-                self.fields['endereco'].initial = aluno.usuario.endereco
-                self.fields['data_nascimento'].initial = aluno.usuario.data_nascimento
+                # CORREÇÃO: Usar self.instance (Usuario) diretamente
+                self.fields['nome'].initial = self.instance.nome
+                self.fields['email'].initial = self.instance.email
+                self.fields['cpf'].initial = self.instance.cpf
+                self.fields['sobrenome'].initial = self.instance.sobrenome
+                self.fields['contato'].initial = self.instance.contato
+                self.fields['endereco'].initial = self.instance.endereco
+                self.fields['data_nascimento'].initial = self.instance.data_nascimento
                 
             except Aluno.DoesNotExist:
+                # Se não existe aluno relacionado, é uma criação
                 pass
     
     @transaction.atomic
@@ -162,14 +167,18 @@ class AlunoUsuarioForm(UsuarioBaseForm):
             if is_creating:
                 aluno = Aluno.objects.create(usuario=usuario)
             else:
-                aluno = usuario
+                # CORREÇÃO: Buscar o aluno existente
+                aluno = Aluno.objects.get(usuario=usuario)
             
+            # CORREÇÃO: Lógica simplificada para status_matricula
             if not is_creating and 'status_matricula' in self.cleaned_data:
                 status_matricula_geral = self.cleaned_data['status_matricula']
                 
                 if not status_matricula_geral:
+                    # Desativa todas as matrículas
                     Matricula.objects.filter(aluno=aluno).update(status_matricula=False)
                 else:
+                    # Ativa pelo menos uma matrícula se não houver nenhuma ativa
                     matriculas_ativas = Matricula.objects.filter(
                         aluno=aluno, 
                         status_matricula=True
@@ -184,23 +193,20 @@ class AlunoUsuarioForm(UsuarioBaseForm):
                                 status_matricula=True
                             )
             
+            # CORREÇÃO: Lógica simplificada para atualização de turmas
             turmas_selecionadas = self.cleaned_data.get('turma', [])
             
-            matriculas_atuais = Matricula.objects.filter(aluno=aluno)
-            turmas_atuais = set(matricula.turma for matricula in matriculas_atuais)
-            turmas_selecionadas_set = set(turmas_selecionadas)
+            # Remove matrículas de turmas não selecionadas
+            Matricula.objects.filter(aluno=aluno).exclude(turma__in=turmas_selecionadas).delete()
             
-            for matricula in matriculas_atuais:
-                if matricula.turma not in turmas_selecionadas_set:
-                    matricula.delete()
-            
+            # Adiciona matrículas para turmas selecionadas que não existem
             for turma in turmas_selecionadas:
-                if turma not in turmas_atuais:
-                    Matricula.objects.create(
-                        aluno=aluno, 
-                        turma=turma, 
-                        status_matricula=True
-                    )
+                Matricula.objects.get_or_create(
+                    aluno=aluno, 
+                    turma=turma,
+                    defaults={'status_matricula': True}
+                )
+                
         return usuario
 
 class ProfessorUsuarioForm(UsuarioBaseForm):
@@ -236,7 +242,8 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
 
         if self.instance and self.instance.pk:
             try:
-                professor = self.instance
+                
+                professor = Professor.objects.get(usuario=self.instance)
                 turmas_atuais = Turma.objects.filter(
                     professor=professor,
                     status=True
@@ -247,13 +254,14 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
                 self.fields['salario'].initial = professor.salario
                 self.fields['status'].initial = professor.status
 
-                self.fields['nome'].initial = professor.usuario.nome
-                self.fields['email'].initial = professor.usuario.email
-                self.fields['cpf'].initial = professor.usuario.cpf
-                self.fields['sobrenome'].initial = professor.usuario.sobrenome
-                self.fields['contato'].initial = professor.usuario.contato
-                self.fields['endereco'].initial = professor.usuario.endereco
-                self.fields['data_nascimento'].initial = professor.usuario.data_nascimento
+                
+                self.fields['nome'].initial = self.instance.nome
+                self.fields['email'].initial = self.instance.email
+                self.fields['cpf'].initial = self.instance.cpf
+                self.fields['sobrenome'].initial = self.instance.sobrenome
+                self.fields['contato'].initial = self.instance.contato
+                self.fields['endereco'].initial = self.instance.endereco
+                self.fields['data_nascimento'].initial = self.instance.data_nascimento
 
             except Professor.DoesNotExist:
                 pass
@@ -281,7 +289,7 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
                     status=True
                 )
             else:
-                professor = usuario.professor
+                professor = Professor.objects.get(usuario=usuario)
                 professor.salario = self.cleaned_data['salario']
                 if 'status' in self.cleaned_data:
                     professor.status = self.cleaned_data['status']

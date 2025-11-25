@@ -118,13 +118,22 @@ class AlunoUpdateView(UpdateView):
     template_name = "secretaria/alunoEdit.html"
     success_url = reverse_lazy("secretaria:alunoList")
 
+    def get_form_kwargs(self):
+        """Sobrescreve para passar o Usuario como instance ao form"""
+        kwargs = super().get_form_kwargs()
+        # Obtém o objeto Aluno
+        aluno = self.get_object()
+        # Passa o Usuario relacionado como instance para o form
+        kwargs['instance'] = aluno.usuario
+        return kwargs
+
     @transaction.atomic
     def form_valid(self, form):
         messages.success(self.request, 'Aluno atualizado com sucesso!')
         return super().form_valid(form)
     
     def form_invalid(self, form):
-        messages.error(self.request, 'Erro na atualização. Verifique os dados.')
+        messages.error(self.request, 'Erro na atualização. Verifique os dados.')
         return super().form_invalid(form)
 
 
@@ -178,20 +187,28 @@ class ProfessorCreateView(CreateView):
 
 @method_decorator(secretaria_required, name='dispatch')
 class ProfessorUpdateView(UpdateView):
-    
-    model = Professor
+    model = Professor  # Mantemos Professor como modelo
     form_class = ProfessorUsuarioForm
     template_name = "secretaria/profEdit.html"
     success_url = reverse_lazy("secretaria:profList")
 
+    def get_form_kwargs(self):
+        """Sobrescreve para passar o Usuario como instance ao form"""
+        kwargs = super().get_form_kwargs()
+        # Obtém o objeto Professor
+        professor = self.get_object()
+        # Passa o Usuario relacionado como instance para o form
+        kwargs['instance'] = professor.usuario
+        return kwargs
+
     @transaction.atomic
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, 'Professor cadastrado com sucesso!')
+        messages.success(self.request, 'Professor atualizado com sucesso!')
         return response
     
     def form_invalid(self, form):
-        messages.error(self.request, 'Erro no cadastro. Verifique os dados.')
+        messages.error(self.request, 'Erro na atualização. Verifique os dados.')
         return super().form_invalid(form)
     
 

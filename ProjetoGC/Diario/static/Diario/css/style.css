@@ -1,0 +1,766 @@
+/* --- Cores principais --- */
+:root {
+    --azul: #164193;
+    --azul-claro: #3D7AFF;
+    --azul-suave: #E8EFFD;
+    --xanadu: #C4D0E9;
+
+    --laranja: #E7490F;
+    --laranja-escuro: #e7490f33;
+    --laranja-suave: #FFF2EE;
+
+    --cinza: #3C3C3C;
+    --cinza-claro: #6B7280;
+    --cinza-borda: #E5E7EB;
+    
+    --bg-claro: #F8FAFC;
+    --bg-card: #FFFFFF;
+
+    --preto: #1F2937;
+    --branco: #FFFFFF;
+
+    --sombra: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --sombra-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* --- Layout Geral --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Poppins', sans-serif;
+    background-color: var(--bg-claro);
+    color: var(--preto);
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+svg {
+    min-width: 20px;
+    min-height: 20px;
+    vertical-align: middle;
+}
+
+
+.layout {
+    min-height: 100vh;
+    display: flex;
+}
+
+/* --- Header --- */
+.topbar {
+    height: 70px;
+    padding: 0 2rem;
+    background: linear-gradient(135deg, var(--azul) 0%, var(--azul-claro) 100%);
+    color: var(--branco);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--sombra);
+    position: relative;
+    z-index: 100;
+}
+
+.sidebar-logo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.profile-btn {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: var(--branco);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+
+
+
+/* --- BOTÕES STYLE --- */
+
+/* Botão - searchbar */
+.btn-style {
+    background: var(--bg-claro);
+    color: var(--azul-claro);
+    border: 1.5px solid var(--azul-claro);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+
+    transition: all 0.3s ease;
+}
+
+.btn-style:hover {
+    color: var(--azul);
+    border: 1.5px solid var(--azul);
+    transform: translateY(-1px);
+}
+
+/* Botões secundários - furmularios  e cards*/
+.btn-style2 {
+    background: var(--laranja-suave);
+    color: var(--laranja);
+    border: 1px solid var(--laranja-escuro);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+
+    transition: all 0.4s ease, background 0.5s ease;
+}
+
+.btn-style2:hover {
+    background: var(--laranja);
+    color: var(--branco);
+    transform: translateY(-2px);
+}
+
+.btn-style3 {
+    background: var(--azul-suave);
+    color: var(--azul);
+    border: 1px solid var(--xanadu);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+
+    transition: all 0.4s ease, background 0.5s ease;
+}
+
+.btn-style3:hover {
+    background: var(--azul);
+    color: var(--branco);
+    transform: translateY(-2px);
+}
+
+
+/* Botões secundários - Tabelas */
+.btn-style4 {
+    color: #007bff;
+    border: 1px solid #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.bnt-style4:hover {
+    background: #007bff;
+    color: var(--branco);
+}
+
+
+
+
+/* ------------------------------------------------------------------------------------------ Template Principal/ Abase */
+
+/* --- MENU LATERAL --- */
+.sidebar {
+    width: calc(25% - 4rem);
+    max-width: 240px;
+    min-width: 200px;
+    padding-top: 10px;
+    background: var(--branco);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 0;
+    position: relative;
+    z-index: 90;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0 1rem;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 1rem;
+    background-color: var(--branco);
+    color: var(--cinza-claro);
+    text-decoration: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 0.95rem;
+    border: 1px solid transparent;
+}
+
+.menu-item:hover {
+    background-color: var(--azul-suave);
+    color: var(--azul);
+    border-color: var(--xanadu);
+    transform: translateX(4px);
+}
+
+.menu-item.active {
+    background: linear-gradient(135deg, var(--azul) 0%, var(--azul-claro) 100%);
+    color: var(--branco);
+    box-shadow: var(--sombra);
+}
+
+.menu-item i {
+    width: 20px;
+    height: 20px;
+}
+
+
+
+/* --- CONTEÚDO --- */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-claro);
+}
+
+.content-area {
+    padding: 2rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+
+
+
+
+
+/* ------------------------------------------------------------------------------------------ Template Secundário/Lista de Turmas */
+
+/* --- HEADER DO CONTEÚDO --- */
+.content-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.content-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--preto);
+    margin-bottom: 0.2rem;
+    
+}
+
+/* --- BARRA DE PESQUISA --- */
+.container-search {
+    width: max-content;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    
+}
+
+.search-bar {
+    width: calc(70vw - 1rem);
+    min-width: 420px;
+    max-width: 800px;
+    padding: 0.5rem 0rem;
+
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem ;
+}
+
+.search-bar input {
+    padding: 0.5rem;
+    
+    background: transparent;
+    border: none;
+    outline: none;
+
+    font-size: 1.5rem;
+}
+
+.search-bar button {
+    max-width: 130px;
+    padding: 0.6rem 1.2rem;
+
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+}
+
+/* --- CONTAINER DE CARDS --- */
+/* mudar o sistema de grids para algo mais absoluto,
+ assim podendo colocar o botão de adicionar ao lado dos cards */
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.8rem;
+    margin-top: 1rem;
+}
+
+/* --- CARDS --- */
+.card {
+    padding: 1.8rem;
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 1px solid var(--cinza-borda);
+    box-shadow: var(--sombra);
+    
+    transition: all 0.5s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.card:not(:first-child)::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, var(--azul) 0%, var(--azul-claro) 100%);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--sombra-hover);
+}
+
+.card-turma:hover::before {
+    background: linear-gradient(135deg, var(--laranja) 0%, #FF6B35 100%);
+}
+
+.card h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--preto);
+    margin-bottom: 1rem;
+    line-height: 1.3;
+}
+
+.card p {
+    color: var(--cinza-claro);
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card p strong {
+    color: var(--preto);
+    font-weight: 600;
+}
+
+/* --- CARD DE ADIÇÃO --- */
+.card-add {
+    height: 100%;
+    
+    grid-column-start: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+    
+    background: linear-gradient(45deg, var(--azul) 0%, var(--azul-claro) 100%);
+    color: var(--branco);
+    border: none;
+    font-weight: 600;
+    font-size: 1.6rem;
+    
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-add::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, var(--azul-claro) 0%, var(--azul) 100%);
+    opacity: 0;
+    transition: opacity 1s ease;
+    z-index: 1;
+}
+
+.card-add > * {
+    position: relative;
+    z-index: 2;
+}
+
+.card-add:hover {
+    transform: translateY(-8px) scale(1.02);
+}
+
+.card-add:hover::before {
+    opacity: 1;
+}
+
+/* --- AÇÕES DOS CARDS --- */
+.card-actions {
+    margin-top: 1.5rem;
+
+    display: flex;
+    gap: 0.8rem;
+}
+
+.card-actions .btn {
+    padding: 0.7rem 1.2rem;
+
+    border-radius: 10px;
+    
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    
+    cursor: pointer;
+    
+}
+
+.card-actions .btn svg{
+    min-width: 18px;
+    min-height: 18px;
+    vertical-align: middle;
+}
+
+.card-header {
+    margin-bottom: 1rem;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+
+/* --- ESTADO VAZIO --- */
+.no-data {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--cinza-claro);
+    background: var(--branco);
+    border-radius: 16px;
+    border: 2px dashed var(--cinza-borda);
+}
+
+.no-data::before {
+    content: '📊';
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+
+
+/* ------------------------------------------------------------------------------------------ Template Secundário/Lista de Professor */
+
+
+
+/* --- STATUS BADGES --- solicitação/turmaList */
+.status-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    text-align: center;
+    min-width: 80px;
+}
+
+.status-pendente {
+    background: #FEF3C7;
+    color: #D97706;
+    border: 1px solid #FBBF24;
+}
+
+.status-aceito {
+    background: #D1FAE5;
+    color: #065F46;
+    border: 1px solid #34D399;
+}
+
+.status-negado {
+    background: #FEE2E2;
+    color: #991B1B;
+    border: 1px solid #F87171;
+}
+
+.status-concluido {
+    background: #E0E7FF;
+    color: #3730A3;
+    border: 1px solid #818CF8;
+}
+
+/* --- BOTÕES DE AÇÃO --- */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-accept, .btn-deny {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    text-align: center;
+    min-width: 70px;
+}
+
+.btn-accept {
+    background: var(--success);
+    color: var(--branco);
+}
+
+.btn-accept:hover {
+    background: #0da271;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-deny {
+    background: var(--error);
+    color: var(--branco);
+}
+
+.btn-deny:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* --- TURMA INFO --- */
+.turma-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--cinza-claro);
+}
+
+.turma-info::before {
+    content: '→';
+    color: var(--azul-claro);
+    font-weight: bold;
+}
+
+/* --- ESTADO VAZIO PARA TABELAS --- */
+.table-empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--cinza-claro);
+    background: var(--branco);
+}
+
+.table-empty-state::before {
+    content: '📋';
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+
+/* -- Calendário */
+#calendar {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Empilha bolinhas verticalmente */
+.fc-daygrid-day-events {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 4px;
+}
+
+/* Bolinhas azuis */
+.fc-daygrid-event {
+    background-color: #007bff;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: none;
+    display: inline-block;
+    text-indent: -9999px;
+    cursor: pointer;
+}
+
+/* Remove texto padrão */
+.fc-daygrid-event-dot,
+.fc-event-title {
+    display: none !important;
+}
+
+
+/* Tooltip em forma de card */
+.tooltip {
+    position: absolute;
+    background: linear-gradient(45deg, var(--azul) 0%, var(--azul-claro) 100%);
+    color: #000000; 
+    padding: 8px 14px 12px 14px; /* diminui o padding superior */
+    border-radius: 10px;
+    font-size: 14px;
+    display: none;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    width: 235px;
+    height: 140px;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.tooltip h4 {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0;              
+    padding-top: 10px;         
+    line-height: 1.1;       /* diminui altura da linha */
+    color: #ffffff;
+}
+
+
+.tooltip p {
+    font-size: 11px;
+    line-height: 1.4;
+    color: #ffffff;
+    width: 208px;
+    height: 92px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+}
+
+    /* Barra de navegação do calendário */
+.fc-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+/* Centraliza o título do mês */
+.fc-toolbar-title {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000000; /* cor estilizada */
+}
+
+/* Botões padrão */
+.fc-button {
+    background-color: #164193;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+/* Hover nos botões */
+.fc-button:hover {
+    background-color: #E7490F;
+}
+
+/* Remove sombra de foco */
+.fc-button:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+
+
+
+
+
+
+/* --- SIDEBAR RESPONSIVA COM SLIDE --- */
+@media (max-width: 768px) {
+  .hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 240px;
+    background: var(--branco);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+    transform: translateX(-100%);
+    transition: transform 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    z-index: 105;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    padding-top: 70px;
+  }
+
+  /* Regras específicas para quando o menu está aberto */
+  .hamburger-btn.active {
+    background: transparent !important;
+  }
+
+  .hamburger-btn.active i,
+  .hamburger-btn.active svg {
+    color: var(--preto) !important;
+    stroke: var(--preto) !important;
+  }
+
+  /* Garantir que o ícone fique branco quando menu fechado */
+  .hamburger-btn:not(.active) i,
+  .hamburger-btn:not(.active) svg {
+    color: var(--branco) !important;
+    stroke: var(--branco) !important;
+  }
+}

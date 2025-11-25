@@ -20,17 +20,16 @@
 <div class="container-search">
     <form method="get" class="search-bar">
         <input type="hidden" name="tab" id="current-tab" value="{{ request.GET.tab|default:'cursos' }}">
-        <input type="text" name="q" placeholder="Pesquisar..." value="{{ request.GET.q }}">
+        <input type="text" name="q" id="search-input" placeholder="Pesquisar..." value="{{ query }}">
         <button type="submit" class="btn btn-style">
             <i data-lucide="search"></i>
-            Buscar
         </button>
     </form>
     
-    {% if request.GET.q %}
+    {% if query %}
         <a href="{% url 'curso_list' %}" class="btn btn-style">
-            <i data-lucide="x"></i>
-            Limpar
+            <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+            Limpar Filtro
         </a>
     {% endif %}
 </div>
@@ -47,7 +46,7 @@
         </a>
 
         {% for curso in cursos %}
-        <div class="card">
+        <div class="card card-curso">
             <div class="card-header">
                 <h2>{{ curso.nome }}</h2>
                 <span class="status-badge {% if curso.ativo %}status-active{% else %}status-inactive{% endif %}">
@@ -56,29 +55,29 @@
             </div>
             
             <p>
-                <i data-lucide="clock"></i>
+                <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
                 <strong>Carga Horária:</strong> {{ curso.carga_horaria }}h
             </p>
             
             {% if curso.descricao %}
             <p>
-                <i data-lucide="file-text"></i>
+                <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
                 <strong>Descrição:</strong> {{ curso.descricao|truncatewords:15 }}
             </p>
             {% endif %}
             
             <p>
-                <i data-lucide="book-open"></i>
+                <i data-lucide="book-open" style="width: 16px; height: 16px;"></i>
                 <strong>Disciplinas:</strong> {{ curso.disciplinas.count }}
             </p>
             
             <div class="card-actions">
                 <a href="{% url 'disciplina_list' curso.pk %}" class="btn btn-style3">
-                    <i data-lucide="book-open"></i>
+                    <i data-lucide="book-open" style="width: 16px; height: 16px;"></i>
                     Ver Disciplinas
                 </a>
                 <a href="{% url 'curso_update' curso.pk %}" class="btn btn-style2">
-                    <i data-lucide="edit"></i>
+                    <i data-lucide="edit-3" style="width: 16px; height: 16px;"></i>
                     Editar
                 </a>
             </div>
@@ -86,15 +85,15 @@
             <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--cinza-borda);">
                 <a href="{% url 'curso_delete' curso.pk %}" class="btn-link" style="color: var(--laranja);" 
                    onclick="return confirm('Tem certeza que deseja excluir este curso?');">
-                    <i data-lucide="trash-2"></i>
+                    <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
                     Excluir
                 </a>
             </div>
         </div>
         {% empty %}
         <div class="no-data">
-            <h3>Nenhum curso cadastrado</h3>
-            <p>Clique em "Novo Curso" para adicionar o primeiro curso.</p>
+            <h3>Nenhum curso encontrado</h3>
+            <p>{% if query %}Tente alterar os termos da pesquisa{% else %}Comece adicionando um novo curso ao sistema{% endif %}</p>
         </div>
         {% endfor %}
     </div>
@@ -112,31 +111,31 @@
         </a>
 
         {% for disciplina in todas_disciplinas %}
-        <div class="card">
+        <div class="card card-disciplina">
             <div class="card-header">
                 <h2>{{ disciplina.nome }}</h2>
             </div>
             
             <p>
-                <i data-lucide="clock"></i>
+                <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
                 <strong>Carga Horária:</strong> {{ disciplina.carga_horaria }}h
             </p>
             
             {% if disciplina.descricao %}
             <p>
-                <i data-lucide="file-text"></i>
+                <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
                 <strong>Descrição:</strong> {{ disciplina.descricao|truncatewords:10 }}
             </p>
             {% endif %}
             
             <p>
-                <i data-lucide="layers"></i>
+                <i data-lucide="layers" style="width: 16px; height: 16px;"></i>
                 <strong>Cursos:</strong> {{ disciplina.cursos.count }}
             </p>
             
             <div class="card-actions">
                 <a href="{% url 'disciplina_update' disciplina.pk %}" class="btn btn-style2">
-                    <i data-lucide="edit"></i>
+                    <i data-lucide="edit-3" style="width: 16px; height: 16px;"></i>
                     Editar
                 </a>
             </div>
@@ -144,15 +143,15 @@
             <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--cinza-borda);">
                 <a href="{% url 'disciplina_delete' disciplina.pk %}" class="btn-link" style="color: var(--laranja);" 
                    onclick="return confirm('Tem certeza que deseja excluir esta disciplina?');">
-                    <i data-lucide="trash-2"></i>
+                    <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
                     Excluir
                 </a>
             </div>
         </div>
         {% empty %}
         <div class="no-data">
-            <h3>Nenhuma disciplina cadastrada</h3>
-            <p>Clique em "Nova Disciplina" para adicionar a primeira disciplina.</p>
+            <h3>Nenhuma disciplina encontrada</h3>
+            <p>{% if query %}Tente alterar os termos da pesquisa{% else %}Comece adicionando uma nova disciplina ao sistema{% endif %}</p>
         </div>
         {% endfor %}
     </div>
@@ -199,6 +198,8 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    lucide.createIcons();
+    
     // Sistema de abas
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -246,10 +247,123 @@ document.addEventListener('DOMContentLoaded', function() {
             const newUrl = new URL(window.location);
             newUrl.searchParams.set('tab', tabName.replace('-tab', ''));
             window.history.replaceState({}, '', newUrl);
+            
+            // Executar busca na aba ativada
+            if (searchInput.value) {
+                buscaAvancada();
+            }
         });
     });
+
+    // Busca avançada - igual à da turma
+    function buscaAvancada() {
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        const activeTab = document.querySelector('.tab-content.active').id;
+        
+        if (activeTab === 'cursos-tab') {
+            buscarCursos(searchTerm);
+        } else if (activeTab === 'disciplinas-tab') {
+            buscarDisciplinas(searchTerm);
+        }
+    }
     
-    lucide.createIcons();
+    function buscarCursos(searchTerm) {
+        const cards = document.querySelectorAll('.card-curso');
+        let algumEncontrado = false;
+        
+        cards.forEach(card => {
+            let encontrou = false;
+            
+            // Buscar no nome do curso
+            const nomeCurso = card.querySelector('h2').textContent.toLowerCase();
+            if (nomeCurso.includes(searchTerm)) encontrou = true;
+            
+            // Buscar na carga horária
+            const cargaHoraria = card.querySelector('p:nth-child(2)').textContent.toLowerCase();
+            if (cargaHoraria.includes(searchTerm)) encontrou = true;
+            
+            // Buscar na descrição (se existir)
+            const descricaoElement = card.querySelector('p:nth-child(3)');
+            if (descricaoElement && descricaoElement.textContent.toLowerCase().includes(searchTerm)) {
+                encontrou = true;
+            }
+            
+            // Buscar no número de disciplinas
+            const disciplinas = card.querySelector('p:nth-child(4)').textContent.toLowerCase();
+            if (disciplinas.includes(searchTerm)) encontrou = true;
+            
+            // Buscar no status
+            const status = card.querySelector('.status-badge').textContent.toLowerCase();
+            if (status.includes(searchTerm)) encontrou = true;
+            
+            card.style.display = encontrou ? 'block' : 'none';
+            if (encontrou) algumEncontrado = true;
+        });
+        
+        atualizarMensagemNenhumResultado(activeTab, algumEncontrado, searchTerm);
+    }
+    
+    function buscarDisciplinas(searchTerm) {
+        const cards = document.querySelectorAll('.card-disciplina');
+        let algumEncontrado = false;
+        
+        cards.forEach(card => {
+            let encontrou = false;
+            
+            // Buscar no nome da disciplina
+            const nomeDisciplina = card.querySelector('h2').textContent.toLowerCase();
+            if (nomeDisciplina.includes(searchTerm)) encontrou = true;
+            
+            // Buscar na carga horária
+            const cargaHoraria = card.querySelector('p:nth-child(2)').textContent.toLowerCase();
+            if (cargaHoraria.includes(searchTerm)) encontrou = true;
+            
+            // Buscar na descrição (se existir)
+            const descricaoElement = card.querySelector('p:nth-child(3)');
+            if (descricaoElement && descricaoElement.textContent.toLowerCase().includes(searchTerm)) {
+                encontrou = true;
+            }
+            
+            // Buscar no número de cursos
+            const cursos = card.querySelector('p:nth-child(4)').textContent.toLowerCase();
+            if (cursos.includes(searchTerm)) encontrou = true;
+            
+            card.style.display = encontrou ? 'block' : 'none';
+            if (encontrou) algumEncontrado = true;
+        });
+        
+        atualizarMensagemNenhumResultado('disciplinas-tab', algumEncontrado, searchTerm);
+    }
+    
+    function atualizarMensagemNenhumResultado(tabName, algumEncontrado, searchTerm) {
+        const cardsContainer = document.querySelector(`#${tabName} .cards-container`);
+        let noDataMessage = document.querySelector(`#${tabName} .no-data-search`);
+        
+        if (!algumEncontrado && searchTerm !== '') {
+            if (!noDataMessage) {
+                noDataMessage = document.createElement('div');
+                noDataMessage.className = 'no-data no-data-search';
+                noDataMessage.innerHTML = `
+                    <h3>Nenhum ${tabName === 'cursos-tab' ? 'curso' : 'disciplina'} encontrado</h3>
+                    <p>Tente alterar os termos da pesquisa</p>
+                `;
+                cardsContainer.appendChild(noDataMessage);
+            }
+        } else if (noDataMessage) {
+            noDataMessage.remove();
+        }
+    }
+    
+    // Adicionar eventos
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', buscaAvancada);
+        
+        // Executar busca inicial se houver texto
+        if (searchInput.value) {
+            buscaAvancada();
+        }
+    }
 });
 </script>
 {% endblock content %}

@@ -42,7 +42,7 @@
                     <i data-lucide="users"></i>
                     <span>Alunos</span>
                 </a>
-                <a href="{% url 'secretaria:calendario' %}" class="menu-item {% if 'solicitacao' in request.resolver_match.url_name %}active{% endif %}">
+                <a href="{% url 'secretaria:calendario' %}" class="menu-item {% if 'calendario' in request.resolver_match.url_name %}active{% endif %}">
                     <i data-lucide="clipboard-pen"></i>
                     <span>Calendar</span>
                 </a>
