@@ -25,12 +25,12 @@ class SolicitacaoListView(ListView):
         user = self.request.user
         
         if user.tipo == 'professor':
-            return ['Solicitacao/solicitacaoList_professor.html']
+            return ['solicitacao/solicitacaoList_professor.html']
         elif user.tipo == 'secretaria':
-            return ['Solicitacao/solicitacaoList_secretaria.html']
+            return ['solicitacao/solicitacaoList_secretaria.html']
         else:
             # Para alunos ou outros tipos, usa o template padrão
-            return ['Solicitacao/solicitacaoList_secretaria.html']
+            return ['solicitacao/solicitacaoList_secretaria.html']
 
     def get_queryset(self):
         user = self.request.user
@@ -52,7 +52,7 @@ class SolicitacaoListView(ListView):
 class SolicitacaoCreateView(CreateView):
     model = Solicitacao
     form_class = SolicitacaoForm
-    template_name = 'Solicitacao/solicitacaoAdd.html'
+    template_name = 'solicitacao/solicitacaoAdd.html'
     
     def dispatch(self, request, *args, **kwargs):
         # Verifica se está autenticado
@@ -333,7 +333,7 @@ class SolicitacaoStatusView(View):
     
 @method_decorator(secretaria_required, name='dispatch')
 class EscolherSubstitutoView(LoginRequiredMixin, TemplateView):
-    template_name = 'Solicitacao/escolher_substituto.html'
+    template_name = 'solicitacao/escolher_substituto.html'
     
     def get(self, request, *args, **kwargs):
         # Verifica se os dados da sessão existem

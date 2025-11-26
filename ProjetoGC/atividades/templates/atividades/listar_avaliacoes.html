@@ -1,0 +1,282 @@
+{% extends 'professor/base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo_pagina }} - Painel SENAI{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h2>{{ titulo_pagina }}</h2>
+        <a href="{% url 'atividades:adicionar_avaliacao' %}" class="btn btn-add">+ Adicionar Avaliação</a>
+    </div>
+
+    <div class="avaliacoes-container">
+        {% if avaliacoes %}
+            {% for avaliacao in avaliacoes %}
+            <div class="avaliacao-card">
+                <div class="avaliacao-header" onclick="toggleCard(this)">
+                    <div class="avaliacao-info">
+                        <h3>{{ avaliacao.titulo }}</h3>
+                        <p class="avaliacao-turma">Turma: {{ avaliacao.turma.nome }}</p>
+                        <p class="avaliacao-data">Data Limite: {{ avaliacao.data_limite_entrega|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    <div class="avaliacao-toggle">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="avaliacao-body" style="display: none;">
+                    <div class="avaliacao-content">
+                        <div class="avaliacao-section">
+                            <h4>Descrição:</h4>
+                            <p>{{ avaliacao.descricao|default:"Sem descrição" }}</p>
+                        </div>
+
+                        {% if avaliacao.arquivo %}
+                        <div class="avaliacao-section">
+                            <h4>Anexo:</h4>
+                            <a href="{{ avaliacao.arquivo.url }}" target="_blank" class="btn btn-download">
+                                <i class="fas fa-download"></i> Baixar Arquivo
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        <div class="avaliacao-section">
+                            <h4>Informações:</h4>
+                            <ul>
+                                <li><strong>Data de Criação:</strong> {{ avaliacao.data_criacao|date:"d/m/Y H:i" }}</li>
+                                <li><strong>Data Limite de Entrega:</strong> {{ avaliacao.data_limite_entrega|date:"d/m/Y H:i" }}</li>
+                                <li><strong>Professor:</strong> {{ avaliacao.professor.usuario.nome }} {{ avaliacao.professor.usuario.sobrenome }}</li>
+                            </ul>
+                        </div>
+
+                        <div class="avaliacao-actions">
+                            <a href="{% url 'atividades:editar_avaliacao' avaliacao.avaliacao_id %}" class="btn btn-edit">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <form method="post" action="{% url 'atividades:deletar_avaliacao' avaliacao.avaliacao_id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-delete" onclick="return confirm('Tem certeza que deseja deletar esta avaliação?');">
+                                    <i class="fas fa-trash"></i> Deletar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <p>Nenhuma avaliação criada ainda.</p>
+                <a href="{% url 'atividades:adicionar_avaliacao' %}" class="btn btn-primary">Criar Primeira Avaliação</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .btn-add {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-add:hover {
+        background-color: #45a049;
+    }
+
+    .avaliacoes-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .avaliacao-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .avaliacao-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        background-color: #f5f5f5;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .avaliacao-header:hover {
+        background-color: #eeeeee;
+    }
+
+    .avaliacao-info {
+        flex: 1;
+    }
+
+    .avaliacao-info h3 {
+        margin: 0 0 10px 0;
+        color: #333;
+        font-size: 18px;
+    }
+
+    .avaliacao-turma,
+    .avaliacao-data {
+        margin: 5px 0;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .avaliacao-toggle {
+        margin-left: 20px;
+        transition: transform 0.3s ease;
+    }
+
+    .avaliacao-toggle i {
+        font-size: 20px;
+        color: #1976d2;
+    }
+
+    .avaliacao-card.open .avaliacao-toggle {
+        transform: rotate(180deg);
+    }
+
+    .avaliacao-body {
+        padding: 20px;
+        border-top: 1px solid #ddd;
+        background-color: #fafafa;
+    }
+
+    .avaliacao-content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .avaliacao-section {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .avaliacao-section h4 {
+        margin: 0;
+        color: #333;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .avaliacao-section p {
+        margin: 0;
+        color: #666;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .avaliacao-section ul {
+        margin: 0;
+        padding-left: 20px;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .avaliacao-section li {
+        margin: 5px 0;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-download {
+        background-color: #2196f3;
+        color: white;
+    }
+
+    .btn-download:hover {
+        background-color: #0b7dda;
+    }
+
+    .btn-edit {
+        background-color: #ff9800;
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background-color: #e68900;
+    }
+
+    .btn-delete {
+        background-color: #f44336;
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background-color: #da190b;
+    }
+
+    .avaliacao-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+
+    .empty-state p {
+        margin: 0 0 20px 0;
+        color: #666;
+        font-size: 16px;
+    }
+
+    .btn-primary {
+        background-color: #1976d2;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #1565c0;
+    }
+</style>
+
+<script>
+    function toggleCard(header) {
+        const card = header.closest('.avaliacao-card');
+        const body = card.querySelector('.avaliacao-body');
+        
+        if (body.style.display === 'none') {
+            body.style.display = 'block';
+            card.classList.add('open');
+        } else {
+            body.style.display = 'none';
+            card.classList.remove('open');
+        }
+    }
+</script>
+{% endblock %}

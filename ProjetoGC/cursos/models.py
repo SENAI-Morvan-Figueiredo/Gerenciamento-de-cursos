@@ -8,8 +8,8 @@ class Curso(models.Model):
     disciplinas = models.ManyToManyField('Disciplina', through='GradeCurricular', blank=True, related_name='cursos')
 
     class Meta:
-        verbose_name = "Curso"
-        verbose_name_plural = "Cursos"
+        verbose_name = "curso"
+        verbose_name_plural = "cursos"
         ordering = ["nome"]
 
     def __str__(self):
@@ -30,7 +30,7 @@ class AlocacaoProfessor(models.Model):
     professor = models.ForeignKey('login.professor', on_delete=models.CASCADE)
     Curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     class Meta:
-        db_table = 'Cursos_alocacaoprofessor'  # Adicione esta linha
+        db_table = 'Cursos_alocacaoprofessor'  
         verbose_name = "Alocação de Professor"
         verbose_name_plural = "Alocações de Professores"
 

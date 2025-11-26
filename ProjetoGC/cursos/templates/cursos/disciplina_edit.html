@@ -1,0 +1,52 @@
+{% extends "secretaria/Abase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-header">
+    <h1>Editar Disciplina</h1>
+    <p>Atualize as informações da disciplina "{{ form.instance.nome }}"</p>
+</div>
+
+<div class="form-container">
+    <form method="post" class="curso-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="form-group">
+            {% for field in form %}
+                <div class="form-field">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <ul class="errorlist">{{ field.errors }}</ul>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-actions">
+            <a href="{% if curso %}{% url 'disciplina_list' curso.id %}{% else %}{% url 'curso_list' %}{% endif %}" class="btn btn-style3">
+                <i data-lucide="arrow-left"></i>
+                Voltar para Lista
+            </a>
+            <button type="submit" class="btn btn-style2">
+                <i data-lucide="save"></i>
+                Salvar Alterações
+            </button>
+        </div>
+    </form>
+
+    {% if curso %}
+    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--cinza-borda); text-align: center;">
+        <a href="{% url 'disciplina_delete' form.instance.pk %}" class="btn" style="background: var(--laranja); color: var(--branco);">
+            <i data-lucide="trash-2"></i>
+            Excluir Disciplina
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}

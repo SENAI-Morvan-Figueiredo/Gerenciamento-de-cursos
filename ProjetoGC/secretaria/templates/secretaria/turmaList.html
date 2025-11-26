@@ -1,0 +1,146 @@
+{% extends 'secretaria/Abase.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<div class="content-header">
+    <h1>Gerenciamento de Turmas</h1>
+</div>
+
+<div class="container-search">
+    <form method="get" class="search-bar">
+        <input type="text" name="q" placeholder="Pesquisar Nome da turma..." value="{{ query }}">
+        <button type="submit" class="btn btn-style">
+            <i data-lucide="search"></i>
+        </button>
+    </form>
+    
+    {% if query %}
+        <a href="{% url 'secretaria:turmaList' %}" class="btn btn-style">
+            <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+            Limpar Filtro
+        </a>
+    {% endif %}
+</div>
+
+<div class="cards-container">
+    <!-- Card de Adição -->
+    <a href="{% url 'secretaria:turmaAdd' %}">
+        <div class="card card-add">
+            <h3>Nova Turma</h3>
+            <i data-lucide="plus-circle" style="width: 32px; height: 32px;"></i>
+        </div>
+    </a>
+    
+    <!-- Cards das Turmas -->
+    {% for turma in turmas %}
+        <div class="card card-turma">
+            <div class="card-header">
+                <h2>{{ turma.nome }}</h2>
+                <span class="status-badge {% if turma.status %}status-active{% else %}status-inactive{% endif %}">
+                    {{ turma.status|yesno:"Ativa,Inativa" }}
+                </span>
+            </div>
+            
+            <p>
+                <i data-lucide="user" style="width: 16px; height: 16px;"></i>
+                <strong>Professor:</strong> {{ turma.professor.usuario.nome }}
+            </p>
+            <p>
+                <i data-lucide="calendar" style="width: 16px; height: 16px;"></i>
+                <strong>Início:</strong> {{ turma.data_inicio|date:"d/m/Y" }}
+            </p>
+            <p>
+                <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
+                <strong>Tipo:</strong> {{ turma.tipo|title }}
+            </p>
+            
+            <div class="card-actions">
+                <a href="{% url 'secretaria:turmaDetail' turma.turma_id %}" class="btn btn-style3">
+                    <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
+                    Detalhes
+                </a>
+                <a href="{% url 'secretaria:turmaUpdate' turma.turma_id %}" class="btn btn-style2">
+                    <i data-lucide="edit-3" style="width: 16px; height: 16px;"></i>
+                    Editar
+                </a>
+            </div>
+        </div>
+    {% empty %}
+        <div class="no-data">
+            <h3>Nenhuma turma encontrada</h3>
+            <p>Comece adicionando uma nova turma ao sistema</p>
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
+        
+        // Busca avançada - procura em campos específicos
+        function buscaAvancada() {
+            const searchTerm = document.querySelector('input[name="q"]').value.toLowerCase();
+            const cards = document.querySelectorAll('.card-turma');
+            
+            cards.forEach(card => {
+                let encontrou = false;
+                
+                // Buscar no nome do curso
+                const nomeCurso = card.querySelector('h2').textContent.toLowerCase();
+                if (nomeCurso.includes(searchTerm)) encontrou = true;
+                
+                // Buscar no nome do professor
+                const professor = card.querySelector('p:nth-child(2)').textContent.toLowerCase();
+                if (professor.includes(searchTerm)) encontrou = true;
+                
+                // Buscar no tipo da turma
+                const tipo = card.querySelector('p:nth-child(4)').textContent.toLowerCase();
+                if (tipo.includes(searchTerm)) encontrou = true;
+                
+                // Buscar no status
+                const status = card.querySelector('.status-badge').textContent.toLowerCase();
+                if (status.includes(searchTerm)) encontrou = true;
+                
+                card.style.display = encontrou ? 'block' : 'none';
+            });
+            
+            atualizarMensagemNenhumResultado();
+        }
+        
+        function atualizarMensagemNenhumResultado() {
+            const searchTerm = document.querySelector('input[name="q"]').value;
+            const cardsVisiveis = document.querySelectorAll('.card-turma[style="display: block"]');
+            const cardsContainer = document.querySelector('.cards-container');
+            let noDataMessage = document.querySelector('.no-data-search');
+            
+            if (cardsVisiveis.length === 0 && searchTerm !== '') {
+                if (!noDataMessage) {
+                    noDataMessage = document.createElement('div');
+                    noDataMessage.className = 'no-data no-data-search';
+                    noDataMessage.innerHTML = `
+                        <h3>Nenhuma turma encontrada</h3>
+                        <p>Tente alterar os termos da pesquisa</p>
+                    `;
+                    cardsContainer.appendChild(noDataMessage);
+                }
+            } else if (noDataMessage) {
+                noDataMessage.remove();
+            }
+        }
+        
+        // Adicionar eventos
+        const searchInput = document.querySelector('input[name="q"]');
+        if (searchInput) {
+            searchInput.addEventListener('input', buscaAvancada);
+            
+            // Executar busca inicial se houver texto
+            if (searchInput.value) {
+                buscaAvancada();
+            }
+        }
+    });
+</script>
+
+{% endblock content %}

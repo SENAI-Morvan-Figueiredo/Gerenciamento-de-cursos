@@ -1,0 +1,211 @@
+{% extends "aluno/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+    <div>
+        <h1 class="h2 mb-1">Minhas Atividades</h1>
+        <p class="text-muted mb-0">Acompanhe e entregue suas atividades.</p>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card-aluno">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" onchange="filtrarAtividades()" id="statusFilter">
+                            <option value="">Todos</option>
+                            <option value="pendente">Pendentes</option>
+                            <option value="entregue">Entregues</option>
+                            <option value="atrasado">Atrasadas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Turma</label>
+                        <select class="form-select" onchange="filtrarAtividades()" id="turmaFilter">
+                            <option value="">Todas as Turmas</option>
+                            {% for turma in turmas %}
+                            <option value="{{ turma.turma_id }}">{{ turma.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Data de Entrega</label>
+                        <input type="date" class="form-control" onchange="filtrarAtividades()" id="dataFilter">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" class="btn btn-outline-secondary w-100" onclick="limparFiltros()">
+                            <i class="fas fa-times me-1"></i>Limpar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Atividades -->
+<div class="row">
+    <div class="col-12">
+        <div class="card-aluno">
+            <div class="card-body">
+                {% if atividades %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Atividade</th>
+                                    <th>Turma</th>
+                                    <th>Data de Entrega</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for atividade in atividades %}
+                                <tr class="atividade-item" 
+                                    data-status="{{ atividade.status }}" 
+                                    data-turma="{{ atividade.atividade.turma.turma_id }}"
+                                    data-data="{{ atividade.atividade.data_entrega|date:'Y-m-d' }}">
+                                    <td>
+                                        <strong>{{ atividade.atividade.titulo }}</strong>
+                                        {% if atividade.atividade.descricao %}
+                                        <br>
+                                        <small class="text-muted">{{ atividade.atividade.descricao|truncatewords:10 }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small>{{ atividade.atividade.turma.nome }}</small>
+                                        <br>
+                                        <small class="text-muted">{{ atividade.atividade.turma.curso.nome }}</small>
+                                    </td>
+                                    <td>
+                                        {% if atividade.atividade.data_entrega %}
+                                            {{ atividade.atividade.data_entrega|date:"d/m/Y H:i" }}
+                                        {% else %}
+                                            <span class="text-muted">Não definida</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="status-badge status-{{ atividade.status }}">
+                                            {{ atividade.status|title }}
+                                        </span>
+                                        {% if atividade.entrega and atividade.entrega.nota %}
+                                        <br>
+                                        <small class="text-success">
+                                            <i class="fas fa-star me-1"></i>Nota: {{ atividade.entrega.nota }}
+                                        </small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            {% if atividade.status == 'pendente' %}
+                                                <a href="{% url 'aluno:entregar_atividade' atividade.atividade.atividade_id %}" 
+                                                   class="btn btn-aluno-primary">
+                                                    <i class="fas fa-paper-plane me-1"></i>Entregar
+                                                </a>
+                                            {% else %}
+                                                <span class="btn btn-outline-secondary">
+                                                    <i class="fas fa-check me-1"></i>Entregue
+                                                </span>
+                                            {% endif %}
+                                            <a href="{% url 'aluno:detalhes_turma' atividade.atividade.turma.turma_id %}" 
+                                               class="btn btn-outline-primary">
+                                                <i class="fas fa-eye me-1"></i>Turma
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-tasks fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">Nenhuma Atividade Encontrada</h4>
+                        <p class="text-muted mb-4">Você não tem atividades disponíveis no momento.</p>
+                        <a href="{% url 'aluno:minhas_turmas' %}" class="btn btn-aluno-primary">
+                            <i class="fas fa-users me-1"></i>Ver Minhas Turmas
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function filtrarAtividades() {
+    const statusFilter = document.getElementById('statusFilter').value;
+    const turmaFilter = document.getElementById('turmaFilter').value;
+    const dataFilter = document.getElementById('dataFilter').value;
+    
+    const atividades = document.querySelectorAll('.atividade-item');
+    let atividadesVisiveis = 0;
+    
+    atividades.forEach(atividade => {
+        let show = true;
+        
+        // Filtro por status
+        if (statusFilter && atividade.dataset.status !== statusFilter) {
+            show = false;
+        }
+        
+        // Filtro por turma
+        if (turmaFilter && atividade.dataset.turma !== turmaFilter) {
+            show = false;
+        }
+        
+        // Filtro por data
+        if (dataFilter && atividade.dataset.data !== dataFilter) {
+            show = false;
+        }
+        
+        if (show) {
+            atividade.style.display = 'table-row';
+            atividadesVisiveis++;
+        } else {
+            atividade.style.display = 'none';
+        }
+    });
+    
+    // Mostrar mensagem se não houver atividades visíveis
+    const tabela = document.querySelector('table');
+    const mensagemVazia = document.getElementById('mensagem-vazia');
+    
+    if (atividadesVisiveis === 0) {
+        if (!mensagemVazia) {
+            const tr = document.createElement('tr');
+            tr.id = 'mensagem-vazia';
+            tr.innerHTML = `
+                <td colspan="5" class="text-center py-4">
+                    <i class="fas fa-search fa-2x text-muted mb-2"></i>
+                    <p class="text-muted mb-0">Nenhuma atividade encontrada com os filtros aplicados.</p>
+                </td>
+            `;
+            tabela.querySelector('tbody').appendChild(tr);
+        }
+    } else if (mensagemVazia) {
+        mensagemVazia.remove();
+    }
+}
+
+function limparFiltros() {
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('turmaFilter').value = '';
+    document.getElementById('dataFilter').value = '';
+    filtrarAtividades();
+}
+
+// Aplicar filtros ao carregar a página
+document.addEventListener('DOMContentLoaded', function() {
+    filtrarAtividades();
+});
+</script>
+{% endblock %}

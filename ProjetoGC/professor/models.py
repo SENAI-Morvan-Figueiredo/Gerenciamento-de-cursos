@@ -8,7 +8,7 @@ class Aula(models.Model):
     ]
     
     aula_id = models.AutoField(primary_key=True)
-    turma = models.ForeignKey('Cursos.Turma', on_delete=models.CASCADE)
+    turma = models.ForeignKey('cursos.Turma', on_delete=models.CASCADE)
     data = models.DateField()
     tipo = models.CharField(max_length=10, choices=TIPO_AULA)
     
@@ -18,7 +18,7 @@ class Aula(models.Model):
 class Frequencia(models.Model):
     frequencia_id = models.AutoField(primary_key=True)
     aula = models.ForeignKey(Aula, on_delete=models.CASCADE)
-    matricula = models.ForeignKey('Cursos.Matricula', on_delete=models.CASCADE)
+    matricula = models.ForeignKey('cursos.Matricula', on_delete=models.CASCADE)
     presenca = models.BooleanField(default=False)
     observacao = models.TextField(blank=True, null=True)  
     class Meta:

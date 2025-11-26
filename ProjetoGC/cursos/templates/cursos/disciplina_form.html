@@ -1,0 +1,44 @@
+{% extends "secretaria/Abase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-header">
+    <h1>{% if view.object %}Editar Disciplina{% else %}Nova Disciplina{% endif %}</h1>
+    <p>{% if view.object %}Atualize as informações da disciplina{% else %}Preencha os dados para criar uma nova disciplina{% endif %}</p>
+</div>
+
+<div class="form-container">
+
+    <form method="post" class="curso-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="form-group">
+            {% for field in form %}
+                <div class="form-field">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <ul class="errorlist">{{ field.errors }}</ul>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-actions">
+            <a href="{% if curso %}{% url 'disciplina_list' curso.id %}{% else %}{% url 'curso_list' %}{% endif %}" class="btn btn-style3">
+                <i data-lucide="arrow-left"></i>
+                Voltar
+            </a>
+            <button type="submit" class="btn btn-style2">
+                <i data-lucide="{% if view.object %}save{% else %}plus{% endif %}"></i>
+                {% if view.object %}Atualizar Disciplina{% else %}Criar Disciplina{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}

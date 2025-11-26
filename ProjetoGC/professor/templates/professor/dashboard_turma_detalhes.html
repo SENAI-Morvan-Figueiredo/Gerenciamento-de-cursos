@@ -1,0 +1,124 @@
+{% extends 'professor/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard — {{ turma.nome }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="content-header">
+        <h1>Dashboard — {{ turma.nome }}</h1>
+        <p class="text-muted">Visão detalhada da turma</p>
+    </div>
+
+    <div class="detail-grid" style="margin-bottom:1.5rem;">
+        <div class="card">
+            <div class="card-header">
+                <span>Informações da Turma</span>
+                <span class="status-badge {% if turma.status %}status-active{% else %}status-inactive{% endif %}">
+                    {{ turma.status|yesno:"Ativa,Inativa" }}
+                </span>
+            </div>
+            <div class="card-body" style="padding:16px;">
+                <div class="turma-info">
+                    <p><strong>Curso:</strong> {{ turma.curso.nome }}</p>
+                    <p><strong>Professor:</strong>
+                        {% if turma.professor %}
+                            {{ turma.professor.usuario.nome }} {{ turma.professor.usuario.sobrenome }}
+                        {% else %}
+                            <span class="text-muted">Não atribuído</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Tipo:</strong> {{ turma.get_tipo_display }}</p>
+                    <p><strong>Período:</strong> {% if turma.data_inicio %}{{ turma.data_inicio|date:"d/m/Y" }}{% else %}-{% endif %} {% if turma.data_fim %}- {{ turma.data_fim|date:"d/m/Y" }}{% endif %}</p>
+                    <p><strong>Horário:</strong> {{ turma.entrada_horas }} - {{ turma.saida_horas }}</p>
+                    <p><strong>Dias:</strong> {{ turma.dias_semana }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span>Estatísticas</span>
+            </div>
+            <div class="card-body" style="padding:16px;">
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:0.75rem;">
+                    <div style="text-align:center; padding:12px; background: #f3fbff; border-radius:8px;">
+                        <div style="font-size:20px; font-weight:700; color:#164193;">{{ total_alunos }}</div>
+                        <div style="font-size:12px; color:#666; text-transform:uppercase;">Total de Alunos</div>
+                    </div>
+                    <div style="text-align:center; padding:12px; background: #f3fbff; border-radius:8px;">
+                        <div style="font-size:20px; font-weight:700; color:#164193;">{{ media_notas }}</div>
+                        <div style="font-size:12px; color:#666; text-transform:uppercase;">Média de Notas</div>
+                    </div>
+                    <div style="text-align:center; padding:12px; background: #f3fbff; border-radius:8px;">
+                        <div style="font-size:20px; font-weight:700; color:#164193;">{{ frequencia }}%</div>
+                        <div style="font-size:12px; color:#666; text-transform:uppercase;">Frequência</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Alunos -->
+    <div class="card" style="margin-bottom:1rem;">
+        <div class="card-header"><span>Alunos Matriculados ({{ total_alunos }})</span></div>
+        <div class="card-body" style="padding:0;">
+            {% if turma.matricula_set.exists %}
+            <div class="table-wrap">
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr style="background:#164193; color:white;">
+                            <th style="padding:12px; text-align:left;">Aluno</th>
+                            <th style="padding:12px; text-align:left;">Email</th>
+                            <th style="padding:12px; text-align:left;">Status</th>
+                            <th style="padding:12px; text-align:left;">Data de Ingresso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for matricula in turma.matricula_set.all %}
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:12px;">{{ matricula.aluno.usuario.nome }} {{ matricula.aluno.usuario.sobrenome }}</td>
+                            <td style="padding:12px;">{{ matricula.aluno.usuario.email }}</td>
+                            <td style="padding:12px;"><span class="status-badge {% if matricula.status_matricula %}status-active{% else %}status-inactive{% endif %}">{{ matricula.status_matricula|yesno:"Ativo,Inativo" }}</span></td>
+                            <td style="padding:12px;">{% if matricula.data_ingresso %}{{ matricula.data_ingresso|date:"d/m/Y" }}{% else %}-{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="no-data">Nenhum aluno matriculado nesta turma.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Disciplinas -->
+    <div class="card">
+        <div class="card-header"><span>Disciplinas do Curso</span></div>
+        <div class="card-body" style="padding:16px;">
+            {% if turma.curso.disciplinas.exists %}
+            <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:1rem;">
+                {% for disciplina in turma.curso.disciplinas.all %}
+                <div style="padding:12px; background:white; border:1px solid #eee; border-radius:8px;">
+                    <h4 style="margin:0 0 8px 0; color:#164193;">{{ disciplina.nome }}</h4>
+                    <p style="margin:0 0 8px 0; color:#666; font-size:13px;">{{ disciplina.descricao|default:"Sem descrição" }}</p>
+                    <p style="margin:0; color:#666; font-size:13px;"><strong>Carga horária:</strong> {{ disciplina.carga_horaria }}h</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-data">Nenhuma disciplina cadastrada para este curso.</div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="detail-actions">
+        <a href="{% url 'professor:home' %}" class="btn btn-style3">← Voltar às turmas</a>
+        <a href="{% url 'secretaria:turmaDetail' turma.turma_id %}" class="btn btn-style2">Ver na Secretaria</a>
+    </div>
+</div>
+
+<script>
+    lucide && lucide.createIcons && lucide.createIcons();
+</script>
+
+{% endblock %}

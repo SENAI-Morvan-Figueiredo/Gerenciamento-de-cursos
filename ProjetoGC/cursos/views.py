@@ -12,7 +12,7 @@ from .forms import CursoForm, DisciplinaForm
 # ==========================
 class CursoListView(ListView):
     model = Curso
-    template_name = "Cursos/curso_list.html"
+    template_name = "cursos/curso_list.html"
     context_object_name = "cursos"
 
     def get_context_data(self, **kwargs):
@@ -24,7 +24,7 @@ class CursoListView(ListView):
 class CursoCreateView(CreateView):
     model = Curso
     form_class = CursoForm
-    template_name = "Cursos/curso_form.html"
+    template_name = "cursos/curso_form.html"
     success_url = reverse_lazy("curso_list")
 
     def form_valid(self, form):
@@ -34,7 +34,7 @@ class CursoCreateView(CreateView):
 class CursoUpdateView(UpdateView):
     model = Curso
     form_class = CursoForm
-    template_name = "Cursos/curso_edit.html"
+    template_name = "cursos/curso_edit.html"
     success_url = reverse_lazy("curso_list")
 
     def get_initial(self):
@@ -49,7 +49,7 @@ class CursoUpdateView(UpdateView):
 
 class CursoDeleteView(DeleteView):
     model = Curso
-    template_name = "Cursos/curso_confirm_delete.html"
+    template_name = "cursos/curso_confirm_delete.html"
     success_url = reverse_lazy("curso_list")
 
     def delete(self, request, *args, **kwargs):
@@ -62,7 +62,7 @@ class CursoDeleteView(DeleteView):
 # ==========================
 class DisciplinaListView(ListView):
     model = Disciplina
-    template_name = "Cursos/disciplina_list.html"
+    template_name = "cursos/disciplina_list.html"
     context_object_name = "disciplinas"
 
     def get_queryset(self):
@@ -88,7 +88,7 @@ class DisciplinaListView(ListView):
 class DisciplinaCreateView(CreateView):
     model = Disciplina
     form_class = DisciplinaForm
-    template_name = "Cursos/disciplina_form.html"
+    template_name = "cursos/disciplina_form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -120,7 +120,7 @@ class DisciplinaCreateView(CreateView):
 class DisciplinaUpdateView(UpdateView):
     model = Disciplina
     form_class = DisciplinaForm
-    template_name = "Cursos/disciplina_edit.html"
+    template_name = "cursos/disciplina_edit.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -140,7 +140,7 @@ class DisciplinaUpdateView(UpdateView):
 
 class DisciplinaDeleteView(DeleteView):
     model = Disciplina
-    template_name = "Cursos/disciplina_confirm_delete.html"
+    template_name = "cursos/disciplina_confirm_delete.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

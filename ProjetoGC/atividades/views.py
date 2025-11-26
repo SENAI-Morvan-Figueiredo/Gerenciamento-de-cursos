@@ -56,7 +56,7 @@ def home_atividades(request):
         'titulo_pagina': 'ATIVIDADES',
     }
     
-    return render(request, 'Atividades/home_atividades.html', context)
+    return render(request, 'atividades/home_atividades.html', context)
 
 
 
@@ -101,7 +101,7 @@ def adicionar_avaliacao(request):
         'titulo_pagina': 'ADICIONAR AVALIACAO',
     }
     
-    return render(request, 'Atividades/adicionar_avaliacao.html', context)
+    return render(request, 'atividades/adicionar_avaliacao.html', context)
 
 
 @login_required
@@ -125,7 +125,7 @@ def editar_avaliacao(request, avaliacao_id):
     else:
         form = AvaliacaoForm(professor=professor, instance=avaliacao)
 
-    return render(request, 'Atividades/adicionar_avaliacao.html', {
+    return render(request, 'atividades/adicionar_avaliacao.html', {
         'form': form,
         'titulo_pagina': 'EDITAR AVALIACAO',
     })
@@ -169,7 +169,7 @@ def listar_avaliacoes(request):
         turma__in=turmas_do_professor
     ).order_by('-data_criacao')
     
-    return render(request, 'Atividades/listar_avaliacoes.html', {
+    return render(request, 'atividades/listar_avaliacoes.html', {
         'avaliacoes': avaliacoes,
         'titulo_pagina': 'AVALIACOES',
     })
@@ -222,7 +222,7 @@ def adicionar_atividade(request):
     else:
         form = AtividadeForm(professor=professor)
 
-    return render(request, 'Atividades/adicionar_atividade.html', {
+    return render(request, 'atividades/adicionar_atividade.html', {
         'form': form,
         'titulo_pagina': 'ADICIONAR ATIVIDADE',
         'turma': turma_inicial
@@ -266,7 +266,7 @@ def listar_atividades_aluno(request):
     turma_ids = Matricula.objects.filter(aluno=aluno).values_list('turma_id', flat=True)
     atividades = Atividade.objects.filter(turma_id__in=turma_ids).order_by('-data_entrega')
 
-    return render(request, 'Atividades/aluno_listar_atividades.html', {
+    return render(request, 'atividades/aluno_listar_atividades.html', {
         'atividades': atividades,
         'titulo_pagina': 'ATIVIDADES'
     })
@@ -307,7 +307,7 @@ def entregar_atividade(request, atividade_id):
     else:
         form = EntregaForm(instance=entrega)
 
-    return render(request, 'Atividades/entregar_atividade.html', {
+    return render(request, 'atividades/entregar_atividade.html', {
         'form': form,
         'atividade': atividade,
         'entrega': entrega

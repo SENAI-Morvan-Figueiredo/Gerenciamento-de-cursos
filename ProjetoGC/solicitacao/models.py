@@ -22,7 +22,7 @@ class Solicitacao(models.Model):
     justificativa = models.TextField(blank=True, null=True)
     
     turma_origem = models.ForeignKey(
-        'Cursos.Turma', 
+        'cursos.Turma', 
         on_delete=models.CASCADE, 
         null=True, 
         blank=True,
@@ -30,7 +30,7 @@ class Solicitacao(models.Model):
     )
     
     turma_destino = models.ForeignKey(
-        'Cursos.Turma', 
+        'cursos.Turma', 
         on_delete=models.CASCADE, 
         null=True, 
         blank=True,

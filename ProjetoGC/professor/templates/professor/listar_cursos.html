@@ -1,0 +1,41 @@
+<!-- professor/listar_cursos.html -->
+{% extends 'professor/base.html' %}
+{% load static %}
+
+{% block title %}Meus Cursos e Turmas{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h2>Meus Cursos</h2>
+        <p>Selecione um curso para visualizar as turmas</p>
+    </div>
+
+    <div class="cards-grid">
+        {% for item in cursos_com_contagem %}
+        <div class="card curso-card">
+            <div class="card-header">
+                <span style="color: black;">{{ item.curso.nome }}</span>
+                <i>📚</i>
+            </div>
+            <div class="card-body">
+                <div class="card-content">
+                    <div class="card-count">{{ item.turmas_count }}</div>
+                    <div class="card-label">Turmas</div>
+                    <p class="curso-descricao">{{ item.curso.descricao|truncatewords:15 }}</p>
+                </div>
+                <div class="card-actions">
+                    <a href="{% url 'professor:turmas_por_curso' item.curso.id %}" class="card-btn" title="Ver Turmas">
+                        <i>👁️</i> Ver Turmas
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="table-empty-state">
+            Nenhum curso encontrado
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

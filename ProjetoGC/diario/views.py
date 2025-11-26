@@ -30,7 +30,7 @@ def lista_turmas_diario(request):
         'turmas': turmas,
         'hoje': timezone.now().date()
     }
-    return render(request, 'Diario/lista_turmas.html', context)
+    return render(request, 'diario/lista_turmas.html', context)
 
 @login_required
 def criar_aula(request, turma_id):
@@ -75,7 +75,7 @@ def criar_aula(request, turma_id):
         'turma': turma,
         'hoje': timezone.now().date()
     }
-    return render(request, 'Diario/criar_aula.html', context)
+    return render(request, 'diario/criar_aula.html', context)
 
 @login_required
 def registrar_chamada(request, aula_id):
@@ -98,7 +98,7 @@ def registrar_chamada(request, aula_id):
         'turma': turma,
         'frequencias': frequencias,
     }
-    return render(request, 'Diario/registrar_chamada.html', context)
+    return render(request, 'diario/registrar_chamada.html', context)
 
 @login_required
 @require_POST
@@ -200,4 +200,4 @@ def relatorio_frequencia(request, turma_id):
         'total_faltas': total_faltas,
         'total_possivel': total_possivel,
     }
-    return render(request, 'Diario/relatorio_frequencia.html', context)
+    return render(request, 'diario/relatorio_frequencia.html', context)

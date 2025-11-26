@@ -145,7 +145,7 @@ AUTH_USER_MODEL = 'login.Usuario'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'Login.backends.EmailAuthBackend',  # Backend customizado para email
+    'login.backends.EmailAuthBackend',  # Backend customizado para email
 ]
 
 LOGIN_URL = '/'

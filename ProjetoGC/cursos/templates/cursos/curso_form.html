@@ -1,0 +1,81 @@
+{% extends "secretaria/Abase.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-header">
+    <h1>{% if view.object %}Editar Curso{% else %}Novo Curso{% endif %}</h1>
+    <p>{% if view.object %}Atualize as informações do curso{% else %}Preencha os dados para criar um novo curso{% endif %}</p>
+</div>
+
+<div class="form-container">
+
+    <form method="post" class="curso-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="form-group">
+            {% for field in form %}
+                {% if field.name == "disciplinas" %}
+                    <!-- Campo disciplinas como checkbox group -->
+                    <fieldset class="checkbox-group">
+                        <legend>{{ field.label }}</legend>
+                        <div class="checkbox-items">
+                            {% for checkbox in field %}
+                                <label class="checkbox-item">
+                                    {{ checkbox.tag }}
+                                    {{ checkbox.choice_label }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                        {% if field.errors %}
+                            <ul class="errorlist">{{ field.errors }}</ul>
+                        {% endif %}
+                    </fieldset>
+
+                {% elif field.name == "ativo" %}
+                    <!-- Campo ativo como checkbox customizado (só aparece na edição) -->
+                    {% if view.object %}  {# Só mostra se estiver editando #}
+                    <div class="checkbox-field">
+                        <label class="checkbox-label">
+                            {{ field }}
+                            <span class="checkmark"></span>
+                            <span>{{ field.label }}</span>
+                        </label>
+                        {% if field.errors %}
+                            <ul class="errorlist">{{ field.errors }}</ul>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                
+
+                {% else %}
+                    <!-- Inputs normais -->
+                    <div class="form-field">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <ul class="errorlist">{{ field.errors }}</ul>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="form-actions">
+            <a href="{% url 'curso_list' %}" class="btn btn-style3">
+                <i data-lucide="arrow-left"></i>
+                Voltar para Lista
+            </a>
+            <button type="submit" class="btn btn-style2">
+                <i data-lucide="{% if view.object %}save{% else %}plus{% endif %}"></i>
+                {% if view.object %}Atualizar Curso{% else %}Criar Curso{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}
