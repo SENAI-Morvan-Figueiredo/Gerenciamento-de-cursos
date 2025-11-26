@@ -220,24 +220,13 @@ class TurmaForm(forms.ModelForm):
 
     class Meta:
         model = apps.get_model('cursos', 'Turma')
+        # Não inclua 'professor' aqui
         fields = [
-            "nome", "curso", "professor", "tipo",
+            "nome", "curso", "tipo",
             "entrada_horas", "saida_horas",
             "data_inicio", "data_fim",
             "dias_semana", "status"
         ]
-        labels = {
-            'entrada_horas': 'Horário de Entrada',
-            'saida_horas': 'Horário de Saída',
-            'nome': 'Nome da Turma',
-            'curso': 'Curso',
-            'professor': 'Professor',
-            'tipo': 'Tipo de Turma',
-            'data_inicio': 'Data de Início',
-            'data_fim': 'Data de Término',
-            'status': 'Turma Ativa',
-            'dias_semana': 'Dias da Semana'
-        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -245,12 +234,19 @@ class TurmaForm(forms.ModelForm):
         Professor = apps.get_model('login', 'Professor')
 
         self.fields['curso'].queryset = Curso.objects.all()
-        self.fields['professor'].queryset = Professor.objects.all()
-        self.fields['tipo'] = forms.ChoiceField(choices=self.TIPO_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'required': True}))
+
+        # Cria o campo professor manualmente
+        self.fields['professor'] = forms.ModelChoiceField(
+            queryset=Professor.objects.all(),
+            required=True,
+            widget=forms.Select(attrs={'class': 'form-control'})
+        )
+
+        self.fields['tipo'] = forms.ChoiceField(choices=self.TIPO_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
         self.fields['dias_semana'] = forms.MultipleChoiceField(
             choices=self.DIA_SEMANA_CHOICES,
             required=True,
-            widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input', 'data-group': 'dias-semana', 'required': True})
+            widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'})
         )
 
     def clean_dias_semana(self):
