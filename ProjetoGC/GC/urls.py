@@ -21,15 +21,15 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('atividades/', include('Atividades.urls', namespace='atividades')),
-    path('', include('Login.urls')),
-    path('secretaria/', include('Secretaria.urls',  namespace='secretaria')),
-    path('solicitacao/', include('Solicitacao.urls', namespace='solicitacao')),
-    path('aluno/', include('Aluno.urls')),
-    path('professor/', include(('Professor.urls', 'professor'), namespace='professor')),
-    path('cursos/', include('Cursos.urls')),
-    path('calendario/', include('Calendario.urls')),
-    path('diario/', include('Diario.urls', namespace='diario')),
+    path('atividades/', include('atividades.urls', namespace='atividades')),
+    path('', include('login.urls')),
+    path('secretaria/', include('secretaria.urls',  namespace='secretaria')),
+    path('solicitacao/', include('solicitacao.urls', namespace='solicitacao')),
+    path('aluno/', include('aluno.urls')),
+    path('professor/', include(('professor.urls', 'professor'), namespace='professor')),
+    path('cursos/', include('cursos.urls')),
+    path('calendario/', include('calendario.urls')),
+    path('diario/', include('diario.urls', namespace='diario')),
 ]
 
 if settings.DEBUG:

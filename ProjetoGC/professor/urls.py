@@ -21,6 +21,6 @@ urlpatterns = [
     # Top-level calendar page for professors: /professor/calendario/
     path('calendario/', calendario_views.calendario_professor, name='calendario'),
     # API endpoints (eventos/) mounted under the same prefix: /professor/calendario/eventos/
-    path('calendario/', include(('Calendario.urls', 'calendario'), namespace='calendario_professor')),
+    path('calendario/', include(('calendario.urls', 'calendario'), namespace='calendario_professor')),
 
 ]

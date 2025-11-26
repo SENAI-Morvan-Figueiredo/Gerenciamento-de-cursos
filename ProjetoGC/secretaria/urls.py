@@ -29,7 +29,7 @@ urlpatterns = [
 
     # API endpoints (eventos/) mounted under the same prefix:
     # /secretaria/calendario/eventos/
-    path('calendario/', include(('Calendario.urls', 'calendario'), namespace='calendario_secretaria_api')),
+    path('calendario/', include(('calendario.urls', 'calendario'), namespace='calendario_secretaria_api')),
 
     path('config/', config_view, name='config'),
 ]
