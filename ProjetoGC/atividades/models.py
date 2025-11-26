@@ -27,8 +27,8 @@ class TipoAtividade(models.Model):
 
 class Avaliacao(models.Model):
     avaliacao_id = models.AutoField(primary_key=True)
-    professor = models.ForeignKey('Login.Professor', on_delete=models.CASCADE)
-    turma = models.ForeignKey('Cursos.Turma', on_delete=models.CASCADE)
+    professor = models.ForeignKey('login.professor', on_delete=models.CASCADE)
+    turma = models.ForeignKey('cursos.Turma', on_delete=models.CASCADE)
     data_criacao = models.DateTimeField(auto_now_add=True)
     titulo = models.CharField(max_length=200)
     descricao = models.TextField(blank=True, null=True)
@@ -55,7 +55,7 @@ class Atividade(models.Model):
     ]
     
     atividade_id = models.AutoField(primary_key=True)
-    turma = models.ForeignKey('Cursos.Turma', on_delete=models.CASCADE)
+    turma = models.ForeignKey('cursos.Turma', on_delete=models.CASCADE)
     tipo = models.ForeignKey(TipoAtividade, on_delete=models.SET_NULL, null=True, blank=True) # Novo campo
     titulo = models.CharField(max_length=200)
     descricao = models.TextField(blank=True, null=True)
@@ -74,7 +74,7 @@ class Atividade(models.Model):
 class AtividadeEntregue(models.Model):
     atividade_entregue_id = models.AutoField(primary_key=True)
     atividade = models.ForeignKey(Atividade, on_delete=models.CASCADE)
-    matricula = models.ForeignKey('Cursos.Matricula', on_delete=models.CASCADE)
+    matricula = models.ForeignKey('cursos.Matricula', on_delete=models.CASCADE)
     texto = models.TextField(blank=True, null=True)
     tipo_arquivo = models.CharField(max_length=10, choices=Atividade.TIPO_ARQUIVO, blank=True, null=True)
     url_arquivo = models.URLField(blank=True, null=True)

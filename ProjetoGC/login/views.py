@@ -53,7 +53,7 @@ def login_view(request):
         else:
             messages.error(request, "E-mail ou senha incorretos.")
 
-    return render(request, "Login/login.html")
+    return render(request, "login/login.html")
 
 def logout_view(request):
     logout(request)
@@ -70,8 +70,8 @@ def password_reset_done(request):
 
 
 class CustomPasswordResetView(PasswordResetView):
-    template_name = 'Login/password_reset_form.html'
-    html_email_template_name = 'Login/password_reset_email.html'
+    template_name = 'login/password_reset_form.html'
+    html_email_template_name = 'login/password_reset_email.html'
     success_url = reverse_lazy('password_reset_done')
 
     form_class = CustomPasswordResetForm

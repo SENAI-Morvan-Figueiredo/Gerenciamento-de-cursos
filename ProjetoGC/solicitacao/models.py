@@ -14,8 +14,8 @@ class Solicitacao(models.Model):
     ]
     
     solicitacao_id = models.AutoField(primary_key=True)
-    secretaria = models.ForeignKey('Login.Secretaria', on_delete=models.CASCADE)
-    usuario = models.ForeignKey('Login.Usuario', on_delete=models.CASCADE)
+    secretaria = models.ForeignKey('login.secretaria', on_delete=models.CASCADE)
+    usuario = models.ForeignKey('login.usuario', on_delete=models.CASCADE)
     tipo = models.CharField(max_length=15, choices=TIPO_SOLICITACAO)
     data_solicitacao = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_BASE, default='pendente')

@@ -27,7 +27,7 @@ class Disciplina(models.Model):
 
     
 class AlocacaoProfessor(models.Model):
-    professor = models.ForeignKey('Login.Professor', on_delete=models.CASCADE)
+    professor = models.ForeignKey('login.professor', on_delete=models.CASCADE)
     Curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     class Meta:
         db_table = 'Cursos_alocacaoprofessor'  # Adicione esta linha
@@ -56,7 +56,7 @@ class Turma(models.Model):
     nome = models.CharField(max_length=100, null=True, blank=True)
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
 
-    professor = models.ForeignKey('Login.Professor', on_delete=models.SET_NULL,  # Ou models.SET_DEFAULT
+    professor = models.ForeignKey('login.professor', on_delete=models.SET_NULL,  # Ou models.SET_DEFAULT
         null=True,                  # Permite NULL
         blank=True,
         default=None)
@@ -90,7 +90,7 @@ class Turma(models.Model):
 
 class Matricula(models.Model):
     matricula_id = models.AutoField(primary_key=True)
-    aluno = models.ForeignKey('Login.Aluno', on_delete=models.CASCADE)
+    aluno = models.ForeignKey('login.aluno', on_delete=models.CASCADE)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     data_ingresso = models.DateField(auto_now_add=True)
     status_matricula = models.BooleanField(default=True)
