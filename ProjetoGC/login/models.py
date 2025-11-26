@@ -54,7 +54,7 @@ class Aluno(models.Model):
     @property
     def turmas_matriculadas(self):
         """Retorna as turmas ativas do aluno"""
-        from Cursos.models import  Turma
+        from cursos.models import  Turma
         return Turma.objects.filter(
             matricula__aluno=self,
             matricula__status_matricula=True

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import TipoAtividade, Atividade, Avaliacao
+from .models import TipoAtividade, Atividade, Avaliacao, AtividadeEntregue
 from .forms import AvaliacaoForm
 from .forms_extra import AtividadeForm, EntregaForm
 from login.models import Professor as ProfessorModel
@@ -8,6 +8,7 @@ from cursos.models import Turma
 from django.db.models import Count, Q
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
+
 
 @login_required
 def home_atividades(request):
@@ -256,7 +257,7 @@ def listar_atividades_aluno(request):
     if request.user.tipo != 'aluno':
         return HttpResponse("Apenas alunos podem ver esta página.", status=403)
 
-    from Cursos.models import Matricula
+    from cursos.models import Matricula
     try:
         aluno = request.user.aluno
     except:
@@ -279,7 +280,7 @@ def entregar_atividade(request, atividade_id):
 
     atividade = get_object_or_404(Atividade, pk=atividade_id)
 
-    from Cursos.models import Matricula
+    from cursos.models import Matricula
     try:
         aluno = request.user.aluno
     except:

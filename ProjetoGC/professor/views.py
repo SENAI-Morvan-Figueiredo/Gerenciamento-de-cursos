@@ -4,11 +4,11 @@ from django.shortcuts import render
 # Import do decorator específico do app login
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Avg
-from Cursos.models import Turma, Matricula, Curso
-from Login.models import Professor
+from cursos.models import Turma, Matricula, Curso
+from login.models import Professor
 from .models import Aula, Frequencia
-from Atividades.models import Atividade, AtividadeEntregue
-from Login.decorators import professor_required
+from atividades.models import Atividade, AtividadeEntregue
+from login.decorators import professor_required
 from django.utils import timezone
 import datetime
 

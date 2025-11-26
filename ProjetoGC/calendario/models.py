@@ -1,7 +1,7 @@
 # Calendario/models.py
 from django.db import models
-from Cursos.models import Turma
-from Atividades.models import Atividade  # ajuste o nome do app conforme seu projeto
+from cursos.models import Turma
+from atividades.models import Atividade  # ajuste o nome do app conforme seu projeto
 
 class Evento(models.Model):
     titulo = models.CharField(max_length=100)

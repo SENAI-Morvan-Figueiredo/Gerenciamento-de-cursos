@@ -74,7 +74,7 @@ def listar_eventos(request):
         elif hasattr(user, 'tipo') and user.tipo == 'aluno':
             # user.aluno -> relação OneToOne com Aluno
             # busca as turmas onde ele está matriculado
-            from Cursos.models import Matricula
+            from cursos.models import Matricula
   # ou o caminho real da sua app
 
             turmas_ids = Matricula.objects.filter(aluno=user.aluno).values_list('turma_id', flat=True)
