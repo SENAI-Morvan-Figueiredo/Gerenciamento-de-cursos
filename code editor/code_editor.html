@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNCODE</title>
+    <!-- Tailwind CSS (Keep this CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Pyodide (Keep this CDN) -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+    <!-- LINK TO YOUR LOCAL CSS FILE -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="h-14 bg-slate-900 border-b border-slate-700 flex items-center justify-between px-4 shrink-0">
+        <div class="flex items-center gap-2">
+            <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+            <h1 class="font-bold text-lg tracking-wide">SENAICode</h1>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <div id="python-status" class="hidden text-xs text-yellow-500 flex items-center gap-2">
+                <div class="loader"></div> Loading Python Engine...
+            </div>
+            <button onclick="runCode()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded text-sm font-semibold flex items-center gap-2 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Run Code
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+        
+        <!-- Editor Column (Left) -->
+        <div class="w-full md:w-1/2 flex flex-col border-r border-slate-700 bg-slate-800">
+            <!-- Tabs -->
+            <div class="flex bg-slate-900 text-sm overflow-x-auto">
+                <button onclick="switchTab('html')" id="tab-html" class="tab-btn px-6 py-3 text-white border-b-2 border-transparent hover:text-orange-500 hover:bg-slate-800 transition-colors active-tab">HTML</button>
+                <button onclick="switchTab('css')" id="tab-css" class="tab-btn px-6 py-3 text-white border-b-2 border-transparent hover:text-blue-500 hover:bg-slate-800 transition-colors">CSS</button>
+                <button onclick="switchTab('js')" id="tab-js" class="tab-btn px-6 py-3 text-white border-b-2 border-transparent hover:text-yellow-200 hover:bg-slate-800 transition-colors">JavaScript</button>
+                <button onclick="switchTab('python')" id="tab-python" class="tab-btn px-6 py-3 text-white border-b-2 border-transparent hover:text-yellow-500 hover:bg-slate-800 transition-colors">Python</button>
+            </div>
+
+            <!-- Code Inputs -->
+            <div class="relative flex-1 bg-slate-900">
+                <textarea id="editor-html" class="code-input w-full h-full p-4 editor-font" placeholder="<!-- Seu HTML aqui -->" spellcheck="false"></textarea>
+                <textarea id="editor-css" class="code-input w-full h-full p-4 editor-font hidden" placeholder="/*Seu CSS aqui */" spellcheck="false"></textarea>
+                <textarea id="editor-js" class="code-input w-full h-full p-4 editor-font hidden" placeholder="// Seu JavaScript aqui" spellcheck="false"></textarea>
+                <textarea id="editor-python" class="code-input w-full h-full p-4 editor-font hidden" placeholder="# Seu Python code aqui" spellcheck="false"></textarea>
+            </div>
+            
+            <!-- Language Hint Footer -->
+            <div class="h-8 bg-slate-800 border-t border-slate-700 flex items-center px-4 text-xs text-slate-500">
+                <span id="lang-indicator">HTML Mode</span>
+                <span class="mx-2">|</span>
+                <span>Digite aqui o seu código</span>
+            </div>
+        </div>
+
+        <!-- Preview Column (Right) -->
+        <div class="w-full md:w-1/2 flex flex-col bg-slate-100">
+            <!-- Output Header -->
+            <div class="h-10 bg-slate-200 border-b border-slate-300 flex items-center px-4 justify-between">
+                <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Output</span>
+                <button onclick="clearOutput()" class="text-xs text-slate-500 hover:text-red-500">Clear</button>
+            </div>
+
+            <!-- Web Preview (Iframe) -->
+            <div id="output-web" class="flex-1 w-full h-full relative">
+                <iframe id="preview-frame" class="w-full h-full border-none bg-white"></iframe>
+            </div>
+
+            <!-- Python Console Output -->
+            <div id="output-python" class="flex-1 w-full h-full bg-slate-900 hidden flex flex-col p-4 overflow-y-auto">
+                <div class="font-mono text-sm">
+                    <div class="text-slate-500 mb-2">Python Console</div>
+                    <div id="console-logs" class="space-y-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
