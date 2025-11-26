@@ -230,33 +230,26 @@ class TurmaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        Curso = apps.get_model('cursos', 'Curso')
-        Professor = apps.get_model('login', 'Professor')
-
-        self.fields['curso'].queryset = Curso.objects.all()
-
-        # Cria o campo professor manualmente
+        from login.models import Professor
         self.fields['professor'] = forms.ModelChoiceField(
             queryset=Professor.objects.all(),
             required=True,
             widget=forms.Select(attrs={'class': 'form-control'})
         )
 
-        self.fields['tipo'] = forms.ChoiceField(choices=self.TIPO_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
-        self.fields['dias_semana'] = forms.MultipleChoiceField(
-            choices=self.DIA_SEMANA_CHOICES,
-            required=True,
-            widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'})
-        )
 
-    def clean_dias_semana(self):
-        dias_semana = self.cleaned_data.get('dias_semana')
-        return ','.join(dias_semana) if dias_semana else ''
+    def clean_professor(self):
+        professor = self.cleaned_data.get('professor')
+        if not professor:
+            raise ValidationError("Selecione um professor.")
+        return professor
 
     def save(self, commit=True):
         turma = super().save(commit=False)
         if 'dias_semana' in self.cleaned_data:
             turma.dias_semana = self.cleaned_data['dias_semana']
+        turma.professor = self.cleaned_data['professor']  #  importante
         if commit:
             turma.save()
         return turma
+
