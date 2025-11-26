@@ -28,11 +28,12 @@ urlpatterns = [
     path('aluno/', include('Aluno.urls')),
     path('professor/', include(('Professor.urls', 'professor'), namespace='professor')),
     path('cursos/', include('Cursos.urls')),
-    path('calendario/', include('Calendario.urls')), 
-    path('diario/', include('Diario.urls', namespace='diario')),  
-] 
+    path('calendario/', include('Calendario.urls')),
+    path('diario/', include('Diario.urls', namespace='diario')),
+]
 
-
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 

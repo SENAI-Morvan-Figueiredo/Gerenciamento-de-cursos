@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-pyylp#1!4&q)_g3exm)=_1sxj&p%c5nqe!jt3*@a)aq$(8=t6=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["gustavodutra237.pythonanywhere.com"]
 
 
 # Application definition
@@ -125,7 +125,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+# Arquivos estáticos
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# Arquivos de mídia (imagens enviadas pelo usuário)
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / "media"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -136,7 +143,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'Login.Usuario'
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend', 
+    'django.contrib.auth.backends.ModelBackend',
     'Login.backends.EmailAuthBackend',  # Backend customizado para email
 ]
 
