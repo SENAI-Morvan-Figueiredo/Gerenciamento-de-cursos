@@ -5,7 +5,7 @@ from .views import (
     ProfessorListView, ProfessorCreateView, ProfessorUpdateView, ProfessorDetailView,
     config_view
 )
-from Calendario import views as calendario_views
+from calendario import views as calendario_views
 
 app_name = 'secretaria'
 

@@ -1,10 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseForbidden, JsonResponse
-from Login.decorators import aluno_required
-from Cursos.models import Matricula, Turma
-from Atividades.models import Atividade, AtividadeEntregue
-from Calendario.models import Evento
+from login.decorators import aluno_required
+from cursos.models import Matricula, Turma
+from atividades.models import Atividade, AtividadeEntregue
+from calendario.models import Evento
 from django.utils import timezone
 from datetime import timedelta, datetime
 import json

@@ -9,10 +9,10 @@ from django.db import transaction
 
 from .models import Solicitacao
 from .forms import SolicitacaoForm
-from Login.models import Secretaria, Aluno , Professor
-from Cursos.models import Matricula, Turma # Import necessário para realocação
+from login.models import Secretaria, Aluno , Professor
+from cursos.models import Matricula, Turma # Import necessário para realocação
 
-from Login.decorators import aluno_required, secretaria_required, professor_required
+from login.decorators import aluno_required, secretaria_required, professor_required
 
 
 

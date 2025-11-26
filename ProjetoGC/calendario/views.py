@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from Login.decorators import professor_required, aluno_required, secretaria_required
+from login.decorators import professor_required, aluno_required, secretaria_required
 from django.http import JsonResponse
 from .models import Evento
 import traceback

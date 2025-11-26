@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required
 from .models import TipoAtividade, Atividade, Avaliacao
 from .forms import AvaliacaoForm
 from .forms_extra import AtividadeForm, EntregaForm
-from Login.models import Professor as ProfessorModel
-from Cursos.models import Turma
+from login.models import Professor as ProfessorModel
+from cursos.models import Turma
 from django.db.models import Count, Q
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods

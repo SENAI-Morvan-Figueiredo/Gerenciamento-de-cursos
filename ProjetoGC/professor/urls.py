@@ -1,6 +1,6 @@
 from django.urls import path, include
 from . import views
-from Calendario import views as calendario_views
+from calendario import views as calendario_views
 
 app_name = 'professor'  # importante para usar namespaced URLs
 

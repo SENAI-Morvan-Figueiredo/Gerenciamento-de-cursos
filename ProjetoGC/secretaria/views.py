@@ -8,10 +8,10 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render
 
 from .forms import AlunoUsuarioForm, ProfessorUsuarioForm, TurmaForm
-from Login.models import Secretaria, Aluno, Professor
-from Cursos.models import Turma, Matricula, Curso
+from login.models import Secretaria, Aluno, Professor
+from cursos.models import Turma, Matricula, Curso
 
-from Login.decorators import secretaria_required
+from login.decorators import secretaria_required
 
 
 

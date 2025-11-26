@@ -1,7 +1,7 @@
 # Calendario/signals.py
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from Atividades.models import Atividade
+from atividades.models import Atividade
 from .models import Evento
 from django.contrib.auth import get_user_model
 

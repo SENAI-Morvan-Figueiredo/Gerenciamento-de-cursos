@@ -1,6 +1,6 @@
 from django import forms
 from .models import Curso, Disciplina, GradeCurricular, Turma, Matricula
-from Login.models import Professor, Aluno
+from login.models import Professor, Aluno
 
 class CursoForm(forms.ModelForm):
     class Meta:

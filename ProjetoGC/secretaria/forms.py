@@ -1,6 +1,6 @@
 from django import forms
-from Login.models import Usuario, Aluno, Professor
-from Cursos.models import Matricula, Turma, Curso
+from login.models import Usuario, Aluno, Professor
+from cursos.models import Matricula, Turma, Curso
 from django.db import transaction
 from django.utils.text import slugify
 from .widgets import DataNascimentoWidget

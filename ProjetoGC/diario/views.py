@@ -11,8 +11,8 @@ from django.db import transaction
 from django.utils import timezone
 
 # Importa dos models do professor
-from Professor.models import Aula, Frequencia
-from Cursos.models import Turma, Matricula
+from professor.models import Aula, Frequencia
+from cursos.models import Turma, Matricula
 
 @login_required
 def lista_turmas_diario(request):

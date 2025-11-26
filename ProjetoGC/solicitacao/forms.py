@@ -1,7 +1,7 @@
 from django import forms
 from .models import Solicitacao
-from Login.models import Aluno, Professor
-from Cursos.models import Matricula, Turma  
+from login.models import Aluno, Professor
+from cursos.models import Matricula, Turma  
 
 class SolicitacaoForm(forms.ModelForm):
 

@@ -1,7 +1,7 @@
 from django import forms
 from .models import Avaliacao
 from django.forms.widgets import DateTimeInput
-from Cursos.models import Turma
+from cursos.models import Turma
 
 class AvaliacaoForm(forms.ModelForm):
     class Meta:

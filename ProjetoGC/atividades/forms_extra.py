@@ -1,6 +1,6 @@
 from django import forms
 from .models import Atividade, AtividadeEntregue
-from Cursos.models import Turma
+from cursos.models import Turma
 
 
 class AtividadeForm(forms.ModelForm):
