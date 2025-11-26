@@ -130,7 +130,13 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_FILES_DIRS = [
-    os.path.join(BASE_DIR, 'GC/static')
+    os.path.join(BASE_DIR, 'GC/static'),
+    os.path.join(BASE_DIR, 'Login/static'),
+    os.path.join(BASE_DIR, 'Professor/static'),
+    os.path.join(BASE_DIR, 'Secretaria/static'),
+    os.path.join(BASE_DIR, 'Solicitacao/static'),
+    os.path.join(BASE_DIR, 'Atividades/static'),
+    os.path.join(BASE_DIR, 'Diario/static'),
 ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
