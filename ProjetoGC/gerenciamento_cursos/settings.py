@@ -61,12 +61,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'gc.urls'
+ROOT_URLCONF = 'gerenciamento_cursos.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ BASE_DIR / 'gc/templates' ],
+        'DIRS': [ BASE_DIR / 'gerenciamento_cursos/templates' ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,7 +78,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'gc.wsgi.application'
+WSGI_APPLICATION = 'gerenciamento_cursos.wsgi.application'
 
 
 # Database
