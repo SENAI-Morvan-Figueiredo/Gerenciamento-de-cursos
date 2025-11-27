@@ -13,13 +13,13 @@
             <img src="{% static 'login/img/senai_logo.png' %}" alt="SENAI Logo" class="senai-logo">
         </div>
 
-        {% if messages %}
+        <!-- {% if messages %}
             <ul class="messages">
                 {% for message in messages %}
                     <li class="{{ message.tags }}">{{ message }}</li>
                 {% endfor %}
             </ul>
-        {% endif %}
+        {% endif %} -->
 
         <form method="post" class="login-form">
             {% csrf_token %}
