@@ -32,9 +32,6 @@ settings.pyc
 media/
 uploads/
 
-# Static files
-staticfiles/
-static/
 
 # PyCharm / VSCode / IDEs
 .idea/
