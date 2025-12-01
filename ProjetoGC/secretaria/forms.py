@@ -6,6 +6,7 @@ from django.utils.text import slugify
 from .widgets import DataNascimentoWidget
 from datetime import datetime
 from django.core.exceptions import ValidationError
+from .widgets import DataNascimentoWidget, DateInputWidget  # Adicione DateInputWidget
 
 class UsuarioBaseForm(forms.ModelForm):
     class Meta:
@@ -399,6 +400,18 @@ class TurmaForm(forms.ModelForm):
         for campo, attrs in campos_atributos.items():
             if campo in self.fields:
                 self.fields[campo].widget.attrs.update(attrs)
+
+        self.fields['data_inicio'].widget = DateInputWidget(attrs={
+            'class': 'form-control date-input',
+            'required': True,
+            'placeholder': 'DD/MM/AAAA'
+        })
+        
+        self.fields['data_fim'].widget = DateInputWidget(attrs={
+            'class': 'form-control date-input',
+            'required': True,
+            'placeholder': 'DD/MM/AAAA'
+        })
         
         if self.instance and self.instance.pk and self.instance.dias_semana:
             dias_salvos = self.instance.dias_semana
