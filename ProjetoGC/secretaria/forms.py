@@ -305,34 +305,6 @@ class ProfessorUsuarioForm(UsuarioBaseForm):
         return usuario
 
 class TurmaForm(forms.ModelForm):
-    class Meta:
-        model = Turma
-        fields = [
-            "nome",
-            "curso",
-            "professor",
-            "tipo",
-            "entrada_horas",
-            "saida_horas",
-            "data_inicio",
-            "data_fim",
-            "dias_semana",
-            "status"
-        ]
-
-        labels = {
-            'entrada_horas': 'Horário de Entrada',
-            'saida_horas': 'Horário de Saída',      
-            'nome': 'Nome da Turma',
-            'curso': 'Curso',
-            'professor': 'Professor',
-            'tipo': 'Tipo de Turma',
-            'data_inicio': 'Data de Início',
-            'data_fim': 'Data de Término',
-            'status': 'Turma Ativa',
-            'dias_semana': 'Dias da Semana'
-        }
-
     DIA_SEMANA_CHOICES = [
         ('segunda', 'Segunda-feira'),
         ('terca', 'Terça-feira'),
@@ -354,89 +326,120 @@ class TurmaForm(forms.ModelForm):
         (False, 'Inativo'),
     ]
 
+    dias_semana = forms.MultipleChoiceField(
+        choices=DIA_SEMANA_CHOICES,
+        required=True,
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'form-check-input',
+            'required': True
+        }),
+        label='Dias da Semana'
+    )
+
+    class Meta:
+        model = Turma
+        fields = [
+            "nome", "curso", "professor", "tipo",
+            "entrada_horas", "saida_horas", "data_inicio",
+            "data_fim", "dias_semana", "status"
+        ]
+
+        labels = {
+            'entrada_horas': 'Horário de Entrada',
+            'saida_horas': 'Horário de Saída',      
+            'nome': 'Nome da Turma',
+            'curso': 'Curso',
+            'professor': 'Professor',
+            'tipo': 'Tipo de Turma',
+            'data_inicio': 'Data de Início',
+            'data_fim': 'Data de Término',
+            'status': 'Turma Ativa',
+        }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        
+        # Configurar querysets
         self.fields['curso'].queryset = Curso.objects.all()
         self.fields['professor'].queryset = Professor.objects.all()
-
-        is_creating = self.instance.pk is None
         
-        if is_creating:
-            self.fields.pop('status', None)
-        else:
-            self.fields['status'] = forms.ChoiceField(
-                choices=self.STATUS_CHOICES,
-                initial=self.instance.status if self.instance else True,
-                widget=forms.CheckboxInput(attrs={'class': 'form-control'})
-            )
-
-        self.fields['nome'].widget.attrs.update({
-        'class': 'form-control', 
-        'required': True, 
-        'placeholder': 'Nome da Turma'
-        })
-        self.fields['curso'].widget.attrs.update({
-            'class': 'form-control',
-            'required': True
-        })
-        self.fields['professor'].widget.attrs.update({
-            'class': 'form-control',
-            'required': True
-        })
-        
+        # Configurar campo tipo
         self.fields['tipo'] = forms.ChoiceField(
             choices=self.TIPO_CHOICES,
             widget=forms.Select(attrs={
-                'class': 'form-control', 
-                'required': True, 
-                'placeholder': 'Selecione o tipo de turma'
-            })
-        )
-
-        self.fields['entrada_horas'].widget = forms.TimeInput(attrs={
-            'class': 'form-control', 
-            'type': 'time', 
-            'required': True
-        })
-        self.fields['saida_horas'].widget = forms.TimeInput(attrs={
-            'class': 'form-control', 
-            'type': 'time', 
-            'required': True
-        })
-
-        self.fields['data_inicio'].widget = forms.DateInput(attrs={
-            'class': 'form-control', 
-            'type': 'date', 
-            'required': True
-        })
-        self.fields['data_fim'].widget = forms.DateInput(attrs={
-            'class': 'form-control', 
-            'type': 'date', 
-            'required': True
-        })
-        
-        self.fields['dias_semana'] = forms.MultipleChoiceField(
-            choices=self.DIA_SEMANA_CHOICES,
-            required=True,
-            widget=forms.CheckboxSelectMultiple(attrs={
-                'class': 'form-check-input', 
-                'data-group': 'dias-semana', 
+                'class': 'form-control',
                 'required': True
-            })
+            }),
+            label='Tipo de Turma'
         )
-
-        if self.instance and self.instance.pk:
-            if self.instance.dias_semana:
-                dias_lista = self.instance.dias_semana.split(',')
-                self.fields['dias_semana'].initial = [dia.strip() for dia in dias_lista]
+        
+        # Configurar status apenas para edição
+        is_creating = self.instance.pk is None
+        
+        if is_creating:
+            # Remover status na criação
+            self.fields.pop('status', None)
+        else:
+            # Configurar status como checkbox na edição
+            self.fields['status'] = forms.BooleanField(
+                required=False,
+                initial=self.instance.status if self.instance else True,
+                widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+                label='Turma Ativa'
+            )
+        
+        # Configurar atributos dos campos
+        campos_atributos = {
+            'nome': {'class': 'form-control', 'placeholder': 'Nome da Turma'},
+            'curso': {'class': 'form-control'},
+            'professor': {'class': 'form-control'},
+            'entrada_horas': {'class': 'form-control', 'type': 'time'},
+            'saida_horas': {'class': 'form-control', 'type': 'time'},
+            'data_inicio': {'class': 'form-control', 'type': 'date'},
+            'data_fim': {'class': 'form-control', 'type': 'date'},
+        }
+        
+        for campo, attrs in campos_atributos.items():
+            if campo in self.fields:
+                self.fields[campo].widget.attrs.update(attrs)
+        
+        # CONFIGURAÇÃO CRÍTICA: Preencher dias_semana quando está editando
+        if self.instance and self.instance.pk and self.instance.dias_semana:
+            # Converter string do banco para lista
+            dias_salvos = self.instance.dias_semana
+            # Remover espaços em branco e converter para lista
+            if dias_salvos:
+                dias_lista = [dia.strip() for dia in dias_salvos.split(',')]
+                # Definir o valor inicial do campo
+                self.fields['dias_semana'].initial = dias_lista
+                print(f"DEBUG - Dias salvos no banco: {dias_salvos}")
+                print(f"DEBUG - Dias convertidos para lista: {dias_lista}")
 
     def clean_dias_semana(self):
         dias_semana = self.cleaned_data.get('dias_semana')
         if dias_semana:
+            # Converter lista para string separada por vírgula
             return ','.join(dias_semana)
-        return ''
+        raise forms.ValidationError("Selecione pelo menos um dia da semana.")
 
+    def clean(self):
+        cleaned_data = super().clean()
+        entrada = cleaned_data.get('entrada_horas')
+        saida = cleaned_data.get('saida_horas')
+        
+        if entrada and saida and entrada >= saida:
+            raise forms.ValidationError(
+                "O horário de entrada deve ser anterior ao horário de saída."
+            )
+        
+        return cleaned_data
+    
+    def get_dias_semana_list(self):
+        """Retorna os dias da semana como lista"""
+        if self.dias_semana:
+            return [dia.strip() for dia in self.dias_semana.split(',')]
+        return []
+    
     def save(self, commit=True):
         turma = super().save(commit=False)
         

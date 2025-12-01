@@ -57,8 +57,26 @@ class TurmaUpdateView(UpdateView):
     template_name = "secretaria/turmaEdit.html"
     success_url = reverse_lazy("secretaria:turmaList")
 
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        print(f"\n=== DEBUG TurmaUpdateView ===")
+        print(f"ID da Turma: {self.object.pk}")
+        print(f"Dias da semana no banco: {self.object.dias_semana}")
+        print(f"Tipo de dados: {type(self.object.dias_semana)}")
+        
+        form = self.get_form()
+        print(f"Initial do form para dias_semana: {form.initial.get('dias_semana')}")
+        print(f"Campo dias_semana no form: {form.fields['dias_semana']}")
+        print("============================\n")
+        
+        return super().get(request, *args, **kwargs)
+
     def form_valid(self, form):
         turma = form.save(commit=False)
+        print(f"\n=== DEBUG Antes de salvar ===")
+        print(f"Dias da semana no cleaned_data: {form.cleaned_data.get('dias_semana')}")
+        print("============================\n")
+        
         turma.professor = form.cleaned_data["professor"]
         turma.save()
         return super().form_valid(form)
