@@ -11,15 +11,21 @@
     <div class="form-group">
       {% for field in form %}
 
-        <!-- Campo dias_semana como checkbox group -->
+        <!-- Campo dias_semana como checkbox group - VERSÃO CORRIGIDA -->
         {% if field.name == "dias_semana" %}
           <fieldset class="checkbox-group">
             <legend>{{ field.label }}</legend>
             <div class="checkbox-items">
-              {% for checkbox in field %}
+              {% for choice_value, choice_label in field.field.choices %}
                 <label class="checkbox-item">
-                  {{ checkbox.tag }}
-                  {{ checkbox.choice_label }}
+                  <input 
+                    type="checkbox" 
+                    name="{{ field.name }}" 
+                    value="{{ choice_value }}"
+                    {% if choice_value in field.initial or choice_value in field.value %}checked{% endif %}
+                    class="form-check-input"
+                  >
+                  {{ choice_label }}
                 </label>
               {% endfor %}
             </div>

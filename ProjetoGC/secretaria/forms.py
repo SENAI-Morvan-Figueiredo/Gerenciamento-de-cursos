@@ -329,10 +329,7 @@ class TurmaForm(forms.ModelForm):
     dias_semana = forms.MultipleChoiceField(
         choices=DIA_SEMANA_CHOICES,
         required=True,
-        widget=forms.CheckboxSelectMultiple(attrs={
-            'class': 'form-check-input',
-            'required': True
-        }),
+        widget=forms.CheckboxSelectMultiple(),
         label='Dias da Semana'
     )
 
@@ -403,17 +400,25 @@ class TurmaForm(forms.ModelForm):
             if campo in self.fields:
                 self.fields[campo].widget.attrs.update(attrs)
         
-        # CONFIGURAÇÃO CRÍTICA: Preencher dias_semana quando está editando
         if self.instance and self.instance.pk and self.instance.dias_semana:
-            # Converter string do banco para lista
             dias_salvos = self.instance.dias_semana
-            # Remover espaços em branco e converter para lista
             if dias_salvos:
-                dias_lista = [dia.strip() for dia in dias_salvos.split(',')]
-                # Definir o valor inicial do campo
-                self.fields['dias_semana'].initial = dias_lista
-                print(f"DEBUG - Dias salvos no banco: {dias_salvos}")
-                print(f"DEBUG - Dias convertidos para lista: {dias_lista}")
+                # Converter string para lista
+                if isinstance(dias_salvos, str):
+                    dias_lista = [dia.strip() for dia in dias_salvos.split(',')]
+                elif isinstance(dias_salvos, list):
+                    dias_lista = self.instance.dias_semana
+                else:
+                    dias_lista = []
+                
+                # IMPORTANTE: Definir o initial no dicionário initial do form
+                self.initial['dias_semana'] = dias_lista
+                
+        # Configurar atributos do widget
+        self.fields['dias_semana'].widget.attrs.update({
+            'class': 'form-check-input',
+            'required': True
+        })
 
     def clean_dias_semana(self):
         dias_semana = self.cleaned_data.get('dias_semana')
