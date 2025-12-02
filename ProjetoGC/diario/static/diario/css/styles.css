@@ -115,7 +115,7 @@
 .card-header {
     padding: 1.25rem 1.5rem;
     background: var(--azul);
-    color: black;
+    color: rgb(255, 255, 255);
     border-bottom: 1px solid var(--cinza-borda);
     display: flex;
     align-items: center;
@@ -128,7 +128,7 @@
     align-items: center;
     gap: 8px;
     font-weight: 600;
-    color: black;
+    color: rgb(255, 255, 255);
 }
 
 .card-header h4 {
@@ -137,6 +137,15 @@
     align-items: center;
     gap: 8px;
     font-weight: 600;
+    color: white;
+}
+
+.card-header h5 {
+    color: white;
+}
+
+
+.card-header span {
     color: white;
 }
 
@@ -164,7 +173,7 @@
 
 .table-wrap th {
     padding: 1rem 1.2rem;
-    color: black;
+    color: rgb(255, 253, 253);
     font-weight: 600;
     text-align: left;
     font-size: 0.9rem;
@@ -216,14 +225,15 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    color: white;
 }
 
-.bg-success { background-color: #28a745 !important; }
+/* .bg-success { background-color: #28a745 !important; } */
 .bg-danger { background-color: #dc3545 !important; }
 .bg-warning { background-color: #346fc5 !important; color: #212529 !important; }
 .bg-info { background-color: var(--azul-claro) !important; }
-.bg-secondary { background-color: var(--cinza-claro) !important; }
-.bg-azul { background-color: var(--azul) !important; }
+.bg-secondary { background-color: #dff4ea !important; color: #0b702a;}
+.bg-azul { background-color: var(--azul); color: white !important; }
 .bg-azul-claro { background-color: var(--azul-claro) !important; }
 
 /* Formulários melhorados */
@@ -385,7 +395,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    color: var(--cinza);
+    color: var(--preto);
     font-size: 0.9rem;
 }
 
@@ -605,19 +615,21 @@
 /* Botões de ação melhorados */
 .action-buttons {
     display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 0.5rem;
+    flex-wrap: nowrap; 
+    align-items: center;
 }
 
+
 .action-btn {
-    padding: 0.75rem 1.5rem;
+    
     border-radius: 8px;
     text-decoration: none;
     font-weight: 600;
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
     border: 2px solid transparent;
 }
 

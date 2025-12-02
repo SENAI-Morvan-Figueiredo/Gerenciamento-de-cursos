@@ -15,7 +15,7 @@
         {% for item in cursos_com_contagem %}
         <div class="card curso-card">
             <div class="card-header">
-                <span style="color: black;">{{ item.curso.nome }}</span>
+                <span style="color: rgb(255, 255, 255);">{{ item.curso.nome }}</span>
                 <i>📚</i>
             </div>
             <div class="card-body">
@@ -25,8 +25,8 @@
                     <p class="curso-descricao">{{ item.curso.descricao|truncatewords:15 }}</p>
                 </div>
                 <div class="card-actions">
-                    <a href="{% url 'professor:turmas_por_curso' item.curso.id %}" class="card-btn" title="Ver Turmas">
-                        <i>👁️</i> Ver Turmas
+                    <a href="{% url 'professor:turmas_por_curso' item.curso.id %}" class="card-btn" title="Ver Turmas" style="text-decoration: none; color: black;">
+                         Ver Turmas
                     </a>
                 </div>
             </div>

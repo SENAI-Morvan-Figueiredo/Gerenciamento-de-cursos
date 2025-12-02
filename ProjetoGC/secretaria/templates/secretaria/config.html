@@ -30,7 +30,7 @@
             
             <div class="config-item">
                 <label>Tipo de Usuário</label>
-                <input type="text" value="{{ user.get_tipo_display }}" readonly>
+                <input id="input-config"   type="text" value="{{ user.get_tipo_display }}" readonly>
             </div>
         </div>
     </div>
@@ -58,7 +58,7 @@
             
             <div class="config-item">
                 <label for="new_password2">Confirmar Nova Senha</label>
-                <input type="password" id="new_password2" name="new_password2" required>
+                <input id="input-config" type="password" id="new_password2" name="new_password2" required>
             </div>
             
             <div class="config-actions">
@@ -132,7 +132,7 @@
             
             <div class="config-item">
                 <label>Endereço</label>
-                <textarea readonly style="height: 80px; resize: vertical;">{{ user.endereco|default:'Não informado' }}</textarea>
+                <textarea readonly id="input-config" style="height: 80px; resize: vertical;">{{ user.endereco|default:'Não informado' }}</textarea>
             </div>
         </div>
     </div>

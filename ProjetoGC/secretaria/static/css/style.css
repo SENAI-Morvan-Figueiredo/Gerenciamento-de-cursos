@@ -136,6 +136,9 @@ svg {
 }
 
 .btn-style3 {
+    display: flex;
+    flex-direction: row;
+    width: 13rem;
     background: var(--azul-suave);
     color: var(--azul);
     border: 1px solid var(--xanadu);
@@ -277,30 +280,29 @@ svg {
 }
 
 .search-bar {
-    width: calc(70vw - 1rem);
-    min-width: 420px;
-    max-width: 800px;
-    padding: 0.5rem 0rem;
-
     display: flex;
     justify-content: space-between;
+    width: calc(80.8vw - 1rem);
+    min-width: 420px;
+    max-width: 1500px;
+    padding: 0.5rem 0rem;
     gap: 2rem ;
 }
 
 .search-bar input {
     padding: 0.5rem;
-    
     background: transparent;
     border: none;
     outline: none;
-
+    width: 1200px;
     font-size: 1.5rem;
 }
 
 .search-bar button {
-    max-width: 130px;
+    display: flex;
+    max-width: 200px;
     padding: 0.6rem 1.2rem;
-
+    flex-direction: row;
     justify-content: center;
     align-items: center;
     gap: 0.4rem;

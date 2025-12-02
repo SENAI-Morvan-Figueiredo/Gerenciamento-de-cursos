@@ -16,7 +16,7 @@
 
     <div class="card criar-aula-card">
         <div class="card-header bg-success">
-            <h5 style="color:black">Dados da Aula</h5>
+            <h5>Dados da Aula</h5>
         </div>
         <div class="card-body">
             <form method="post" class="aula-form">
@@ -34,7 +34,7 @@
                                     <i class="fas fa-calendar-day me-1"></i>Data da Aula *
                                 </label>
                                 <input type="date" 
-                                       class="form-control form-control-lg" 
+                                       class="form-control input-sm-custom"
                                        id="data_aula" 
                                        name="data_aula" 
                                        value="{{ hoje|date:'Y-m-d' }}"
@@ -48,7 +48,7 @@
                                 <label for="tipo_aula" class="form-label">
                                     <i class="fas fa-laptop me-1"></i>Tipo de Aula *
                                 </label>
-                                <select class="form-select form-select-lg" id="tipo_aula" name="tipo_aula" required>
+                                <select class="form-select input-sm-custom" id="tipo_aula" name="tipo_aula" required>
                                     <option value="">Selecione o tipo...</option>
                                     <option value="presencial">🎓 Presencial</option>
                                     <option value="ead">💻 EAD (Online)</option>
@@ -64,7 +64,7 @@
                         <i class="fas fa-info-circle info-icon"></i>
                         <div>
                             <h6 class="info-title">Importante</h6>
-                            <p class="info-text mb-0">
+                            <p class="info-text">
                                 Ao criar a aula, você será redirecionado para registrar a frequência dos alunos.
                                 Certifique-se de que a data selecionada está correta.
                             </p>
@@ -73,15 +73,14 @@
                 </div>
 
                 <div class="form-actions mt-5">
-                    <div class="d-flex gap-3 justify-content-end align-items-center flex-wrap">
-                        <a href="{% url 'diario:lista_turmas_diario' %}" class="btn btn-outline-secondary btn-lg px-4">
-                            <i class="fas fa-arrow-left me-2"></i>Voltar para Turmas
-                        </a>
-                        <button type="submit" class="btn btn-success btn-lg btn-create px-4">
-                            <i class="fas fa-calendar-plus me-2"></i>Criar Aula e Fazer Chamada
-                        </button>
-                    </div>
+                    <a href="{% url 'diario:lista_turmas_diario' %}" class="btn btn-outline-secondary btn-sm-custom">
+                        Voltar para Turmas
+                    </a>
+                    <button type="submit" class="btn btn-success btn-create btn-sm-custom">
+                        Criar Aula e Fazer Chamada
+                    </button>
                 </div>
+
                 
             </form>
         </div>
@@ -94,6 +93,12 @@
     margin: 0 auto;
     border: none;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .aula-form {
@@ -112,9 +117,13 @@
     border-bottom: 2px solid var(--azul-suave);
     display: flex;
     align-items: center;
+    font-size: 16px;
 }
 
 .form-group {
+    width: 280px;
+    display: flex;
+    flex-direction: column;
     margin-bottom: 1.5rem;
 }
 
@@ -171,17 +180,20 @@
 }
 
 .info-title {
+    font-size: 15px;
     color: var(--azul);
     font-weight: 600;
     margin-bottom: 0.5rem;
 }
 
 .info-text {
-    color: var(--cinza);
+    color: var(--preto);
     line-height: 1.5;
 }
 
 .form-actions {
+    display: flex;
+    justify-content: space-between;
     padding-top: 1.5rem;
     border-top: 1px solid var(--cinza-borda);
 }
@@ -194,6 +206,19 @@
     border-radius: 10px;
     transition: all 0.3s ease;
 }
+
+
+.btn-sm-custom {
+    padding: 0.55rem 1.2rem !important;
+    font-size: 0.9rem !important;
+    height: 42px !important;     
+    min-width: 170px !important;  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
 
 .btn-outline-secondary:hover {
     background-color: var(--cinza-claro);
@@ -235,6 +260,10 @@
 
 .btn-outline-secondary, .btn-create {
     min-width: 200px;
+}
+
+#tipo-aula {
+    width: 280px;
 }
 
 @media (max-width: 768px) {

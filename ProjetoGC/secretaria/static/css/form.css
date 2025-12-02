@@ -297,6 +297,22 @@ select.form-control:focus {
     font-weight: bold;
 }
 
+
+#input-config {
+    width: 90vw;       
+    max-width: 736px;  
+    min-width: 0;      
+    margin: 0 auto;
+}
+
+#items_per_page{
+    width: 90vw;       
+    max-width: 736px;  
+    min-width: 0;      
+    margin: 0 auto;
+}
+
+
 /* --- CAMPO DE DATA COM MÁSCARA --- */
 input[data-date-mask="true"] {
     font-family: 'Courier New', monospace;

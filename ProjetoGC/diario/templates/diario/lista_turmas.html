@@ -30,7 +30,7 @@
         <div class="turma-card">
             <div class="card-header">
                 <span><i class="fas fa-users me-2"></i>{{ turma.nome }}</span>
-                <span class="status-badge status-active">Ativa</span>
+                <p class="status-badge status-active"> Ativa </p>
             </div>
             <div class="card-body">
                 <div class="turma-info">
@@ -48,7 +48,7 @@
                     <span class="badge bg-secondary">
                         <i class="fas fa-user-graduate me-1"></i>{{ turma.matricula_set.count }} alunos
                     </span>
-                    <div class="action-buttons">
+                    <div class="action-buttons d-flex">
                         <a href="{% url 'diario:criar_aula' turma.turma_id %}" 
                            class="action-btn action-btn-success" 
                            title="Nova Aula">

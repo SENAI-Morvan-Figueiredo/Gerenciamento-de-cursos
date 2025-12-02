@@ -62,7 +62,8 @@
             </div>
             <div class="card-body">
                 <div class="card-content">
-                    <div class="card-icon">📖</div>
+                    <div class="card-count">{{ eventos_count }}</div>
+                    <div class="card-label">Diário</div>
                 </div>
                 <div class="card-actions">
                     <a href="{% url 'diario:lista_turmas_diario'%}" class="card-btn" title="Visualizar">
@@ -75,27 +76,8 @@
             </div>
         </div>
 
-        <!-- Card: Atividades -->
-        <div class="card atividades">
-            <div class="card-header">
-                <span>Atividades</span>
-                <i>✓</i>
-            </div>
-            <div class="card-body">
-                <div class="card-content">
-                    <div class="card-count">{{ atividades_count }}</div>
-                    <div class="card-label">Atividades</div>
-                </div>
-                <div class="card-actions">
-                    <a href="{% url 'atividades:home' %}" class="card-btn" title="Ver Atividades">
-                        <i>👁️</i>
-                    </a>
-                    <a href="{% url 'atividades:adicionar_atividade' %}" class="card-btn" title="Adicionar Atividade">
-                        <i>✏️</i>
-                    </a>
-                </div>
-            </div>
-        </div>
+        
+      
 
         <!-- Card: Secretaria -->
         <div class="card secretaria">
