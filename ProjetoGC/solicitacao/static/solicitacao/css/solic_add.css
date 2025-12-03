@@ -1,4 +1,9 @@
 /* Estilos específicos para o formulário de solicitação */
+
+a:hover {
+    color: white;
+    text-decoration: none;
+}
 .dashboard-header {
     display: flex;
     justify-content: space-between;
@@ -133,6 +138,7 @@ textarea {
 
 .btn-cancel:hover {
     background-color: #7f8c8d;
+    
     transform: translateY(-2px);
 }
 

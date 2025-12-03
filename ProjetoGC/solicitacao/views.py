@@ -49,6 +49,7 @@ class SolicitacaoListView(ListView):
         context['tipo_usuario'] = self.request.user.tipo
         return context
 
+# Adicione isso à sua view existente
 class SolicitacaoCreateView(CreateView):
     model = Solicitacao
     form_class = SolicitacaoForm
@@ -65,18 +66,33 @@ class SolicitacaoCreateView(CreateView):
             return redirect('login:login')
             
         return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        
+        # Determina qual template base usar
+        if user.tipo == 'professor':
+            context['base_template'] = 'professor/base.html'
+            context['cancel_url'] = reverse('professor:home')  # URL para professor
+        else:
+            context['base_template'] = 'aluno/base.html'
+            context['cancel_url'] = reverse('aluno:dashboard_aluno')  # URL para aluno
+            
+        return context
+    
     def get_success_url(self):
         user = self.request.user
         if user.tipo == 'professor':
             return reverse_lazy('professor:home')
         elif user.tipo == 'aluno':
             return reverse_lazy('aluno:dashboard_aluno')
-
+    
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
-
+    
     def form_valid(self, form):
         solicitacao = form.save(commit=False)
         user = self.request.user

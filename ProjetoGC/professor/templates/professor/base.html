@@ -14,12 +14,12 @@
     <header class="header">
         <div class="header-left">
             <img src="{% static 'professor/img/senai_logo.png' %}" alt="SENAI" class="senai-logo">
-            <span class="welcome-text">BEM-VINDO, PROFESSOR ANDERSON</span>
+            <span class="welcome-text">BEM-VINDO, PROFESSOR {{ user.nome|default:user.username|upper }}</span>
         </div>
 
         <div class="header-right">
-            <span class="weekday">Segunda-Feira</span>
-            <span class="date">23/02/2026</span>
+            <span class="weekday">{% now "l" %}</span>
+            <span class="date">{% now "d/m/Y" %}</span>
             <div class="icons">
                 <i class="mail-icon">📧</i>
                 <i class="bell-icon">🔔</i>
