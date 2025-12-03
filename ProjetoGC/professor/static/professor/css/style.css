@@ -840,7 +840,7 @@ table tbody td {
 
 /* --- Dashboard Container específico para detalhes da turma --- */
 .dashboard-container {
-    max-width: 1200px;
+    /* max-width: 1200px; */
     margin: 0 auto;
     padding: 0 20px;
 }

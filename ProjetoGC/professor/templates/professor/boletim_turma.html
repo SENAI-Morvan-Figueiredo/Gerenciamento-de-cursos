@@ -166,7 +166,9 @@
 
     <!-- Legenda -->
     <div class="legenda-container">
-        <h4 class="legenda-title">📊 Legenda do Boletim</h4>
+        <div class="card-header">
+            <h4 class="legenda-title">📊 Legenda do Boletim</h4>
+        </div>
         <div class="legenda-grid">
             <div class="legenda-item">
                 <strong>Nota Final:</strong>
@@ -232,6 +234,16 @@
     font-weight: 600;
     font-size: 14px;
     text-transform: uppercase;
+}
+
+.card-header {
+    padding: 15px 20px;
+    color: var(--branco);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    background-color: #164193;
 }
 
 .boletim-table {
@@ -429,20 +441,17 @@
 
 .legenda-container {
     margin-top: 2rem;
-    padding: 1rem;
-    background: #f8f9fa;
+    
+    background: #ffffff;
     border-radius: 8px;
-}
-
-.legenda-title {
-    margin-bottom: 1rem;
-    color: #1F2937;
+    box-shadow: 0 8px 20px rgba(61, 122, 255, 0.15);
 }
 
 .legenda-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem;
+    padding: 1rem;
 }
 
 .legenda-item {
