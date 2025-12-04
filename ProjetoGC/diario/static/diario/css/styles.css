@@ -225,7 +225,7 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    color: white;
+    color: black;
 }
 
 /* .bg-success { background-color: #28a745 !important; } */
@@ -738,7 +738,21 @@
 .mb-4 { margin-bottom: 2rem; }
 .mt-4 { margin-top: 2rem; }
 
-.d-flex { display: flex; }
+
+.d-flex { 
+    display: flex; 
+    gap: 10px;
+    padding-inline: 10px;      
+}
+
+
+.col-12 .d-flex {
+    height: 50px;
+    display: flex; 
+    gap: 10px;
+    padding-inline: 10px; 
+}
+
 .justify-content-between { justify-content: space-between; }
 .justify-content-end { justify-content: flex-end; }
 .align-items-center { align-items: center; }

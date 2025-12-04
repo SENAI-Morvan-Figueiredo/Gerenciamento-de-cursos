@@ -52,7 +52,6 @@ def criar_aula(request, turma_id):
                 turma=turma,
                 data=data_aula,
                 tipo=tipo_aula
-                # Remove conteudo e observacoes que não existem no modelo
             )
             
             # Cria registros de frequência para todos os alunos
@@ -79,6 +78,7 @@ def criar_aula(request, turma_id):
 
 @login_required
 def registrar_chamada(request, aula_id):
+
     """Página para registrar frequência dos alunos"""
     aula = get_object_or_404(Aula, pk=aula_id)
     turma = aula.turma
@@ -108,18 +108,23 @@ def salvar_chamada(request, aula_id):
     
     try:
         with transaction.atomic():
-            presencas = request.POST.getlist('presenca[]')
+            # Se o checkbox foi marcado, o valor (matricula_id) será enviado
+            # Se não foi marcado, não será enviado nada nessa lista
+            presencas_ids = request.POST.getlist('presenca[]')  # IDs dos presentes
             matriculas_ids = request.POST.getlist('matricula_id[]')
             observacoes = request.POST.getlist('observacao[]')
             
             for i, matricula_id in enumerate(matriculas_ids):
                 matricula = get_object_or_404(Matricula, pk=matricula_id)
                 
+                #Verifica se o ID da matrícula está na lista de presenças. Se estiver, presenca=True, senão presenca=False
+                esta_presente = matricula_id in presencas_ids
+                
                 Frequencia.objects.filter(
                     aula=aula,
                     matricula=matricula
                 ).update(
-                    presenca=matricula_id in presencas,
+                    presenca=esta_presente,
                     observacao=observacoes[i] if i < len(observacoes) else ''
                 )
             
