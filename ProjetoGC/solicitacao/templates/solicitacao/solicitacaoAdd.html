@@ -1,11 +1,31 @@
-{% extends 'professor/base.html' %}
-{% load static %}
+{% extends base_template %}
 
+{% load static %}
 
 {% block title %}Nova Solicitação - Painel SENAI{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'solicitacao/css/solic_add.css' %}">
+<style>
+    /* Esconde os campos condicionais por padrão */
+    .conditional-field {
+        display: none;
+    }
+    
+    /* Opcional: adiciona transição suave */
+    .conditional-field {
+        transition: opacity 0.3s ease, max-height 0.3s ease;
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+    }
+    
+    .conditional-field.active {
+        display: block;
+        opacity: 1;
+        max-height: 500px; /* Ajuste conforme necessário */
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -47,31 +67,40 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn-submit">Enviar Solicitação</button>
-                <a href="{% url 'solicitacao:solicitacaoList' %}" class="btn-cancel">Cancelar</a>
+                <a href="{{ cancel_url }}" class="btn-cancel">Cancelar</a>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-window.onload = function() {
-    setTimeout(() => {
-        const tipoSelect = document.getElementById('id_tipo');
-        const justificativaDiv = document.getElementById('justificativa-field');
-        const realocacaoDiv = document.getElementById('realocacao-fields');
+document.addEventListener('DOMContentLoaded', function() {
+    const tipoSelect = document.getElementById('id_tipo');
+    const justificativaDiv = document.getElementById('justificativa-field');
+    const realocacaoDiv = document.getElementById('realocacao-fields');
 
-        if (!tipoSelect) return console.error('id_tipo não encontrado');
+    if (!tipoSelect) return console.error('id_tipo não encontrado');
 
-        function toggleFields() {
-            const tipo = tipoSelect.value;
-            justificativaDiv.style.display = tipo === 'trancamento' ? 'block' : 'none';
-            realocacaoDiv.style.display = tipo === 'realocacao' ? 'block' : 'none';
+    function toggleFields() {
+        const tipo = tipoSelect.value;
+        
+        // Remove classe 'active' de todos
+        justificativaDiv.classList.remove('active');
+        realocacaoDiv.classList.remove('active');
+        
+        // Adiciona classe 'active' apenas ao campo relevante
+        if (tipo === 'trancamento') {
+            justificativaDiv.classList.add('active');
+        } else if (tipo === 'realocacao') {
+            realocacaoDiv.classList.add('active');
         }
+    }
 
-        tipoSelect.addEventListener('change', toggleFields);
-        toggleFields();
-    }, 100);
-};
+    // Executa imediatamente ao carregar
+    toggleFields();
+    
+    // Adiciona listener para mudanças
+    tipoSelect.addEventListener('change', toggleFields);
+});
 </script>
 {% endblock %}
-[file content end]
