@@ -6,30 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Painel SENAI{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'professor/css/style.css' %}">
-     {% block extra_css %}{% endblock %}
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
 
     <!-- HEADER -->
     <header class="header">
         <div class="header-left">
-            <img src="{% static 'professor/img/senai_logo.png' %}" alt="SENAI" class="senai-logo">
-            <span class="welcome-text">BEM-VINDO, PROFESSOR ANDERSON</span>
+            <img class="senai-logo">
+            <span class="welcome-text">BEM-VINDO, PROFESSOR {{ user.get_full_name|default:user.username|upper }}</span>
         </div>
 
         <div class="header-right">
-            <span class="weekday">Segunda-Feira</span>
-            <span class="date">23/02/2026</span>
-            <div class="icons">
-                <i class="mail-icon">📧</i>
-                <i class="bell-icon">🔔</i>
-            </div>
+            <span class="weekday" id="currentWeekday"></span>
+            <span class="date" id="currentDate"></span>
         </div>
     </header>
 
     <main class="main-container">
         <!-- SIDEBAR -->
         <aside class="sidebar" id="sidebar">
+            <img src="{% static 'professor/img/senai_logo.png' %}" alt="SENAI" id="senai-logo-sidebar">
             <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-chevron-left"></i></button>
             
             <ul class="sidebar-menu">
@@ -69,13 +66,6 @@
                         <span>Secretaria</span>
                     </a>
                 </li>
-                <!-- No menu lateral, atualize o item Boletim -->
-                <!-- <li>
-                    <a href="{% url 'professor:boletim_turma' 0 %}" onclick="alert('Selecione uma turma primeiro'); return false;">
-                        <i>📊</i>
-                        <span>Boletim</span>
-                    </a>
-                </li> -->
             </ul>
 
             <div class="sidebar-footer">
@@ -94,6 +84,26 @@
     </main>
 
     <script>
+        // Função para formatar data atual em português
+        function formatarDataAtual() {
+            const data = new Date();
+            
+            // Dias da semana em português
+            const diasSemana = [
+                'Domingo', 'Segunda-Feira', 'Terça-Feira', 'Quarta-Feira',
+                'Quinta-Feira', 'Sexta-Feira', 'Sábado'
+            ];
+            
+            const diaSemana = diasSemana[data.getDay()];
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const ano = data.getFullYear();
+            
+            // Atualizar elementos HTML
+            document.getElementById('currentWeekday').textContent = diaSemana;
+            document.getElementById('currentDate').textContent = `${dia}/${mes}/${ano}`;
+        }
+
         // Sidebar Toggle
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
@@ -123,8 +133,12 @@
             const isCollapsed = sidebar.classList.contains('collapsed');
             localStorage.setItem('sidebarCollapsed', isCollapsed);
         });
+
+        // Executar quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            formatarDataAtual();
+        });
     </script>
 
 </body>
 </html>
-

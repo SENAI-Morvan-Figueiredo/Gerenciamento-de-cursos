@@ -1,6 +1,5 @@
 {% extends base_template %}
 
-
 {% load static %}
 
 {% block content %}
@@ -30,7 +29,7 @@
       headerToolbar: {
         left: 'prev',
         center: 'title',
-        right: 'today next'  // "Hoje" antes de "Próximo"
+        right: 'today next'
       },
 
       buttonText: {
@@ -38,17 +37,50 @@
       },
 
       eventDidMount: function(info) {
+        var evento = info.event;
+        var props = evento.extendedProps || {};
+        
+        // 🔹 CORREÇÃO AQUI: Use o turma_id dos props OU use null
+        var turmaId = props.turma_id;  // Não use fallback para 1!
+        var turmaNome = props.turma || 'Turma';
+        var descricao = props.description || 'Sem descrição';
+        
+        
+        // 🔹 Use a URL que já vem do servidor (redirect_url)
+        // Ela já tem o turma_id correto
+        var url = props.redirect_url;
+        
+        // Se não tiver URL, construa com o turmaId correto
+        if (!url && turmaId) {
+          url = `http://127.0.0.1:8000/professor/turma/${turmaId}/atividades/${evento.id}/`;
+        } else if (!url && !turmaId) {
+          // Se não tiver turmaId, mostre erro
+          console.error('Evento sem turma_id:', evento.id);
+          url = '#';
+        }
+        
         info.el.addEventListener('mouseenter', function(e) {
           if (!tooltipFixo) {
             tooltip.innerHTML = `
-              <h4>${info.event.title}</h4>
-              <p>${info.event.extendedProps.description || 'Sem descrição disponível.'}</p>
+              <h4>${evento.title}</h4>
+              <p>${descricao}</p>
+              <p><small><strong>Turma:</strong> ${turmaNome}</small></p>
+              ${turmaId ? `<p><small><strong>ID Turma:</strong> ${turmaId}</small></p>` : ''}
             `;
             tooltip.style.display = 'block';
             tooltip.style.left = (e.pageX - 130) + 'px';
             tooltip.style.top = (e.pageY + 20) + 'px';
             tooltip.style.opacity = '1';
-            tooltip.dataset.url = `/atividades/${info.event.extendedProps.atividade_id}/`;
+            
+            if (url && url !== '#') {
+              tooltip.dataset.url = url;
+              tooltip.style.cursor = 'pointer';
+              tooltip.classList.add('clickable-tooltip');
+            } else {
+              tooltip.dataset.url = '';
+              tooltip.style.cursor = 'default';
+              tooltip.classList.remove('clickable-tooltip');
+            }
           }
         });
 
@@ -76,15 +108,28 @@
           } else {
             tooltipFixo = true;
             eventoAtivo = info.el;
+            
             tooltip.innerHTML = `
-              <h4>${info.event.title}</h4>
-              <p>${info.event.extendedProps.description || 'Sem descrição disponível.'}</p>
+              <h4>${evento.title}</h4>
+              <p>${descricao}</p>
+              <p><small><strong>Turma:</strong> ${turmaNome}</small></p>
+              ${turmaId ? `<p><small><strong>ID Turma:</strong> ${turmaId}</small></p>` : ''}
+              ${url && url !== '#' ? '<p><small><i>Clique para abrir atividade</i></small></p>' : '<p><small><i>Sem link disponível</i></small></p>'}
             `;
             tooltip.style.display = 'block';
             tooltip.style.left = (e.pageX - 130) + 'px';
             tooltip.style.top = (e.pageY + 20) + 'px';
             tooltip.style.opacity = '1';
-            tooltip.dataset.url = `/atividades/${info.event.id}/`;
+            
+            if (url && url !== '#') {
+              tooltip.dataset.url = url;
+              tooltip.style.cursor = 'pointer';
+              tooltip.classList.add('clickable-tooltip');
+            } else {
+              tooltip.dataset.url = '';
+              tooltip.style.cursor = 'default';
+              tooltip.classList.remove('clickable-tooltip');
+            }
           }
         });
       },
@@ -95,8 +140,11 @@
     });
 
     tooltip.addEventListener('click', function() {
-      if (tooltip.dataset.url) {
+      if (tooltip.dataset.url && tooltip.dataset.url !== '#') {
+        console.log('Redirecionando para:', tooltip.dataset.url);
         window.location.href = tooltip.dataset.url;
+      } else {
+        console.log('URL não disponível para redirecionamento');
       }
     });
 
@@ -111,4 +159,5 @@
     calendar.render();
   });
 </script>
+
 {% endblock %}

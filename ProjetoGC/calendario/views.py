@@ -63,39 +63,39 @@ def listar_eventos(request):
 
         # 🔹 SECRETARIA: vê todos os eventos
         if hasattr(user, 'tipo') and user.tipo == 'secretaria':
-            eventos = Evento.objects.all()
+            eventos = Evento.objects.all().select_related('turma')
 
         # 🔹 PROFESSOR: vê eventos das turmas onde ele é o professor
         elif hasattr(user, 'tipo') and user.tipo == 'professor':
             # user.professor -> relação OneToOne com Professor
-            eventos = Evento.objects.filter(turma__professor=user.professor)
+            eventos = Evento.objects.filter(turma__professor=user.professor).select_related('turma')
 
         # 🔹 ALUNO: vê eventos das turmas onde está matriculado
         elif hasattr(user, 'tipo') and user.tipo == 'aluno':
             # user.aluno -> relação OneToOne com Aluno
-            # busca as turmas onde ele está matriculado
             from cursos.models import Matricula
-  # ou o caminho real da sua app
-
             turmas_ids = Matricula.objects.filter(aluno=user.aluno).values_list('turma_id', flat=True)
-            eventos = Evento.objects.filter(turma_id__in=turmas_ids)
+            eventos = Evento.objects.filter(turma_id__in=turmas_ids).select_related('turma')
 
-        # 🔹 Caso não tenha tipo ou relação válida
         else:
             eventos = Evento.objects.none()
 
         # 🔹 Monta resposta JSON
-        data = [
-            {
+        data = []
+        for e in eventos:
+            # Acessa diretamente o ID da turma do ForeignKey
+            turma_id = e.turma_id  # 🔹 ESTA É A CHAVE - use turma_id em vez de e.turma.id
+            
+            data.append({
                 "id": e.id,
                 "title": e.titulo,
                 "start": e.data_inicio.isoformat() if e.data_inicio else None,
                 "end": e.data_fim.isoformat() if e.data_fim else None,
                 "description": e.descricao or "",
-                "turma": str(e.turma) if hasattr(e, "turma") else None,
-            }
-            for e in eventos
-        ]
+                "turma": str(e.turma) if e.turma else None,
+                "turma_id": turma_id,  # 🔹 Use turma_id diretamente
+                "redirect_url": f"http://127.0.0.1:8000/professor/turma/{turma_id}/atividades/{e.id}/"
+            })
 
         return JsonResponse(data, safe=False)
 
@@ -103,5 +103,3 @@ def listar_eventos(request):
         print("=== ERRO AO LISTAR EVENTOS ===")
         traceback.print_exc()
         return JsonResponse({"erro": str(e)}, status=500)
-
-

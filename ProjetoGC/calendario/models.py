@@ -8,7 +8,7 @@ class Evento(models.Model):
     descricao = models.TextField(blank=True)
     data_inicio = models.DateTimeField()
     data_fim = models.DateTimeField()
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='eventos')
+    turma = models.ForeignKey('cursos.Turma', on_delete=models.CASCADE, related_name='eventos')
     atividade = models.OneToOneField(Atividade, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):

@@ -100,9 +100,11 @@
 
   /* Textarea */
   .activity-card textarea {
-    min-height: 120px;
-    resize: vertical;
-    line-height: 1.4;
+      min-height: 120px;
+      max-height: 300px; /* Altura máxima */
+      resize: none; /* Remove a opção de redimensionar */
+      line-height: 1.4;
+      overflow-y: auto; /* Adiciona scroll vertical se necessário */
   }
 
   /* Material selector section */
@@ -353,12 +355,20 @@
 {% endblock %}
 
 {% block content %}
+
+<div class="content-header" style="display: flex; justify-content: space-between; align-items: center; ">
+        <div class="content">
+            <h1>Adicionar Atividade — {{ turma.nome }}</h1>
+            <p class="text-muted ">Preencha o formulário para adicionar uma atividade</p>
+        </div>
+        <div>
+            <a href="{% url 'professor:turmas_por_curso' turma.curso.id %}" class="btn btn-secondary" style="background: #9ca3af; color: white;">
+                ← Voltar às Turmas
+            </a>
+        </div>
+    </div>
 <div class="activity-page">
   <div class="activity-card form-container">
-    <div class="form-header">
-      <h1>{{ titulo_pagina }}</h1>
-    </div>
-
     <form method="post" enctype="multipart/form-data" novalidate>
       {% csrf_token %}
 
