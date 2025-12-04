@@ -125,7 +125,241 @@
     </div>
 </div>
 
-<!-- ... script mantido ... -->
+<script>
+function selecionarTodos() {
+    const selectAll = document.getElementById('select-all');
+    const checkboxes = document.querySelectorAll('.presenca-checkbox');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+    });
+}
+
+function salvarChamada() {
+    // URL do Django template - 100% correta
+    const url = "{% url 'diario:salvar_chamada' aula_id=aula.aula_id %}";
+    
+    const form = document.getElementById('form-chamada');
+    const formData = new FormData(form);
+    
+    // Adiciona CSRF token
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    // Mostra loading
+    const btn = document.querySelector('.btn-lg');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Salvando...';
+    btn.disabled = true;
+    
+    // Adiciona os dados como arrays
+    const presencaCheckboxes = document.querySelectorAll('input[name="presenca"]:checked');
+    const matriculasIds = document.querySelectorAll('input[name="matricula_id"]');
+    const observacoes = document.querySelectorAll('input[name="observacao"]');
+    
+    // Limpa dados anteriores
+    formData.delete('presenca[]');
+    formData.delete('matricula_id[]');
+    formData.delete('observacao[]');
+    
+    // Adiciona os presentes
+    presencaCheckboxes.forEach(checkbox => {
+        formData.append('presenca[]', checkbox.value);
+    });
+    
+    // Adiciona todos os IDs de matrícula
+    matriculasIds.forEach(input => {
+        formData.append('matricula_id[]', input.value);
+    });
+    
+    // Adiciona todas as observações
+    observacoes.forEach(input => {
+        formData.append('observacao[]', input.value);
+    });
+    
+    // Log para debug
+    console.log('URL da requisição:', url);
+    console.log('Total de alunos:', matriculasIds.length);
+    console.log('Presentes:', presencaCheckboxes.length);
+    
+    fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        // Verifica se houve erro HTTP
+        if (!response.ok) {
+            throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Resposta do servidor:', data);
+        
+        if (data.success) {
+            // Sucesso
+            showToast('success', data.message);
+            
+            // Atualiza a página após 1.5 segundos para refletir mudanças
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            // Erro do servidor
+            showToast('error', data.message || 'Erro ao salvar chamada.');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Erro completo:', error);
+        
+        // Mensagem de erro amigável
+        let errorMessage = 'Erro ao salvar chamada. ';
+        
+        if (error.message.includes('JSON')) {
+            errorMessage += 'O servidor não retornou uma resposta válida. ';
+            errorMessage += 'Verifique se a view está retornando JsonResponse.';
+        } else if (error.message.includes('HTTP')) {
+            errorMessage += error.message;
+        } else if (error.message.includes('Network')) {
+            errorMessage += 'Problema de conexão. Verifique sua internet.';
+        } else {
+            errorMessage += error.message;
+        }
+        
+        showToast('error', errorMessage);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
+
+// Função para mostrar notificações/toasts
+function showToast(type, message) {
+    // Remove toasts existentes
+    const existingToasts = document.querySelectorAll('.custom-toast');
+    existingToasts.forEach(toast => toast.remove());
+    
+    // Cria novo toast
+    const toast = document.createElement('div');
+    toast.className = `custom-toast ${type}`;
+    toast.innerHTML = `
+        <div class="toast-content">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
+            ${message}
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Mostra o toast
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+    
+    // Remove após 3 segundos
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Adiciona estilos para os toasts
+const toastStyles = document.createElement('style');
+toastStyles.textContent = `
+    .custom-toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        color: white;
+        font-weight: 500;
+        z-index: 9999;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: all 0.3s ease;
+        min-width: 300px;
+        max-width: 400px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .custom-toast.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .custom-toast.success {
+        background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+        border-left: 4px solid #1e7e34;
+    }
+    
+    .custom-toast.error {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border-left: 4px solid #bd2130;
+    }
+    
+    .toast-content {
+        display: flex;
+        align-items: center;
+    }
+    
+    @media (max-width: 768px) {
+        .custom-toast {
+            left: 20px;
+            right: 20px;
+            max-width: none;
+        }
+    }
+`;
+document.head.appendChild(toastStyles);
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', function() {
+    // Atualiza o estado do checkbox "Selecionar Todos"
+    const selectAll = document.getElementById('select-all');
+    const checkboxes = document.querySelectorAll('.presenca-checkbox');
+    
+    selectAll.addEventListener('change', selecionarTodos);
+    
+    // Atualiza "Selecionar Todos" quando checkboxes individuais mudam
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            const someChecked = Array.from(checkboxes).some(cb => cb.checked);
+            
+            if (allChecked) {
+                selectAll.checked = true;
+                selectAll.indeterminate = false;
+            } else if (someChecked) {
+                selectAll.checked = false;
+                selectAll.indeterminate = true;
+            } else {
+                selectAll.checked = false;
+                selectAll.indeterminate = false;
+            }
+        });
+    });
+    
+    // Verifica estado inicial
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    const someChecked = Array.from(checkboxes).some(cb => cb.checked);
+    
+    if (allChecked) {
+        selectAll.checked = true;
+        selectAll.indeterminate = false;
+    } else if (someChecked) {
+        selectAll.checked = false;
+        selectAll.indeterminate = true;
+    }
+    
+    // DEBUG: Mostra a URL que será usada
+    console.log('Página carregada. URL para salvar chamada:', "{% url 'diario:salvar_chamada' aula_id=aula.aula_id %}");
+});
+</script>
 
 <style>
 .card-spaced {

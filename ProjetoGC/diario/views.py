@@ -108,7 +108,7 @@ def salvar_chamada(request, aula_id):
     
     try:
         with transaction.atomic():
-            # Se o checkbox foi marcado, o valor (matricula_id) será enviado
+            #  presenca[] contém os IDs das matrículas que ESTÃO presentes.Se o checkbox foi marcado, o valor (matricula_id) será enviado
             # Se não foi marcado, não será enviado nada nessa lista
             presencas_ids = request.POST.getlist('presenca[]')  # IDs dos presentes
             matriculas_ids = request.POST.getlist('matricula_id[]')
@@ -117,7 +117,7 @@ def salvar_chamada(request, aula_id):
             for i, matricula_id in enumerate(matriculas_ids):
                 matricula = get_object_or_404(Matricula, pk=matricula_id)
                 
-                #Verifica se o ID da matrícula está na lista de presenças. Se estiver, presenca=True, senão presenca=False
+                # Verifica se o ID da matrícula está na lista de presenças. Se estiver, presenca=True, senão presenca=False
                 esta_presente = matricula_id in presencas_ids
                 
                 Frequencia.objects.filter(
