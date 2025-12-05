@@ -84,3 +84,18 @@ class AtividadeEntregue(models.Model):
     class Meta:
         db_table = 'AtividadesEntregues'
         unique_together = ['atividade', 'matricula']
+
+
+class AtividadeEntregueArquivo(models.Model):
+    """
+    Arquivos enviados pelo aluno ligados a uma AtividadeEntregue.
+    Criado isoladamente para NÃO alterar AtividadeEntregue existente.
+    """
+    arquivo_id = models.AutoField(primary_key=True)
+    atividade_entregue = models.ForeignKey('AtividadeEntregue', on_delete=models.CASCADE, related_name='arquivos')
+    arquivo = models.FileField(upload_to='entregas_alunos/%Y/%m/%d/')
+    nome_original = models.CharField(max_length=255, blank=True, null=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'AtividadesEntregues_Arquivos'

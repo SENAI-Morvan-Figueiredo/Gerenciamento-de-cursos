@@ -4,7 +4,6 @@ from calendario import views as calendario_views
 
 app_name = 'professor'  # importante para usar namespaced URLs
 
-# professor/urls.py
 urlpatterns = [
     path('', views.home, name='home'),
     path('home/', views.home, name='home'),
@@ -16,13 +15,13 @@ urlpatterns = [
     path('turma/<int:turma_id>/atividades/<int:atividade_id>/', views.atividade_detalhe, name='atividade_detalhe'),
     path('turma/<int:turma_id>/alunos/', views.listar_alunos_turma, name='listar_alunos_turma'),
     path('turma/<int:turma_id>/boletim/', views.boletim_turma, name='boletim_turma'),
-    
+     path('turma/<int:turma_id>/atividades/<int:atividade_id>/entrega/<int:entrega_id>/',
+         views.atividade_entrega_detalhe,
+         name='atividade_entrega_detalhe'),
 
-
-
-    # Top-level calendar page for professors: /professor/calendario/
+    # Página principal do calendário do professor
     path('calendario/', calendario_views.calendario_professor, name='calendario'),
-    # API endpoints (eventos/) mounted under the same prefix: /professor/calendario/eventos/
-    path('calendario/', include(('calendario.urls', 'calendario'), namespace='calendario_professor')),
 
+    # Todas as demais URLs do calendário (API de eventos etc.)
+    path('calendario/eventos/', include(('calendario.urls', 'calendario'), namespace='calendario_professor')),
 ]

@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseForbidden, JsonResponse
 from login.decorators import aluno_required
 from cursos.models import Matricula, Turma
-from atividades.models import Atividade, AtividadeEntregue
+from atividades.models import Atividade, AtividadeEntregue, AtividadeEntregueArquivo
 from calendario.models import Evento
 from django.utils import timezone
 from datetime import timedelta, datetime
@@ -248,49 +248,68 @@ def lista_atividades(request):
 def entregar_atividade(request, atividade_id):
     """Entrega de atividade pelo aluno"""
     atividade = get_object_or_404(Atividade, atividade_id=atividade_id)
-    
-    # Verificar se o aluno está matriculado
+
     matricula = Matricula.objects.filter(
         aluno=request.user.aluno,
         turma=atividade.turma,
         status_matricula=True
     ).first()
-    
+
     if not matricula:
         return render(request, "aluno/error.html", {
             "message": "Você não está matriculado na turma desta atividade."
         })
-    
-    # Buscar entrega existente
-    entrega_existente = AtividadeEntregue.objects.filter(
+
+    entrega = AtividadeEntregue.objects.filter(
         atividade=atividade,
         matricula=matricula
     ).first()
-    
+
     if request.method == 'POST':
-        # Processar entrega (simplificado - você pode expandir)
-        texto = request.POST.get('texto', '')
-        
-        if entrega_existente:
-            entrega_existente.texto = texto
-            entrega_existente.save()
+        texto = request.POST.get('texto', '').strip()
+        url = request.POST.get('url_arquivo', '').strip()
+
+        # Se já existe, atualiza. Se não, cria a entrega.
+        if entrega:
+            entrega.texto = texto
+            entrega.url_arquivo = url if url else None
+            entrega.data_entrega = timezone.now()
+            entrega.save()
+            print(f"Entrega atualizada: {entrega.id}")
         else:
-            AtividadeEntregue.objects.create(
+            entrega = AtividadeEntregue.objects.create(
                 atividade=atividade,
                 matricula=matricula,
                 texto=texto,
+                url_arquivo=url if url else None,
                 data_entrega=timezone.now()
             )
-        
-        return redirect('aluno:detalhes_turma', turma_id=atividade.turma.turma_id)
-    
+            print(f"Nova entrega criada: {entrega.id}")
+
+        # ARQUIVOS MULTIPLOS
+        arquivos = request.FILES.getlist('arquivos')
+        for arquivo in arquivos:
+            obj_arquivo = AtividadeEntregueArquivo.objects.create(
+                atividade_entregue=entrega,
+                arquivo=arquivo,
+                nome_original=arquivo.name
+            )
+            print("Arquivo salvo:", obj_arquivo.nome_original)
+            print("Caminho completo no servidor:", obj_arquivo.arquivo.path)
+
+        # Redireciona para a própria página para mostrar os arquivos enviados
+        return redirect('aluno:entregar_atividade', atividade_id=atividade.atividade_id)
+
     context = {
         'atividade': atividade,
-        'entrega': entrega_existente,
+        'entrega': entrega,
         'turma': atividade.turma,
+        'now': timezone.now(),
     }
-    
+
     return render(request, "aluno/entregar_atividade.html", context)
+
+
 
 @login_required
 @aluno_required

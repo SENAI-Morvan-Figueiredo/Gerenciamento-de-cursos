@@ -7,7 +7,7 @@ from django.db.models import Avg
 from cursos.models import Turma, Matricula, Curso
 from login.models import Professor
 from .models import Aula, Frequencia
-from atividades.models import Atividade, AtividadeEntregue
+from atividades.models import Atividade, AtividadeEntregue, AtividadeEntregueArquivo
 from login.decorators import professor_required
 from django.utils import timezone
 import datetime
@@ -179,12 +179,14 @@ def atividade_detalhe(request, turma_id, atividade_id):
         usuario = getattr(aluno, 'usuario', None)
         nome_aluno = usuario.nome if usuario else str(aluno)
         entregas_info.append({
+            'entrega_id': e.pk, 
             'aluno_nome': nome_aluno,
             'data_entrega': e.data_entrega,
             'nota': e.nota,
             'texto': e.texto,
             'url_arquivo': e.url_arquivo,
         })
+
 
     context = {
         'turma': turma,
@@ -196,6 +198,25 @@ def atividade_detalhe(request, turma_id, atividade_id):
     }
 
     return render(request, 'Professor/atividade_detalhe.html', context)
+
+
+@login_required
+@professor_required
+def atividade_entrega_detalhe(request, turma_id, atividade_id, entrega_id):
+    entrega = get_object_or_404(AtividadeEntregue, pk=entrega_id)
+
+    arquivos = AtividadeEntregueArquivo.objects.filter(
+        atividade_entregue=entrega
+    )
+
+    context = {
+        "entrega": entrega,
+        "arquivos": arquivos,
+        "atividade": entrega.atividade,
+        "turma": entrega.atividade.turma,
+    }
+
+    return render(request, "professor/atividade_entrega_detalhe.html", context)
 
 
 # --- LISTAR ALUNOS DA TURMA ---

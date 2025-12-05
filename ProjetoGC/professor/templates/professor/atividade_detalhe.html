@@ -33,9 +33,9 @@
                     {% if e.nota %}<div style="font-size:13px; color:#444;">Nota: {{ e.nota }}</div>{% endif %}
                 </div>
                 <div style="text-align:right;">
-                    {% if e.url_arquivo %}
-                    <a href="{{ e.url_arquivo }}" target="_blank" style="text-decoration:none; color:#164193;">📎 Arquivo</a>
-                    {% endif %}
+                    <a href="{% url 'professor:atividade_entrega_detalhe' turma.turma_id atividade.atividade_id e.entrega_id %}">
+                        📄 Ver Entrega
+                    </a>
                 </div>
             </div>
             {% endfor %}

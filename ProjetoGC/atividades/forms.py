@@ -26,3 +26,17 @@ class AvaliacaoForm(forms.ModelForm):
         else:
             # Se não houver professor, não deve haver turmas para selecionar
             self.fields['turma'].queryset = self.fields['turma'].queryset.none()
+
+
+class EntregarAtividadeForm(forms.Form):
+    texto = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 4, "class": "form-control"})
+    )
+    url_arquivo = forms.URLField(required=False)
+    # Apenas um FileField normal, sem multiple
+    arquivos = forms.FileField(
+        required=False,
+        widget=forms.FileInput()
+    )
+
