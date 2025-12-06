@@ -44,14 +44,13 @@
 
 /* --- BOTOES --- */
 .form-container .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    max-width: 300px;
+    max-width: 212px;
     height: 50px;
-    padding: 1rem 2rem;
 
-    margin-top: 2rem;
-    margin-left: auto;
-    margin-right: auto;
     display: block;
     text-align: center;
     

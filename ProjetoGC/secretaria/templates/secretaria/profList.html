@@ -29,12 +29,7 @@
                 </a>
             </button>
         </div>
-        
-        
     </div>
-
-    
-    
 
     <table id="professoresTable">
         <thead>
@@ -42,7 +37,6 @@
                 <th>ID</th>
                 <th>Nome</th>
                 <th>Email</th>
-                
                 <th>Turmas</th>
                 <th>Status</th>
                 <th>Detalhes</th>
@@ -58,7 +52,6 @@
                     <td>{{ professor.professor_id }}</td>
                     <td>{{ professor.usuario.nome }} {{ professor.usuario.sobrenome }}</td>
                     <td>{{ professor.usuario.email }}</td>
-                    
                     <td>
                         {% with professor.turma_set.all as turmas %}
                             {% if turmas %}
@@ -91,7 +84,7 @@
                 </tr>
             {% empty %}
                 <tr id="noDataRow">
-                    <td colspan="8" class="no-data">
+                    <td colspan="7" class="no-data">
                         Nenhum professor cadastrado.
                     </td>
                 </tr>
@@ -107,34 +100,26 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
     const clearFilter = document.getElementById('clearFilter');
-    const searchResultsInfo = document.getElementById('searchResultsInfo');
-    const resultsText = document.getElementById('resultsText');
     const tableBody = document.getElementById('tableBody');
     const professorRows = document.querySelectorAll('.professor-row');
     const noDataRow = document.getElementById('noDataRow');
     
     let currentSearchTerm = '';
 
-    // Função para filtrar os resultados
     function filterProfessors(searchTerm) {
         const term = searchTerm.toLowerCase().trim();
         let visibleCount = 0;
-        
+
         professorRows.forEach(row => {
             const nome = row.getAttribute('data-nome');
             const email = row.getAttribute('data-email');
-            
             const turmas = row.getAttribute('data-turmas');
             
-            const matches = nome.includes(term) || 
-                           email.includes(term) || 
-                           turmas.includes(term);
-            
+            const matches = nome.includes(term) || email.includes(term) || turmas.includes(term);
+
             if (matches) {
                 row.style.display = '';
                 visibleCount++;
-                
-                // Adiciona highlight se houver termo de busca
                 if (term) {
                     row.classList.add('highlight');
                     highlightText(row, term);
@@ -148,116 +133,62 @@ document.addEventListener('DOMContentLoaded', function() {
                 removeHighlight(row);
             }
         });
-        
-        // Mostra/oculta a linha de "nenhum dado"
-        if (noDataRow) {
-            if (visibleCount === 0 && professorRows.length > 0) {
-                if (!document.getElementById('noResultsRow')) {
-                    const noResultsRow = document.createElement('tr');
-                    noResultsRow.id = 'noResultsRow';
-                    noResultsRow.innerHTML = `<td colspan="8" class="no-data">Nenhum professor encontrado para "${searchTerm}"</td>`;
-                    tableBody.appendChild(noResultsRow);
-                }
-                noDataRow.style.display = 'none';
-            } else {
-                const noResultsRow = document.getElementById('noResultsRow');
-                if (noResultsRow) {
-                    noResultsRow.remove();
-                }
-                noDataRow.style.display = visibleCount === 0 ? '' : 'none';
+
+        // Mostra linha de nenhum resultado com emoji 📊
+        const noResultsRowId = 'noResultsRow';
+        let noResultsRow = document.getElementById(noResultsRowId);
+
+        if (visibleCount === 0 && professorRows.length > 0) {
+            if (!noResultsRow) {
+                noResultsRow = document.createElement('tr');
+                noResultsRow.id = noResultsRowId;
+                noResultsRow.innerHTML = `<td colspan="7" class="no-data"> Nenhum professor encontrado para "${searchTerm}"</td>`;
+                tableBody.appendChild(noResultsRow);
             }
-        }
-        
-        // Atualiza informações de resultados
-        if (term) {
-            resultsText.textContent = `Encontrados ${visibleCount} professor(es) para "${searchTerm}"`;
-            searchResultsInfo.style.display = 'block';
-            clearFilter.style.display = 'flex';
-            
+            if (noDataRow) noDataRow.style.display = 'none';
         } else {
-            searchResultsInfo.style.display = 'none';
-            clearFilter.style.display = 'none';
+            if (noResultsRow) noResultsRow.remove();
+            if (noDataRow) noDataRow.style.display = visibleCount === 0 ? '' : 'none';
         }
-        
+
+        clearFilter.style.display = term ? 'flex' : 'none';
         currentSearchTerm = term;
     }
 
-    // Função para destacar texto encontrado
     function highlightText(row, term) {
-        // Seleciona apenas as células de dados (excluindo as colunas de ação)
         const dataCells = row.querySelectorAll('td:not(:last-child):not(:nth-last-child(2))');
-        
         dataCells.forEach(cell => {
-            const originalHTML = cell.innerHTML;
-            // Armazena o HTML original se ainda não foi armazenado
-            if (!cell.hasAttribute('data-original')) {
-                cell.setAttribute('data-original', originalHTML);
-            }
-            
-            const textContent = cell.textContent || cell.innerText;
+            if (!cell.hasAttribute('data-original')) cell.setAttribute('data-original', cell.innerHTML);
             const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-            const highlightedHTML = textContent.replace(regex, '<mark>$1</mark>');
-            cell.innerHTML = highlightedHTML;
+            cell.innerHTML = cell.textContent.replace(regex, '<mark>$1</mark>');
         });
-    }
-    
-    // Função para remover destaque
-    function removeHighlight(row) {
-        const dataCells = row.querySelectorAll('td:not(:last-child):not(:nth-last-child(2))');
-        
-        dataCells.forEach(cell => {
-            // Restaura o HTML original se foi armazenado
-            if (cell.hasAttribute('data-original')) {
-                cell.innerHTML = cell.getAttribute('data-original');
-            }
-        });
-    }
-    
-    // Função auxiliar para obter o conteúdo original da célula
-    function getOriginalCellContent(row, cellIndex) {
-        // Esta função deve retornar o conteúdo original baseado na estrutura do seu template
-        // Para simplificar, vamos armazenar o conteúdo original em um data attribute
-        const cell = row.children[cellIndex];
-        const contentSpan = cell.querySelector('.cell-content');
-        
-        if (!contentSpan.hasAttribute('data-original')) {
-            contentSpan.setAttribute('data-original', contentSpan.textContent);
-        }
-        
-        return contentSpan.getAttribute('data-original');
     }
 
-    // Debounce para otimizar a busca
+    function removeHighlight(row) {
+        const dataCells = row.querySelectorAll('td:not(:last-child):not(:nth-last-child(2))');
+        dataCells.forEach(cell => {
+            if (cell.hasAttribute('data-original')) cell.innerHTML = cell.getAttribute('data-original');
+        });
+    }
+
     function debounce(func, wait) {
         let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
+        return function(...args) {
             clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
+            timeout = setTimeout(() => func(...args), wait);
         };
     }
 
     const debouncedFilter = debounce(filterProfessors, 300);
-    
-    // Event Listeners
-    searchInput.addEventListener('keyup', function(e) {
-        debouncedFilter(searchInput.value);
-    });
-    
-    searchBtn.addEventListener('click', function() {
-        filterProfessors(searchInput.value);
-    });
-    
-    clearFilter.addEventListener('click', function() {
+
+    searchInput.addEventListener('keyup', () => debouncedFilter(searchInput.value));
+    searchBtn.addEventListener('click', () => filterProfessors(searchInput.value));
+    clearFilter.addEventListener('click', () => {
         searchInput.value = '';
         filterProfessors('');
         searchInput.focus();
     });
-    
-    // Focar no campo de busca quando a página carregar
+
     searchInput.focus();
 });
 </script>
