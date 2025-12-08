@@ -20,7 +20,7 @@ class Usuario(AbstractUser):
     tipo = models.CharField(max_length=10, choices=TIPO_USUARIO) 
 
     USERNAME_FIELD = 'email' 
-    REQUIRED_FIELDS = ['nome','sobrenome','cpf', 'tipo', 'username' ]
+    REQUIRED_FIELDS = ['nome','sobrenome','cpf', 'tipo', 'username']
     
     class Meta:
         db_table = 'Usuario'
