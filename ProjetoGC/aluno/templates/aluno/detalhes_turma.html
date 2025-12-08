@@ -106,15 +106,17 @@
                         {% for item in atividades_com_status %}
                         <div class="border rounded-lg p-4">
                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="font-semibold text-dark mb-0">{{ item.atividade.titulo }}</h6>
+                                <h6 class="font-semibold text-dark mb-0 text-wrap" style="word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; max-width: 70%;">
+                                    {{ item.atividade.titulo }}
+                                </h6>
                                 <span class="status-badge status-{{ item.status }}">
                                     {{ item.status|title }}
                                 </span>
                             </div>
                             
                             {% if item.atividade.descricao %}
-                            <p class="text-sm text-muted mb-2">
-                                {{ item.atividade.descricao|truncatewords:20 }}
+                            <p class="text-sm text-muted mb-2 text-truncate" style="max-width: 100%; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; word-wrap: break-word;">
+                                {{ item.atividade.descricao|truncatechars:120 }}
                             </p>
                             {% endif %}
                             
