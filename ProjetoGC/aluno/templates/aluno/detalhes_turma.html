@@ -1,138 +1,156 @@
 {% extends "aluno/base.html" %}
 {% load static %}
 
-{% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">{{ turma.nome }}</h1>
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <a href="{% url 'atividades:aluno_listar_atividades' %}" class="btn btn-sm btn-outline-primary me-2">
-            <i class="fas fa-arrow-left me-1"></i>Voltar
-        </a>
-    </div>
-</div>
+{% block title %}{{ turma.nome }} - Portal do Aluno{% endblock %}
 
-<div class="row">
+{% block page_title %}{{ turma.nome }}{% endblock %}
+{% block page_subtitle %}Detalhes da turma{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb-item">
+    <a href="{% url 'aluno:minhas_turmas' %}" class="breadcrumb-link">Minhas Turmas</a>
+    <span class="breadcrumb-separator">/</span>
+</div>
+<div class="breadcrumb-item">
+    <span class="breadcrumb-link active">{{ turma.nome }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Informações da Turma -->
-    <div class="col-md-4">
+    <div class="lg:col-span-1">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">Informações da Turma</h5>
+                <h3 class="card-title">Informações da Turma</h3>
             </div>
             <div class="card-body">
-                <table class="table table-borderless">
-                    <tr>
-                        <td><strong>Curso:</strong></td>
-                        <td>{{ turma.curso.nome }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Professor:</strong></td>
-                        <td>
+                <div class="space-y-3">
+                    <div>
+                        <div class="text-xs text-muted">Curso</div>
+                        <div class="font-medium">{{ turma.curso.nome }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-muted">Professor</div>
+                        <div class="font-medium">
                             {% if professor %}
                                 {{ professor.usuario.nome }} {{ professor.usuario.sobrenome }}
                             {% else %}
                                 Não definido
                             {% endif %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>Período:</strong></td>
-                        <td>{{ turma.data_inicio|date:"d/m/Y" }} - {% if turma.data_fim %}{{ turma.data_fim|date:"d/m/Y" }}{% else %}Presente{% endif %}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Dias:</strong></td>
-                        <td>{{ turma.dias_semana }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Horário:</strong></td>
-                        <td>{{ turma.entrada_horas }} - {{ turma.saida_horas }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Modalidade:</strong></td>
-                        <td>{{ turma.get_tipo_display }}</td>
-                    </tr>
-                </table>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-muted">Período</div>
+                        <div class="font-medium">
+                            {{ turma.data_inicio|date:"d/m/Y" }} - {% if turma.data_fim %}{{ turma.data_fim|date:"d/m/Y" }}{% else %}Presente{% endif %}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-muted">Dias</div>
+                        <div class="font-medium">{{ turma.dias_semana }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-muted">Horário</div>
+                        <div class="font-medium">{{ turma.entrada_horas }} - {{ turma.saida_horas }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-muted">Modalidade</div>
+                        <div class="font-medium">{{ turma.get_tipo_display }}</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Informações do Professor -->
+        <!-- Contato do Professor -->
         {% if professor %}
         <div class="card mt-4">
             <div class="card-header">
-                <h5 class="mb-0">Contato do Professor</h5>
+                <h3 class="card-title">Contato do Professor</h3>
             </div>
             <div class="card-body">
-                <p class="mb-2">
-                    <i class="fas fa-user me-2"></i>
-                    {{ professor.usuario.nome }} {{ professor.usuario.sobrenome }}
-                </p>
-                <p class="mb-2">
-                    <i class="fas fa-envelope me-2"></i>
-                    {{ professor.usuario.email }}
-                </p>
-                {% if professor.usuario.contato %}
-                <p class="mb-0">
-                    <i class="fas fa-phone me-2"></i>
-                    {{ professor.usuario.contato }}
-                </p>
-                {% endif %}
+                <div class="space-y-2">
+                    <div class="d-flex items-center gap-2">
+                        <i class="fas fa-user text-muted"></i>
+                        <span>{{ professor.usuario.nome }} {{ professor.usuario.sobrenome }}</span>
+                    </div>
+                    <div class="d-flex items-center gap-2">
+                        <i class="fas fa-envelope text-muted"></i>
+                        <span>{{ professor.usuario.email }}</span>
+                    </div>
+                    {% if professor.usuario.contato %}
+                    <div class="d-flex items-center gap-2">
+                        <i class="fas fa-phone text-muted"></i>
+                        <span>{{ professor.usuario.contato }}</span>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
         {% endif %}
     </div>
 
     <!-- Atividades da Turma -->
-    <div class="col-md-8">
+    <div class="lg:col-span-2">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Atividades da Turma</h5>
-                <span class="badge bg-primary">{{ atividades_com_status|length }} atividades</span>
+                <div>
+                    <h3 class="card-title">Atividades da Turma</h3>
+                    <p class="card-subtitle">{{ atividades_com_status|length }} atividades</p>
+                </div>
+                <span class="badge badge-primary">{{ atividades_com_status|length }} atividades</span>
             </div>
             <div class="card-body">
                 {% if atividades_com_status %}
-                    {% for item in atividades_com_status %}
-                    <div class="border rounded p-3 mb-3">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="mb-0">{{ item.atividade.titulo }}</h6>
-                            <span class="status-badge status-{{ item.status }}">
-                                {{ item.status|title }}
-                            </span>
-                        </div>
-                        
-                        <p class="text-muted small mb-2">
-                            {% if item.atividade.descricao %}
-                                {{ item.atividade.descricao|truncatewords:20 }}
-                            {% else %}
-                                Sem descrição
-                            {% endif %}
-                        </p>
-                        
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                                <i class="fas fa-clock me-1"></i>
-                                Entrega: {{ item.atividade.data_entrega|date:"d/m/Y H:i"|default:"Não definida" }}
-                            </small>
+                    <div class="space-y-3">
+                        {% for item in atividades_com_status %}
+                        <div class="border rounded-lg p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="font-semibold text-dark mb-0">{{ item.atividade.titulo }}</h6>
+                                <span class="status-badge status-{{ item.status }}">
+                                    {{ item.status|title }}
+                                </span>
+                            </div>
                             
-                            <div>
-                                {% if item.status == 'pendente' %}
-                                    <a href="{% url 'atividades:entregar_atividade' item.atividade.atividade_id %}" 
-                                       class="btn btn-sm btn-primary">
-                                        <i class="fas fa-paper-plane me-1"></i>Entregar
-                                    </a>
-                                {% elif item.status == 'entregue' %}
-                                    <span class="text-success">
-                                        <i class="fas fa-check me-1"></i>Entregue em 
-                                        {{ item.entrega.data_entrega|date:"d/m/Y" }}
-                                    </span>
-                                    {% if item.entrega.nota %}
-                                    <span class="badge bg-success ms-2">Nota: {{ item.entrega.nota }}</span>
+                            {% if item.atividade.descricao %}
+                            <p class="text-sm text-muted mb-2">
+                                {{ item.atividade.descricao|truncatewords:20 }}
+                            </p>
+                            {% endif %}
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div class="text-sm text-muted">
+                                    <i class="fas fa-clock me-1"></i>
+                                    Entrega: {{ item.atividade.data_entrega|date:"d/m/Y H:i"|default:"Não definida" }}
+                                </div>
+                                
+                                <div>
+                                    {% if item.status == 'pendente' %}
+                                        <a href="{% url 'atividades:entregar_atividade' item.atividade.atividade_id %}" 
+                                           class="btn btn-primary btn-sm">
+                                            <i class="fas fa-paper-plane me-1"></i>Entregar
+                                        </a>
+                                    {% elif item.status == 'entregue' %}
+                                        <div class="d-flex items-center gap-2">
+                                            <span class="text-success">
+                                                <i class="fas fa-check me-1"></i>Entregue em 
+                                                {{ item.entrega.data_entrega|date:"d/m/Y" }}
+                                            </span>
+                                            {% if item.entrega.nota %}
+                                            <span class="badge badge-success">Nota: {{ item.entrega.nota }}</span>
+                                            {% endif %}
+                                        </div>
                                     {% endif %}
-                                {% endif %}
+                                </div>
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                 {% else %}
-                    <p class="text-muted text-center">Nenhuma atividade disponível para esta turma.</p>
+                    <div class="text-center py-4">
+                        <i class="fas fa-tasks fa-2x text-muted mb-3"></i>
+                        <p class="text-muted">Nenhuma atividade disponível para esta turma.</p>
+                    </div>
                 {% endif %}
             </div>
         </div>

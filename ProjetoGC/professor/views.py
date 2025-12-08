@@ -146,7 +146,7 @@ def listar_atividades(request, turma_id):
             'atividade': atividade,
             'entregues_count': entregues_count,
             'total_alunos': total_alunos,
-            'atrasada': atrasada,      # <- adicionamos isso
+            'atrasada': atrasada,      
         })
 
     context = {

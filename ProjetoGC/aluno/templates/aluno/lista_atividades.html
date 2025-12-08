@@ -1,145 +1,141 @@
 {% extends "aluno/base.html" %}
 {% load static %}
 
-{% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
-    <div>
-        <h1 class="h2 mb-1">Minhas Atividades</h1>
-        <p class="text-muted mb-0">Acompanhe e entregue suas atividades.</p>
-    </div>
-</div>
+{% block title %}Minhas Atividades - Portal do Aluno{% endblock %}
 
+{% block page_title %}Minhas Atividades{% endblock %}
+{% block page_subtitle %}Acompanhe e entregue suas atividades{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb-item">
+    <span class="breadcrumb-link active">Atividades</span>
+</div>
+{% endblock %}
+
+{% block content %}
 <!-- Filtros -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card-aluno">
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label">Status</label>
-                        <select class="form-select" onchange="filtrarAtividades()" id="statusFilter">
-                            <option value="">Todos</option>
-                            <option value="pendente">Pendentes</option>
-                            <option value="entregue">Entregues</option>
-                            <option value="atrasado">Atrasadas</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Turma</label>
-                        <select class="form-select" onchange="filtrarAtividades()" id="turmaFilter">
-                            <option value="">Todas as Turmas</option>
-                            {% for turma in turmas %}
-                            <option value="{{ turma.turma_id }}">{{ turma.nome }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Data de Entrega</label>
-                        <input type="date" class="form-control" onchange="filtrarAtividades()" id="dataFilter">
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">&nbsp;</label>
-                        <button type="button" class="btn btn-outline-secondary w-100" onclick="limparFiltros()">
-                            <i class="fas fa-times me-1"></i>Limpar Filtros
-                        </button>
-                    </div>
-                </div>
+<div class="card mb-6">
+    <div class="card-body">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="form-group">
+                <label class="form-label">Status</label>
+                <select class="form-control form-select" onchange="filtrarAtividades()" id="statusFilter">
+                    <option value="">Todos</option>
+                    <option value="pendente">Pendentes</option>
+                    <option value="entregue">Entregues</option>
+                    <option value="atrasado">Atrasadas</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Turma</label>
+                <select class="form-control form-select" onchange="filtrarAtividades()" id="turmaFilter">
+                    <option value="">Todas as Turmas</option>
+                    {% for turma in turmas %}
+                    <option value="{{ turma.turma_id }}">{{ turma.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Data de Entrega</label>
+                <input type="date" class="form-control" onchange="filtrarAtividades()" id="dataFilter">
+            </div>
+            <div class="form-group">
+                <label class="form-label">&nbsp;</label>
+                <button type="button" class="btn btn-secondary btn-full" onclick="limparFiltros()">
+                    <i class="fas fa-times me-1"></i>Limpar Filtros
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Lista de Atividades -->
-<div class="row">
-    <div class="col-12">
-        <div class="card-aluno">
-            <div class="card-body">
-                {% if atividades %}
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Atividade</th>
-                                    <th>Turma</th>
-                                    <th>Data de Entrega</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for atividade in atividades %}
-                                <tr class="atividade-item" 
-                                    data-status="{{ atividade.status }}" 
-                                    data-turma="{{ atividade.atividade.turma.turma_id }}"
-                                    data-data="{{ atividade.atividade.data_entrega|date:'Y-m-d' }}">
-                                    <td>
-                                        <strong>{{ atividade.atividade.titulo }}</strong>
-                                        {% if atividade.atividade.descricao %}
-                                        <br>
-                                        <small class="text-muted">{{ atividade.atividade.descricao|truncatewords:10 }}</small>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <small>{{ atividade.atividade.turma.nome }}</small>
-                                        <br>
-                                        <small class="text-muted">{{ atividade.atividade.turma.curso.nome }}</small>
-                                    </td>
-                                    <td>
-                                        {% if atividade.atividade.data_entrega %}
-                                            {{ atividade.atividade.data_entrega|date:"d/m/Y H:i" }}
-                                        {% else %}
-                                            <span class="text-muted">Não definida</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <span class="status-badge status-{{ atividade.status }}">
-                                            {{ atividade.status|title }}
+<div class="card">
+    <div class="card-body">
+        {% if atividades %}
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Atividade</th>
+                            <th>Turma</th>
+                            <th>Data de Entrega</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="atividadesTable">
+                        {% for atividade in atividades %}
+                        <tr class="atividade-item" 
+                            data-status="{{ atividade.status }}" 
+                            data-turma="{{ atividade.atividade.turma.turma_id }}"
+                            data-data="{{ atividade.atividade.data_entrega|date:'Y-m-d'|default:'' }}">
+                            <td>
+                                <div class="font-semibold text-dark">{{ atividade.atividade.titulo }}</div>
+                                {% if atividade.atividade.descricao %}
+                                <div class="text-sm text-muted mt-1">
+                                    {{ atividade.atividade.descricao|truncatewords:10 }}
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="text-sm">{{ atividade.atividade.turma.nome }}</div>
+                                <div class="text-xs text-muted">{{ atividade.atividade.turma.curso.nome }}</div>
+                            </td>
+                            <td>
+                                {% if atividade.atividade.data_entrega %}
+                                    <div class="text-sm">{{ atividade.atividade.data_entrega|date:"d/m/Y H:i" }}</div>
+                                {% else %}
+                                    <span class="text-sm text-muted">Não definida</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ atividade.status }}">
+                                    {{ atividade.status|title }}
+                                </span>
+                                {% if atividade.entrega and atividade.entrega.nota %}
+                                <div class="text-sm text-success mt-1">
+                                    <i class="fas fa-star me-1"></i>Nota: {{ atividade.entrega.nota }}
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    {% if atividade.status == 'pendente' %}
+                                        <a href="{% url 'aluno:entregar_atividade' atividade.atividade.atividade_id %}" 
+                                           class="btn btn-primary btn-sm">
+                                            <i class="fas fa-paper-plane me-1"></i>Entregar
+                                        </a>
+                                    {% else %}
+                                        <span class="btn btn-outline btn-sm">
+                                            <i class="fas fa-check me-1"></i>Entregue
                                         </span>
-                                        {% if atividade.entrega and atividade.entrega.nota %}
-                                        <br>
-                                        <small class="text-success">
-                                            <i class="fas fa-star me-1"></i>Nota: {{ atividade.entrega.nota }}
-                                        </small>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm">
-                                            {% if atividade.status == 'pendente' %}
-                                                <a href="{% url 'aluno:entregar_atividade' atividade.atividade.atividade_id %}" 
-                                                   class="btn btn-aluno-primary">
-                                                    <i class="fas fa-paper-plane me-1"></i>Entregar
-                                                </a>
-                                            {% else %}
-                                                <span class="btn btn-outline-secondary">
-                                                    <i class="fas fa-check me-1"></i>Entregue
-                                                </span>
-                                            {% endif %}
-                                            <a href="{% url 'aluno:detalhes_turma' atividade.atividade.turma.turma_id %}" 
-                                               class="btn btn-outline-primary">
-                                                <i class="fas fa-eye me-1"></i>Turma
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <div class="text-center py-5">
-                        <i class="fas fa-tasks fa-4x text-muted mb-3"></i>
-                        <h4 class="text-muted">Nenhuma Atividade Encontrada</h4>
-                        <p class="text-muted mb-4">Você não tem atividades disponíveis no momento.</p>
-                        <a href="{% url 'aluno:minhas_turmas' %}" class="btn btn-aluno-primary">
-                            <i class="fas fa-users me-1"></i>Ver Minhas Turmas
-                        </a>
-                    </div>
-                {% endif %}
+                                    {% endif %}
+                                    <a href="{% url 'aluno:detalhes_turma' atividade.atividade.turma.turma_id %}" 
+                                       class="btn btn-outline btn-sm">
+                                        <i class="fas fa-eye me-1"></i>Turma
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-tasks fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">Nenhuma Atividade Encontrada</h4>
+                <p class="text-muted mb-4">Você não tem atividades disponíveis no momento.</p>
+                <a href="{% url 'aluno:minhas_turmas' %}" class="btn btn-primary">
+                    <i class="fas fa-users me-1"></i>Ver Minhas Turmas
+                </a>
+            </div>
+        {% endif %}
     </div>
 </div>
 
+{% block extra_js %}
 <script>
 function filtrarAtividades() {
     const statusFilter = document.getElementById('statusFilter').value;
@@ -148,6 +144,7 @@ function filtrarAtividades() {
     
     const atividades = document.querySelectorAll('.atividade-item');
     let atividadesVisiveis = 0;
+    const tbody = document.querySelector('#atividadesTable');
     
     atividades.forEach(atividade => {
         let show = true;
@@ -176,10 +173,9 @@ function filtrarAtividades() {
     });
     
     // Mostrar mensagem se não houver atividades visíveis
-    const tabela = document.querySelector('table');
     const mensagemVazia = document.getElementById('mensagem-vazia');
     
-    if (atividadesVisiveis === 0) {
+    if (atividadesVisiveis === 0 && atividades.length > 0) {
         if (!mensagemVazia) {
             const tr = document.createElement('tr');
             tr.id = 'mensagem-vazia';
@@ -189,7 +185,7 @@ function filtrarAtividades() {
                     <p class="text-muted mb-0">Nenhuma atividade encontrada com os filtros aplicados.</p>
                 </td>
             `;
-            tabela.querySelector('tbody').appendChild(tr);
+            tbody.appendChild(tr);
         }
     } else if (mensagemVazia) {
         mensagemVazia.remove();
@@ -205,7 +201,10 @@ function limparFiltros() {
 
 // Aplicar filtros ao carregar a página
 document.addEventListener('DOMContentLoaded', function() {
-    filtrarAtividades();
+    if (document.querySelector('.atividade-item')) {
+        filtrarAtividades();
+    }
 });
 </script>
+{% endblock %}
 {% endblock %}

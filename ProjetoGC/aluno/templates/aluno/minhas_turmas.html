@@ -1,139 +1,131 @@
 {% extends "aluno/base.html" %}
 {% load static %}
 
-{% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
-    <div>
-        <h1 class="h2 mb-1">Minhas Turmas</h1>
-        <p class="text-muted mb-0">Gerencie suas turmas e acompanhe o progresso.</p>
-    </div>
-</div>
+{% block title %}Minhas Turmas - Portal do Aluno{% endblock %}
 
-<div class="row">
-    {% if turmas_com_info %}
+{% block page_title %}Minhas Turmas{% endblock %}
+{% block page_subtitle %}Gerencie suas turmas e acompanhe o progresso{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb-item">
+    <span class="breadcrumb-link active">Minhas Turmas</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Grid de Turmas -->
+{% if turmas_com_info %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {% for turma_info in turmas_com_info %}
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card-aluno h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h5 class="card-title mb-0">{{ turma_info.turma.nome }}</h5>
-                        <span class="badge bg-success">Ativa</span>
-                    </div>
-                    
-                    <p class="text-muted small mb-2">
-                        <i class="fas fa-book me-1"></i>{{ turma_info.turma.curso.nome }}
-                    </p>
-                    
-                    <p class="text-muted small mb-3">
-                        <i class="fas fa-user me-1"></i>
-                        {% if turma_info.turma.professor %}
-                            Prof. {{ turma_info.turma.professor.usuario.nome }}
-                        {% else %}
-                            Professor não definido
-                        {% endif %}
-                    </p>
-                    
-                    <div class="border-top pt-3">
-                        <div class="row text-center">
-                            <div class="col-6">
-                                <small class="text-muted d-block">Atividades</small>
-                                <span class="fw-bold text-primary">{{ turma_info.total_atividades }}</span>
-                            </div>
-                            <div class="col-6">
-                                <small class="text-muted d-block">Pendentes</small>
-                                <span class="fw-bold text-warning">{{ turma_info.atividades_pendentes }}</span>
-                            </div>
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title mb-0">{{ turma_info.turma.nome }}</h5>
+                    <span class="badge badge-success">Ativa</span>
+                </div>
+                
+                <p class="text-sm text-muted mb-2">
+                    <i class="fas fa-book me-1"></i>{{ turma_info.turma.curso.nome }}
+                </p>
+                
+                <p class="text-sm text-muted mb-3">
+                    <i class="fas fa-user me-1"></i>
+                    {% if turma_info.turma.professor %}
+                        Prof. {{ turma_info.turma.professor.usuario.nome }}
+                    {% else %}
+                        Professor não definido
+                    {% endif %}
+                </p>
+                
+                <div class="border-top pt-3 mt-3">
+                    <div class="grid grid-cols-2 text-center">
+                        <div>
+                            <div class="text-xs text-muted">Atividades</div>
+                            <div class="text-lg font-bold text-primary">{{ turma_info.total_atividades }}</div>
+                        </div>
+                        <div>
+                            <div class="text-xs text-muted">Pendentes</div>
+                            <div class="text-lg font-bold text-warning">{{ turma_info.atividades_pendentes }}</div>
                         </div>
                     </div>
-                    
-                    <div class="mt-3">
-                        <a href="{% url 'aluno:detalhes_turma' turma_info.turma.turma_id %}" 
-                           class="btn btn-aluno-primary btn-sm w-100">
-                            <i class="fas fa-eye me-1"></i>Ver Detalhes
-                        </a>
-                    </div>
                 </div>
-            </div>
-        </div>
-        {% endfor %}
-    {% else %}
-        <div class="col-12">
-            <div class="card-aluno">
-                <div class="card-body text-center py-5">
-                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">Nenhuma Turma Encontrada</h4>
-                    <p class="text-muted mb-4">Você não está matriculado em nenhuma turma no momento.</p>
-                    <a href="{% url 'aluno:solicitacoes' %}" class="btn btn-aluno-primary">
-                        <i class="fas fa-plus me-1"></i>Solicitar Matrícula
+                
+                <div class="mt-4">
+                    <a href="{% url 'aluno:detalhes_turma' turma_info.turma.turma_id %}" 
+                       class="btn btn-primary btn-full">
+                        <i class="fas fa-eye me-1"></i>Ver Detalhes
                     </a>
                 </div>
             </div>
         </div>
-    {% endif %}
-</div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">Nenhuma Turma Encontrada</h4>
+            <p class="text-muted mb-4">Você não está matriculado em nenhuma turma no momento.</p>
+            <a href="{% url 'aluno:solicitacoes' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Solicitar Matrícula
+            </a>
+        </div>
+    </div>
+{% endif %}
 
-<!-- Informações Gerais -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card-aluno">
-            <div class="card-header">
-                <h5 class="mb-0">Resumo das Turmas</h5>
-            </div>
-            <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-md-3 mb-3">
-                        <div class="border rounded p-3">
-                            <i class="fas fa-layer-group fa-2x text-primary mb-2"></i>
-                            <h4 class="text-dark">{{ turmas_com_info|length }}</h4>
-                            <small class="text-muted">Total de Turmas</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="border rounded p-3">
-                            <i class="fas fa-tasks fa-2x text-warning mb-2"></i>
-                            <h4 class="text-dark">
-                                {% with total_pendentes=0 %}
-                                    
-                                    {{ total_pendentes }}
-                                {% endwith %}
-                            </h4>
-                            <small class="text-muted">Atividades Pendentes</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="border rounded p-3">
-                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
-                            <h4 class="text-dark">
-                                {% with total_atividades=0 total_pendentes=0 %}
-                                    
-                                    {{ total_atividades }}
-                                {% endwith %}
-                            </h4>
-                            <small class="text-muted">Atividades Concluídas</small>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="border rounded p-3">
-                            <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
-                            <h4 class="text-dark">
-                                {% with total_atividades=0 total_pendentes=0 %}
-                                    {% for turma in turmas_com_info %}
-                                        {% widthratio turma.total_atividades 1 1 as total %}
-                                        {% widthratio turma.atividades_pendentes 1 1 as pendentes %}
-                                        {{ total_atividades|add:total }}
-                                        {{ total_pendentes|add:pendentes }}
-                                    {% endfor %}
-                                    {% if total_atividades > 0 %}
-                                        {{ total_atividades|add:"-total_pendentes" }}/{{ total_atividades }}
-                                    {% else %}
-                                        0
-                                    {% endif %}
-                                {% endwith %}
-                            </h4>
-                            <small class="text-muted">Progresso Geral</small>
-                        </div>
-                    </div>
+<!-- Resumo das Turmas -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Resumo das Turmas</h3>
+    </div>
+    <div class="card-body">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="border rounded-lg p-4 text-center">
+                <div class="stat-icon text-primary mb-2">
+                    <i class="fas fa-layer-group fa-2x"></i>
                 </div>
+                <div class="text-2xl font-bold text-dark">{{ turmas_com_info|length }}</div>
+                <div class="text-sm text-muted">Total de Turmas</div>
+            </div>
+            
+            <div class="border rounded-lg p-4 text-center">
+                <div class="stat-icon text-warning mb-2">
+                    <i class="fas fa-tasks fa-2x"></i>
+                </div>
+                {% with total_pendentes=0 %}
+                    <div class="text-2xl font-bold text-dark">{{ total_pendentes }}</div>
+                {% endwith %}
+                <div class="text-sm text-muted">Atividades Pendentes</div>
+            </div>
+            
+            <div class="border rounded-lg p-4 text-center">
+                <div class="stat-icon text-success mb-2">
+                    <i class="fas fa-check-circle fa-2x"></i>
+                </div>
+                {% with total_atividades=0 total_pendentes=0 %}
+                    <div class="text-2xl font-bold text-dark">{{ total_atividades }}</div>
+                {% endwith %}
+                <div class="text-sm text-muted">Atividades Concluídas</div>
+            </div>
+            
+            <div class="border rounded-lg p-4 text-center">
+                <div class="stat-icon text-info mb-2">
+                    <i class="fas fa-chart-line fa-2x"></i>
+                </div>
+                {% with total_atividades=0 total_pendentes=0 %}
+                    {% for turma in turmas_com_info %}
+                        {% widthratio turma.total_atividades 1 1 as total %}
+                        {% widthratio turma.atividades_pendentes 1 1 as pendentes %}
+                        {{ total_atividades|add:total }}
+                        {{ total_pendentes|add:pendentes }}
+                    {% endfor %}
+                    {% if total_atividades > 0 %}
+                        <div class="text-2xl font-bold text-dark">{{ total_atividades|add:"-total_pendentes" }}/{{ total_atividades }}</div>
+                    {% else %}
+                        <div class="text-2xl font-bold text-dark">0</div>
+                    {% endif %}
+                {% endwith %}
+                <div class="text-sm text-muted">Progresso Geral</div>
             </div>
         </div>
     </div>

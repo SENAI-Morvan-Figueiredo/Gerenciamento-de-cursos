@@ -1,126 +1,148 @@
 {% extends "aluno/base.html" %}
 {% load static %}
 
-{% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
-    <div>
-        <h1 class="h2 mb-1">Entregar Atividade</h1>
-        <p class="text-muted mb-0">Envie sua resposta para a atividade.</p>
-    </div>
-    <div class="btn-toolbar mb-2 mb-md-0">
-        <a href="{% url 'aluno:lista_atividades' %}" class="btn btn-outline-primary me-2">
-            <i class="fas fa-arrow-left me-1"></i>Voltar
-        </a>
-    </div>
-</div>
+{% block title %}Entregar Atividade - Portal do Aluno{% endblock %}
 
-<div class="row">
-    <div class="col-lg-8">
-        <div class="card-aluno">
+{% block page_title %}Entregar Atividade{% endblock %}
+{% block page_subtitle %}Envie sua resposta para a atividade{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb-item">
+    <a href="{% url 'aluno:lista_atividades' %}" class="breadcrumb-link">Atividades</a>
+    <span class="breadcrumb-separator">/</span>
+</div>
+<div class="breadcrumb-item">
+    <span class="breadcrumb-link active">Entregar</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Formulário de Entrega -->
+    <div class="lg:col-span-2">
+        <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">Informações da Atividade</h5>
+                <h3 class="card-title">Informações da Atividade</h3>
             </div>
             <div class="card-body">
                 <h4 class="text-primary mb-3">{{ atividade.titulo }}</h4>
 
                 {% if atividade.descricao %}
                 <div class="mb-4">
-                    <h6 class="text-muted">Descrição:</h6>
-                    <p class="mb-0">{{ atividade.descricao|linebreaks }}</p>
+                    <div class="text-sm text-muted mb-1">Descrição:</div>
+                    <p class="text-base">{{ atividade.descricao|linebreaks }}</p>
                 </div>
                 {% endif %}
 
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <small class="text-muted d-block">Turma</small>
-                        <strong>{{ atividade.turma.nome }}</strong>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <div class="text-xs text-muted">Turma</div>
+                        <div class="font-medium">{{ atividade.turma.nome }}</div>
                     </div>
-                    <div class="col-md-6">
-                        <small class="text-muted d-block">Data de Entrega</small>
-                        <strong>
+                    <div>
+                        <div class="text-xs text-muted">Data de Entrega</div>
+                        <div class="font-medium">
                             {% if atividade.data_entrega %}
                                 {{ atividade.data_entrega|date:"d/m/Y H:i" }}
                             {% else %}
                                 Não definida
                             {% endif %}
-                        </strong>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Formulário para envio -->
-                <form method="post" enctype="multipart/form-data">
+                <!-- Formulário -->
+                <form method="post" enctype="multipart/form-data" class="space-y-4">
                     {% csrf_token %}
                     
-                    <div class="mb-4">
+                    <div class="form-group">
                         <label for="texto" class="form-label">Sua Resposta</label>
                         <textarea class="form-control" id="texto" name="texto" rows="8"
                                 placeholder="Digite sua resposta aqui...">{% if entrega %}{{ entrega.texto }}{% endif %}</textarea>
                     </div>
 
-                    <div class="mb-4">
+                    <div class="form-group">
                         <label class="form-label">Anexos (Opcional)</label>
-                        <!-- Input visível e clicável -->
                         <input type="file" id="arquivos" name="arquivos" multiple class="form-control mb-2">
-
-                        <small class="form-text text-muted">
+                        <div class="text-xs text-muted">
                             Formatos suportados: PDF, DOC, DOCX, Imagens. Tamanho máximo: 10MB por arquivo.
-                        </small>
+                        </div>
 
                         {% if entrega and entrega.atividadeentreguearquivo_set.exists %}
-                        <div class="mt-2">
-                            <h6>Arquivos enviados:</h6>
-                            <ul>
+                        <div class="mt-3">
+                            <div class="text-sm font-medium mb-1">Arquivos enviados:</div>
+                            <ul class="space-y-1">
                                 {% for arquivo in entrega.atividadeentreguearquivo_set.all %}
-                                    <li><a href="{{ arquivo.arquivo.url }}" target="_blank">{{ arquivo.nome_original }}</a></li>
+                                    <li>
+                                        <a href="{{ arquivo.arquivo.url }}" target="_blank" class="text-primary hover:underline">
+                                            <i class="fas fa-paperclip me-1"></i>{{ arquivo.nome_original }}
+                                        </a>
+                                    </li>
                                 {% endfor %}
                             </ul>
                         </div>
                         {% endif %}
                     </div>
 
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button type="submit" class="btn btn-aluno-primary">
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">
                             {% if entrega %}Atualizar Entrega{% else %}Enviar Resposta{% endif %}
                         </button>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
 
-    <div class="col-lg-4">
-        <!-- Status da entrega -->
-        <div class="card-aluno">
+    <!-- Sidebar -->
+    <div class="lg:col-span-1">
+        <!-- Status da Entrega -->
+        <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">Status da Entrega</h5>
+                <h3 class="card-title">Status da Entrega</h3>
             </div>
             <div class="card-body">
                 {% if entrega %}
                     <div class="alert alert-success">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <strong>Entregue em:</strong> {{ entrega.data_entrega|date:"d/m/Y H:i" }}
+                        <div class="d-flex items-center gap-2">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <div class="font-medium">Entregue em:</div>
+                                <div class="text-sm">{{ entrega.data_entrega|date:"d/m/Y H:i" }}</div>
+                            </div>
+                        </div>
                     </div>
                     {% if entrega.nota %}
                         <div class="alert alert-info">
-                            <i class="fas fa-star me-2"></i>
-                            <strong>Nota:</strong> {{ entrega.nota }}
+                            <div class="d-flex items-center gap-2">
+                                <i class="fas fa-star"></i>
+                                <div>
+                                    <div class="font-medium">Nota:</div>
+                                    <div class="text-sm">{{ entrega.nota }}</div>
+                                </div>
+                            </div>
                         </div>
                     {% else %}
                         <div class="alert alert-warning">
-                            <i class="fas fa-clock me-2"></i>
-                            <strong>Avaliação pendente</strong>
+                            <div class="d-flex items-center gap-2">
+                                <i class="fas fa-clock"></i>
+                                <div class="font-medium">Avaliação pendente</div>
+                            </div>
                         </div>
                     {% endif %}
                 {% else %}
                     <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Não entregue</strong>
+                        <div class="d-flex items-center gap-2">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div class="font-medium">Não entregue</div>
+                        </div>
                     </div>
                     {% if atividade.data_entrega and atividade.data_entrega < now %}
                         <div class="alert alert-danger">
-                            <i class="fas fa-clock me-2"></i>
-                            <strong>Data de entrega expirada</strong>
+                            <div class="d-flex items-center gap-2">
+                                <i class="fas fa-clock"></i>
+                                <div class="font-medium">Data de entrega expirada</div>
+                            </div>
                         </div>
                     {% endif %}
                 {% endif %}
@@ -128,21 +150,31 @@
         </div>
 
         <!-- Informações da Turma -->
-        <div class="card-aluno mt-4">
+        <div class="card mt-4">
             <div class="card-header">
-                <h5 class="mb-0">Informações da Turma</h5>
+                <h3 class="card-title">Informações da Turma</h3>
             </div>
             <div class="card-body">
-                <p class="mb-2">
-                    <strong>Curso:</strong><br>{{ atividade.turma.curso.nome }}
-                </p>
-                <p class="mb-2">
-                    <strong>Professor:</strong><br>
-                    {% if atividade.turma.professor %}{{ atividade.turma.professor.usuario.nome }}{% else %}Não definido{% endif %}
-                </p>
-                <p class="mb-0">
-                    <strong>Modalidade:</strong><br>{{ atividade.turma.get_tipo_display }}
-                </p>
+                <div class="space-y-2">
+                    <div>
+                        <div class="text-xs text-muted">Curso</div>
+                        <div class="font-medium">{{ atividade.turma.curso.nome }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-muted">Professor</div>
+                        <div class="font-medium">
+                            {% if atividade.turma.professor %}
+                                {{ atividade.turma.professor.usuario.nome }}
+                            {% else %}
+                                Não definido
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-muted">Modalidade</div>
+                        <div class="font-medium">{{ atividade.turma.get_tipo_display }}</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
