@@ -59,11 +59,9 @@ def dashboard_aluno(request):
         if a['status'] == 'pendente'
     ]
 
-     # Ordenar por data de entrega (as mais próximas primeiro)
-    proximas_atividades.sort(key=lambda x: x['atividade'].data_entrega or datetime.max.replace(tzinfo=timezone.utc))
-    proximas_atividades = proximas_atividades[:5]  # Limitar a 5 atividades
+    proximas_atividades = proximas_atividades[:3]  # Limitar a 5 atividades
 
-    
+
     # Próximos eventos
     proximos_eventos = Evento.objects.filter(
         turma__in=turmas,
