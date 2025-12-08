@@ -4,7 +4,7 @@
 {% block content %}
 <div class="content-header">
     <div class="cursos-header container-search">
-        <h2>Gerenciar Cursos e Disciplinas</h2>
+        <h1>Gerenciar Cursos e Disciplinas</h1>
     </div>
 </div>
 
@@ -18,7 +18,7 @@
 
 <!-- Barra de Pesquisa (funciona para ambas as abas) -->
 <div class="container-search">
-    <form method="get" class="search-bar">
+    <form method="get" class="search-bar-2">
         <input type="hidden" name="tab" id="current-tab" value="{{ request.GET.tab|default:'cursos' }}">
         <input type="text" name="q" id="search-input" placeholder="Pesquisar..." value="{{ query }}">
         <button type="submit" class="btn btn-style">

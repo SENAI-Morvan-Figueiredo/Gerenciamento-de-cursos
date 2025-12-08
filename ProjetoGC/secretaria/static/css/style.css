@@ -119,13 +119,15 @@ svg {
 
 /* Botões secundários - furmularios  e cards*/
 .btn-style2 {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
     background: var(--laranja-suave);
     color: var(--laranja);
     border: 1px solid var(--laranja-escuro);
     text-decoration: none;
     font-weight: 500;
     font-size: 0.9rem;
-
     transition: all 0.4s ease, background 0.5s ease;
 }
 
@@ -170,7 +172,18 @@ svg {
     color: var(--branco);
 }
 
-
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
 
 
 /* ------------------------------------------------------------------------------------------ Template Principal/ Abase */
@@ -247,7 +260,10 @@ svg {
 }
 
 
-
+.content-header-config {
+    text-align: center; 
+    margin-bottom: 2rem;
+}
 
 
 
@@ -255,7 +271,7 @@ svg {
 
 /* --- HEADER DO CONTEÚDO --- */
 .content-header {
-    text-align: center;
+    text-align: start;
     margin-bottom: 2rem;
 }
 
@@ -311,6 +327,17 @@ svg {
 
     cursor: pointer;
 }
+
+.search-bar-2 {
+    display: flex;
+    justify-content: space-between;
+    width: calc(83.8vw - 1rem);
+    min-width: 420px;
+    max-width: 1600px;
+    padding: 0.5rem 0rem;
+    gap: 2rem ;
+}
+
 
 /* --- CONTAINER DE CARDS --- */
 /* mudar o sistema de grids para algo mais absoluto,

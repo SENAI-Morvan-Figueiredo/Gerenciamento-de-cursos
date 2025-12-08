@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="content-header">
+<div class="content-header-config">
     <h1>Editar Disciplina</h1>
     <p>Atualize as informações da disciplina "{{ form.instance.nome }}"</p>
 </div>
@@ -37,12 +37,6 @@
     </form>
 
     {% if curso %}
-    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--cinza-borda); text-align: center;">
-        <a href="{% url 'disciplina_delete' form.instance.pk %}" class="btn" style="background: var(--laranja); color: var(--branco);">
-            <i data-lucide="trash-2"></i>
-            Excluir Disciplina
-        </a>
-    </div>
     {% endif %}
 </div>
 
