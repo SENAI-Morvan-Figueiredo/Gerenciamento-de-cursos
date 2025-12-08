@@ -74,7 +74,7 @@
                                 <div class="font-semibold text-dark">{{ atividade.atividade.titulo }}</div>
                                 {% if atividade.atividade.descricao %}
                                 <div class="text-sm text-muted mt-1">
-                                    {{ atividade.atividade.descricao|truncatewords:10 }}
+                                    {{ atividade.atividade.descricao|truncatechars:100 }}
                                 </div>
                                 {% endif %}
                             </td>

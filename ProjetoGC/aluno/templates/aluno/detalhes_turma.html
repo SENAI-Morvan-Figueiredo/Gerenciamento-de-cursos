@@ -128,7 +128,7 @@
                                 
                                 <div>
                                     {% if item.status == 'pendente' %}
-                                        <a href="{% url 'atividades:entregar_atividade' item.atividade.atividade_id %}" 
+                                        <a href="{% url 'aluno:entregar_atividade' item.atividade.atividade_id %}" 
                                            class="btn btn-primary btn-sm">
                                             <i class="fas fa-paper-plane me-1"></i>Entregar
                                         </a>
