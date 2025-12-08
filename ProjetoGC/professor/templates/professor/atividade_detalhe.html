@@ -6,8 +6,8 @@
 {% block content %}
 <div style="max-width:980px; margin: 1.5rem auto;">
     <div style="background:white; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-        <h2 style="margin:0 0 8px 0; color:#000000;">{{ atividade.titulo }}</h2>
-        <p style="color:#666; margin:0 0 16px 0;">{{ atividade.descricao }}</p>
+        <h2 style="margin:0 0 8px 0; color:#000000; word-wrap: break-word; overflow-wrap: break-word;">{{ atividade.titulo }}</h2>
+        <p style="color:#666; margin:0 0 16px 0; word-wrap: break-word; overflow-wrap: break-word;">{{ atividade.descricao }}</p>
 
         <div style="display:flex; gap:12px; align-items:center; margin-bottom:16px;">
             <div style="padding:8px 12px; background:#f8f9fa; border-radius:6px; color:#333;">Entrega: {{ atividade.data_entrega|date:"d/m/Y H:i" }}</div>

@@ -51,14 +51,17 @@ def dashboard_aluno(request):
     # Estatísticas
     atividades_pendentes = len([a for a in atividades_com_status if a['status'] == 'pendente'])
     atividades_entregues = len([a for a in atividades_com_status if a['status'] == 'entregue'])
+    atividades_atrasadas = len([a for a in atividades_com_status if a['status'] == 'atrasado'])
     
-    # Próximas atividades (próximos 7 dias)
-    sete_dias = timezone.now() + timedelta(days=7)
+    # Próximas atividades (todas pendentes, não apenas dos próximos 7 dias)
     proximas_atividades = [
         a for a in atividades_com_status 
-        if a['status'] == 'pendente' and a['atividade'].data_entrega and a['atividade'].data_entrega <= sete_dias
-    ][:5]
-    
+        if a['status'] == 'pendente'
+    ]
+
+    proximas_atividades = proximas_atividades[:3]  # Limitar a 5 atividades
+
+
     # Próximos eventos
     proximos_eventos = Evento.objects.filter(
         turma__in=turmas,
