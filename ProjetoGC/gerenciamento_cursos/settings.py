@@ -143,10 +143,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # settings.py
 AUTH_USER_MODEL = 'login.Usuario'
 
+# settings.py - MODIFIQUE AUTHENTICATION_BACKENDS
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'login.backends.EmailAuthBackend',  # Backend customizado para email
+    'login.backends.EmailOnlyBackend',  # APENAS ESTE
 ]
+
+# COMENTE ou REMOVA estas linhas:
+# 'django.contrib.auth.backends.ModelBackend',
+# 'login.backends.EmailAuthBackend',
 
 LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/home/'

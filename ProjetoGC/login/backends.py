@@ -1,25 +1,37 @@
+# backends.py - SUBSTITUA TODO O CONTEÚDO por:
 from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import check_password
 
-class EmailAuthBackend(BaseBackend):
+class EmailOnlyBackend(BaseBackend):
     """
-    Backend de autenticação que usa APENAS email
+    Backend APENAS para email - funciona com Password Reset
     """
     def authenticate(self, request, username=None, password=None, **kwargs):
         UserModel = get_user_model()
         
-        # Usa o email passado como 'username' no authenticate
-        email = username
+        # IMPORTANTE: Django Password Reset envia 'email' no kwargs
+        # Login normal envia 'username'
+        email = username or kwargs.get('email')
         
+        if not email:
+            return None
+            
         try:
+            # Procura APENAS por email
             user = UserModel.objects.get(email=email)
             if user.check_password(password):
                 return user
-        except UserModel.DoesNotExist:
             return None
+        except UserModel.DoesNotExist:
+            # Para compatibilidade com usuários antigos
+            try:
+                user = UserModel.objects.get(username=email)
+                if user.check_password(password):
+                    return user
+                return None
+            except UserModel.DoesNotExist:
+                return None
         except UserModel.MultipleObjectsReturned:
-            # Se houver emails duplicados (o que não deveria acontecer com unique=True)
             users = UserModel.objects.filter(email=email)
             for user in users:
                 if user.check_password(password):
