@@ -52,7 +52,7 @@
         
         // Se não tiver URL, construa com o turmaId correto
         if (!url && turmaId) {
-          url = `http://127.0.0.1:8000/professor/turma/${turmaId}/atividades/${evento.id}/`;
+          url = `http://gustavodutra237.pythonanywhere.com/professor/turma/${turmaId}/atividades/${evento.id}/`;
         } else if (!url && !turmaId) {
           // Se não tiver turmaId, mostre erro
           console.error('Evento sem turma_id:', evento.id);
