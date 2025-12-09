@@ -26,6 +26,7 @@
         max-height: 500px; /* Ajuste conforme necessário */
     }
 </style>
+
 {% endblock %}
 
 {% block content %}
@@ -52,7 +53,7 @@
             </div>
 
             <div id="realocacao-fields" class="conditional-field">
-                <div class="form-row">
+                <div class="form-column">
                     <div class="form-group">
                         <label for="id_turma_origem" class="form-label">{{ form.turma_origem.label }}</label>
                         {{ form.turma_origem }}
