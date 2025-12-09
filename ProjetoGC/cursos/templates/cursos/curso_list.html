@@ -188,6 +188,10 @@
 }
 
 .tab-content {
+    height: 380px
+}
+
+.tab-content {
     display: none;
 }
 
@@ -270,88 +274,31 @@ document.addEventListener('DOMContentLoaded', function() {
     function buscarCursos(searchTerm) {
         const cards = document.querySelectorAll('.card-curso');
         let algumEncontrado = false;
-        
+
         cards.forEach(card => {
-            let encontrou = false;
-            
-            // Buscar no nome do curso
-            const nomeCurso = card.querySelector('h2').textContent.toLowerCase();
-            if (nomeCurso.includes(searchTerm)) encontrou = true;
-            
-            // Buscar na carga horária
-            const cargaHoraria = card.querySelector('p:nth-child(2)').textContent.toLowerCase();
-            if (cargaHoraria.includes(searchTerm)) encontrou = true;
-            
-            // Buscar na descrição (se existir)
-            const descricaoElement = card.querySelector('p:nth-child(3)');
-            if (descricaoElement && descricaoElement.textContent.toLowerCase().includes(searchTerm)) {
-                encontrou = true;
-            }
-            
-            // Buscar no número de disciplinas
-            const disciplinas = card.querySelector('p:nth-child(4)').textContent.toLowerCase();
-            if (disciplinas.includes(searchTerm)) encontrou = true;
-            
-            // Buscar no status
-            const status = card.querySelector('.status-badge').textContent.toLowerCase();
-            if (status.includes(searchTerm)) encontrou = true;
-            
-            card.style.display = encontrou ? 'block' : 'none';
+            const texto = card.innerText.toLowerCase();
+            const encontrou = texto.includes(searchTerm);
+
+            card.style.display = encontrou ? '' : 'none';
             if (encontrou) algumEncontrado = true;
         });
-        
-        atualizarMensagemNenhumResultado(activeTab, algumEncontrado, searchTerm);
+
+        atualizarMensagemNenhumResultado('cursos-tab', algumEncontrado, searchTerm);
     }
     
     function buscarDisciplinas(searchTerm) {
         const cards = document.querySelectorAll('.card-disciplina');
         let algumEncontrado = false;
-        
+
         cards.forEach(card => {
-            let encontrou = false;
-            
-            // Buscar no nome da disciplina
-            const nomeDisciplina = card.querySelector('h2').textContent.toLowerCase();
-            if (nomeDisciplina.includes(searchTerm)) encontrou = true;
-            
-            // Buscar na carga horária
-            const cargaHoraria = card.querySelector('p:nth-child(2)').textContent.toLowerCase();
-            if (cargaHoraria.includes(searchTerm)) encontrou = true;
-            
-            // Buscar na descrição (se existir)
-            const descricaoElement = card.querySelector('p:nth-child(3)');
-            if (descricaoElement && descricaoElement.textContent.toLowerCase().includes(searchTerm)) {
-                encontrou = true;
-            }
-            
-            // Buscar no número de cursos
-            const cursos = card.querySelector('p:nth-child(4)').textContent.toLowerCase();
-            if (cursos.includes(searchTerm)) encontrou = true;
-            
-            card.style.display = encontrou ? 'block' : 'none';
+            const texto = card.innerText.toLowerCase();
+            const encontrou = texto.includes(searchTerm);
+
+            card.style.display = encontrou ? '' : 'none';
             if (encontrou) algumEncontrado = true;
         });
-        
+
         atualizarMensagemNenhumResultado('disciplinas-tab', algumEncontrado, searchTerm);
-    }
-    
-    function atualizarMensagemNenhumResultado(tabName, algumEncontrado, searchTerm) {
-        const cardsContainer = document.querySelector(`#${tabName} .cards-container`);
-        let noDataMessage = document.querySelector(`#${tabName} .no-data-search`);
-        
-        if (!algumEncontrado && searchTerm !== '') {
-            if (!noDataMessage) {
-                noDataMessage = document.createElement('div');
-                noDataMessage.className = 'no-data no-data-search';
-                noDataMessage.innerHTML = `
-                    <h3>Nenhum ${tabName === 'cursos-tab' ? 'curso' : 'disciplina'} encontrado</h3>
-                    <p>Tente alterar os termos da pesquisa</p>
-                `;
-                cardsContainer.appendChild(noDataMessage);
-            }
-        } else if (noDataMessage) {
-            noDataMessage.remove();
-        }
     }
     
     // Adicionar eventos

@@ -343,11 +343,14 @@ svg {
 /* mudar o sistema de grids para algo mais absoluto,
  assim podendo colocar o botão de adicionar ao lado dos cards */
 .cards-container {
+    min-height: 380px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.8rem;
     margin-top: 1rem;
+    align-content: start; /* impede que o grid colapse para o centro */
 }
+
 
 /* --- CARDS --- */
 .card {
@@ -412,7 +415,7 @@ svg {
     gap: 2rem;
     align-items: center;
     justify-content: center;
-
+    min-height: 380px;
     background: linear-gradient(45deg, var(--azul) 0%, var(--azul-claro) 100%);
     color: var(--branco);
     border: none;
