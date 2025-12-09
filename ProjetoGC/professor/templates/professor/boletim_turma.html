@@ -13,7 +13,7 @@
                 <p>{{ turma.curso.nome }} | Período: {{ turma.data_inicio|date:"d/m/Y" }} - {{ turma.data_fim|date:"d/m/Y" }}</p>
             </div>
             <div class="header-actions">
-                <a href="{% url 'professor:turmas_por_curso' turma.curso.id %}" class="btn btn-secondary">
+                <a href="{% url 'professor:turmas_por_curso' turma.curso.id %}" class="btn btn-outline-primary">
                     ← Voltar para Turmas
                 </a>
                 <button onclick="window.print()" class="btn btn-primary">

@@ -34,14 +34,14 @@
             </div>
             <div class="card-body">
                 <div class="turma-info">
-                    <p><strong><i class="fas fa-book me-2"></i>Curso:</strong> {{ turma.curso.nome }}</p>
-                    <p><strong><i class="fas fa-calendar me-2"></i>Início:</strong> {{ turma.data_inicio|date:"d/m/Y" }}</p>
+                    <p><strong><i class="fas fa-book me-2"></i>Curso</strong> {{ turma.curso.nome }}</p>
+                    <p><strong><i class="fas fa-calendar me-2"></i>Início</strong> {{ turma.data_inicio|date:"d/m/Y" }}</p>
                     {% if turma.data_fim %}
-                    <p><strong><i class="fas fa-calendar-times me-2"></i>Término:</strong> {{ turma.data_fim|date:"d/m/Y" }}</p>
+                    <p><strong><i class="fas fa-calendar-times me-2"></i>Término</strong> {{ turma.data_fim|date:"d/m/Y" }}</p>
                     {% endif %}
-                    <p><strong><i class="fas fa-clock me-2"></i>Horário:</strong> {{ turma.entrada_horas }} - {{ turma.saida_horas }}</p>
-                    <p><strong><i class="fas fa-calendar-day me-2"></i>Dias:</strong> {{ turma.dias_semana }}</p>
-                    <p><strong><i class="fas fa-laptop me-2"></i>Modalidade:</strong> {{ turma.get_tipo_display }}</p>
+                    <p><strong><i class="fas fa-clock me-2"></i>Horário</strong> {{ turma.entrada_horas }} - {{ turma.saida_horas }}</p>
+                    <p><strong><i class="fas fa-calendar-day me-2"></i>Dias</strong> {{ turma.dias_semana }}</p>
+                    <p><strong><i class="fas fa-laptop me-2"></i>Modalidade</strong> {{ turma.get_tipo_display }}</p>
                 </div>
                 
                 <div class="d-flex justify-content-between align-items-center mt-4">

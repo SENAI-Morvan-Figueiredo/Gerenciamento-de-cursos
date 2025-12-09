@@ -5,6 +5,7 @@ from login.decorators import aluno_required
 from cursos.models import Matricula, Turma
 from atividades.models import Atividade, AtividadeEntregue, AtividadeEntregueArquivo
 from calendario.models import Evento
+from solicitacao.models import Solicitacao
 from django.utils import timezone
 from datetime import timedelta, datetime
 import json
@@ -307,7 +308,24 @@ def calendario_aluno(request):
 @login_required
 @aluno_required
 def solicitacoes_aluno(request):
-    return render(request, "aluno/solicitacoes.html")
+    """Página de solicitações do aluno"""
+    try:
+        aluno = request.user.aluno
+        usuario = request.user  # O usuário logado
+    except:
+        return render(request, "aluno/error.html", {
+            "message": "Perfil de aluno não encontrado."
+        })
+    
+    
+    solicitacoes = Solicitacao.objects.filter(usuario=usuario).order_by('-data_solicitacao')
+    
+    context = {
+        'solicitacoes': solicitacoes,
+    }
+    
+    return render(request, "aluno/solicitacoes.html", context)
+
 
 @login_required
 @aluno_required
