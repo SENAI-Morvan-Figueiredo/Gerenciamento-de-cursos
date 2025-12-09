@@ -55,25 +55,19 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'atividades:home' %}">
-                        <i>✓</i>
-                        <span>Atividades</span>
-                    </a>
-                </li>
-                <li>
                     <a href="{% url 'solicitacao:solicitacaoList' %}">
                         <i>📋</i>
                         <span>Secretaria</span>
                     </a>
                 </li>
+                <li>
+                    <a href="{% url 'logout' %}">
+                        <i>⚙️</i>
+                        <span>SAIR</span>
+                    </a>    
+                </li>
             </ul>
 
-            <div class="sidebar-footer">
-                <a href="{% url 'logout' %}">
-                    <i>⚙️</i>
-                    <span>SAIR</span>
-                </a>
-            </div>
         </aside>
 
         <!-- DASHBOARD CONTENT -->

@@ -22,6 +22,7 @@
     color: inherit;
 }
 
+/* Card de atividade - estrutura base */
 .atividade-card {
     width: 374px;
     height: 319px;
@@ -32,16 +33,60 @@
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: hidden; /* IMPORTANTE: mantém tudo dentro do card */
 }
 
 /* Seção superior - contém título e descrição */
 .atividade-card-top {
     display: flex;
     flex-direction: column;
-    min-height: 0;
+    flex: 1; /* Ocupa o espaço disponível */
+    min-height: 0; /* Permite que o conteúdo interno faça scroll */
+    overflow: hidden; /* Mantém o conteúdo dentro */
 }
 
+/* Descrição - APARECE COMPLETA COM SCROLL INTERNO */
+.atividade-card-descricao {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+    padding: 8px;
+    border-radius: 4px;
+    background: #f9f9f9;
+    border: 1px solid #f0f0f0;
+    
+    /* Permite quebra de linha natural */
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    
+    /* Scroll interno quando necessário */
+    overflow-y: auto;
+    flex: 1; /* Ocupa todo o espaço disponível */
+    min-height: 0;
+    
+    
+}
+
+/* Estiliza a barra de rolagem no Chrome/Safari */
+.atividade-card-descricao::-webkit-scrollbar {
+    width: 4px;
+}
+
+.atividade-card-descricao::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.atividade-card-descricao::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.atividade-card-descricao::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
 /* Título - máximo 2 linhas */
 .atividade-card-titulo {
     margin: 0 0 12px 0;
@@ -56,23 +101,6 @@
     text-overflow: ellipsis;
 }
 
-/* Descrição - OCUPAR TODO O ESPAÇO DISPONÍVEL */
-.atividade-card-descricao {
-    margin: 0;
-    font-size: 13px;
-    color: #666;
-    line-height: 1.4;
-    padding: 8px;
-    border-radius: 4px;
-
-    display: -webkit-box !important;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 6;
-    line-clamp: 6;
-    overflow: hidden !important;
-    text-overflow: ellipsis;
-    white-space: normal;
-}
 
 /* Seção inferior - data e contagem */
 .atividade-card-bottom {
@@ -194,10 +222,10 @@
             <p class="text-muted">{{ turma.curso.descricao }}</p>
         </div>
         <div>
-            <a href="{% url 'atividades:adicionar_atividade' %}?turma={{ turma.turma_id }}" class="btn-primary-green">
+            <a href="{% url 'atividades:adicionar_atividade' %}?turma={{ turma.turma_id }}" class="btn btn-primary">
                 ✏️ Criar Nova Atividade
             </a>
-            <a href="{% url 'professor:turmas_por_curso' turma.curso.id %}" class="btn-secondary-gray">
+            <a href="{% url 'professor:turmas_por_curso' turma.curso.id %}" class="btn btn-outline-primary">
                 ← Voltar às Turmas
             </a>
         </div>
