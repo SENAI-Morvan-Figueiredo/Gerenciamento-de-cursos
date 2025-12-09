@@ -76,9 +76,7 @@
                 white-space: normal;
               ">${evento.title}</h4>
               <p>${descricao}</p>
-              <p><small><strong>Turma:</strong> ${turmaNome}</small></p>
-              ${turmaId ? `<p><small><strong>ID Turma:</strong> ${turmaId}</small></p>` : ''}
-            `;
+              `;
             tooltip.style.display = 'block';
             tooltip.style.left = (e.pageX - 130) + 'px';
             tooltip.style.top = (e.pageY + 20) + 'px';
@@ -136,9 +134,6 @@
                 white-space: normal;
               ">${evento.title}</h4>
               <p>${descricao}</p>
-              <p><small><strong>Turma:</strong> ${turmaNome}</small></p>
-              ${turmaId ? `<p><small><strong>ID Turma:</strong> ${turmaId}</small></p>` : ''}
-              ${url && url !== '#' ? '<p><small><i>Clique para abrir atividade</i></small></p>' : '<p><small><i>Sem link disponível</i></small></p>'}
             `;
             tooltip.style.display = 'block';
             tooltip.style.left = (e.pageX - 130) + 'px';
