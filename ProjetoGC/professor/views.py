@@ -160,19 +160,20 @@ def listar_atividades(request, turma_id):
 @login_required
 @professor_required
 def atividade_detalhe(request, turma_id, atividade_id):
-    """
-    Página detalhada da atividade com estatísticas e lista de entregas.
-    """
-    professor = Professor.objects.get(usuario=request.user)
+    professor = get_object_or_404(Professor, usuario=request.user)
     turma = get_object_or_404(Turma, turma_id=turma_id, professor=professor)
-    atividade = get_object_or_404(Atividade, pk=atividade_id, turma=turma)
 
-    entregues = AtividadeEntregue.objects.filter(atividade=atividade).select_related('matricula__aluno__usuario').order_by('-data_entrega')
+    # 🔹 Use atividade_id, NÃO pk
+    atividade = get_object_or_404(Atividade, atividade_id=atividade_id, turma__turma_id=turma_id)
+
+    entregues = AtividadeEntregue.objects.filter(
+        atividade=atividade
+    ).select_related('matricula__aluno__usuario').order_by('-data_entrega')
+
     total_alunos = Matricula.objects.filter(turma=turma).count()
     total_entregues = entregues.count()
     porcentagem = (total_entregues / total_alunos * 100) if total_alunos > 0 else 0
 
-    # Construir lista de entregas com informações úteis
     entregas_info = []
     for e in entregues:
         aluno = getattr(e.matricula, 'aluno', None)
@@ -187,7 +188,6 @@ def atividade_detalhe(request, turma_id, atividade_id):
             'url_arquivo': e.url_arquivo,
         })
 
-
     context = {
         'turma': turma,
         'atividade': atividade,
@@ -198,6 +198,7 @@ def atividade_detalhe(request, turma_id, atividade_id):
     }
 
     return render(request, 'professor/atividade_detalhe.html', context)
+
 
 
 @login_required

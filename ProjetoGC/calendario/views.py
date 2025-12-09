@@ -87,14 +87,14 @@ def listar_eventos(request):
             turma_id = e.turma_id  # 🔹 ESTA É A CHAVE - use turma_id em vez de e.turma.id
             
             data.append({
-                "id": e.id,
+                "id": e.atividade.atividade_id,
                 "title": e.titulo,
                 "start": e.data_inicio.isoformat() if e.data_inicio else None,
                 "end": e.data_fim.isoformat() if e.data_fim else None,
                 "description": e.descricao or "",
                 "turma": str(e.turma) if e.turma else None,
                 "turma_id": turma_id,  # 🔹 Use turma_id diretamente
-                "redirect_url": f"http://gustavodutra237.pythonanywhere.com/professor/turma/{turma_id}/atividades/{e.id}/"
+                "redirect_url": f"http://gustavodutra237.pythonanywhere.com/professor/turma/{turma_id}/atividades/{e.atividade.atividade_id}/"
             })
 
         return JsonResponse(data, safe=False)
