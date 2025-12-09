@@ -94,7 +94,7 @@ def listar_eventos(request):
                 "description": e.descricao or "",
                 "turma": str(e.turma) if e.turma else None,
                 "turma_id": turma_id,  # 🔹 Use turma_id diretamente
-                "redirect_url": f"http://127.0.0.1:8000/professor/turma/{turma_id}/atividades/{e.id}/"
+                "redirect_url": f"http://gustavodutra237.pythonanywhere.com/professor/turma/{turma_id}/atividades/{e.id}/"
             })
 
         return JsonResponse(data, safe=False)
