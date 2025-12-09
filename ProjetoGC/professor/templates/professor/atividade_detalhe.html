@@ -50,6 +50,7 @@
             </a>
 
         </div>
+        
 
         <h3 style="color:#333;">Entregas (mais recentes primeiro)</h3>
         {% if entregas_info %}
@@ -74,5 +75,9 @@
         {% endif %}
 
     </div>
+    <a class="btn btn-outline-primary" style="margin-top: 20px;"  href="{% url 'professor:listar_atividades' turma.turma_id %}">
+            ← Voltar para Atividades
+
+    </a>
 </div>
 {% endblock %}

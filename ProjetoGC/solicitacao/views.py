@@ -84,7 +84,7 @@ class SolicitacaoCreateView(CreateView):
     def get_success_url(self):
         user = self.request.user
         if user.tipo == 'professor':
-            return reverse_lazy('professor:home')
+            return reverse_lazy('solicitacao:solicitacaoList')
         elif user.tipo == 'aluno':
             return reverse_lazy('aluno:dashboard_aluno')
     

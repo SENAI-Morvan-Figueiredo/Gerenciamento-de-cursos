@@ -37,7 +37,7 @@
     {% for turma in turmas %}
         <div class="card card-turma">
             <div class="card-header">
-                <h2>{{ turma.nome }}</h2>
+                <h2 style="word-break: break-word;">{{ turma.nome }}</h2>
                 <span class="status-badge {% if turma.status %}status-active{% else %}status-inactive{% endif %}">
                     {{ turma.status|yesno:"Ativa,Inativa" }}
                 </span>
