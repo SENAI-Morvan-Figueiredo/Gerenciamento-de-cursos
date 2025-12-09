@@ -28,6 +28,8 @@
     box-sizing: border-box;
 }
 
+
+
 body {
     font-family: 'Inter', 'Segoe UI', sans-serif;
     background-color: var(--bg-claro);
