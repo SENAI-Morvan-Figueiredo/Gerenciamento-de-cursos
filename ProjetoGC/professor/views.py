@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 # Import do decorator específico do app login
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Avg
 from cursos.models import Turma, Matricula, Curso
 from login.models import Professor
@@ -198,6 +198,52 @@ def atividade_detalhe(request, turma_id, atividade_id):
     }
 
     return render(request, 'professor/atividade_detalhe.html', context)
+
+
+@login_required
+@professor_required
+def editar_atividade(request, turma_id, atividade_id):
+    professor = get_object_or_404(Professor, usuario=request.user)
+
+    turma = get_object_or_404(Turma, turma_id=turma_id, professor=professor)
+
+    atividade = get_object_or_404(Atividade, atividade_id=atividade_id, turma=turma)
+
+    if request.method == "POST":
+        atividade.titulo = request.POST.get("titulo")
+        atividade.descricao = request.POST.get("descricao")
+        atividade.data_entrega = request.POST.get("data_entrega") or None
+
+        # Atualiza arquivo se enviado
+        if "arquivo" in request.FILES:
+            atividade.arquivo = request.FILES["arquivo"]
+
+        atividade.save()
+
+        return redirect(
+            "professor:atividade_detalhe",
+            turma_id=turma.turma_id,
+            atividade_id=atividade.atividade_id,
+        )
+
+    return render(request, "atividades/editar_atividade.html", {
+        "atividade": atividade,
+        "turma": turma,
+        "turma_id": turma.turma_id,  # <-- evita erro no template
+    })
+
+
+
+@login_required
+@professor_required
+def excluir_atividade(request, turma_id, atividade_id):
+    professor = get_object_or_404(Professor, usuario=request.user)
+    turma = get_object_or_404(Turma, turma_id=turma_id, professor=professor)
+    atividade = get_object_or_404(Atividade, pk=atividade_id, turma=turma)
+
+    atividade.delete()
+
+    return redirect('professor:listar_atividades', turma_id=turma_id)
 
 
 @login_required

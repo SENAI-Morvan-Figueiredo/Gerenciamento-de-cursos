@@ -1,5 +1,6 @@
 {% extends 'professor/base.html' %}
 {% load static %}
+{% load arquivo_filters %}
 
 {% block content %}
 
@@ -50,13 +51,18 @@
 .button-primary:hover {
     opacity: .8;
 }
+
+.preview-image {
+    max-width: 250px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+}
 </style>
 
 <div class="page-container">
 
-    <!-- ===================================== -->
-    <!-- 📌 BLOCO: informações da atividade -->
-    <!-- ===================================== -->
+    <!-- DETALHES DA ATIVIDADE -->
     <div class="card">
         <div class="card-title">📘 Detalhes da Atividade</div>
 
@@ -74,7 +80,7 @@
         {% if atividade.arquivo %}
         <div class="section-label" style="margin-top:15px;">Arquivo anexado pelo professor:</div>
         <div class="file-box">
-            📎 <a href="{{ atividade.arquivo.url }}" target="_blank">Baixar arquivo</a>
+            📎 <a href="{{ atividade.arquivo.url }}" target="_blank">{{ atividade.arquivo.name }}</a>
         </div>
         {% endif %}
 
@@ -86,10 +92,7 @@
         {% endif %}
     </div>
 
-
-    <!-- ===================================== -->
-    <!-- 📌 BLOCO: informações enviadas pelo aluno -->
-    <!-- ===================================== -->
+    <!-- ENTREGA DO ALUNO -->
     <div class="card">
         <div class="card-title">👨‍🎓 Entrega do Aluno</div>
 
@@ -104,28 +107,39 @@
         <div class="file-box">{{ entrega.texto|linebreaks }}</div>
         {% endif %}
 
-        {% if entrega.link %}
+        {% if entrega.url_arquivo %}
         <div class="section-label" style="margin-top:15px;">Link enviado:</div>
         <div class="file-box">
-            🔗 <a href="{{ entrega.link }}" target="_blank">{{ entrega.link }}</a>
+            🔗 <a href="{{ entrega.url_arquivo }}" target="_blank">{{ entrega.url_arquivo }}</a>
         </div>
         {% endif %}
 
-        {% if entrega.atividadeentreguearquivo_set.all %}
-        <div class="section-label" style="margin-top:15px;">Arquivos enviados:</div>
-        {% for arquivo in entrega.atividadeentreguearquivo_set.all %}
-        <div class="file-box">
-            📎 <a href="{{ arquivo.arquivo.url }}" target="_blank">{{ arquivo.nome_original }}</a>
-        </div>
-        {% empty %}
-        <div class="file-box">Nenhum arquivo enviado.</div>
-        {% endfor %}
+        <!-- EXIBIR ARQUIVOS -->
+        {% if entrega.atividadeentreguearquivo_set.exists %}
+            <div class="section-label" style="margin-top:15px;">Arquivos enviados:</div>
+
+            {% for arquivo in entrega.atividadeentreguearquivo_set.all %}
+                <div class="file-box">
+
+                    {% if arquivo.nome_original|is_image %}
+                        <img src="{{ arquivo.arquivo.url }}"
+                             alt="{{ arquivo.nome_original }}"
+                             class="preview-image">
+                        <br>
+                        📎 <a href="{{ arquivo.arquivo.url }}" target="_blank">Baixar imagem</a>
+
+                    {% else %}
+                        📄 <a href="{{ arquivo.arquivo.url }}" target="_blank">{{ arquivo.nome_original }}</a>
+                    {% endif %}
+
+                </div>
+            {% empty %}
+                <div class="file-box">Nenhum arquivo enviado.</div>
+            {% endfor %}
         {% endif %}
     </div>
 
-    <!-- ===================================== -->
-    <!-- 📌 BLOCO: avaliação -->
-    <!-- ===================================== -->
+    <!-- AVALIAÇÃO -->
     <div class="card">
         <div class="card-title">📝 Avaliação</div>
 
@@ -133,10 +147,8 @@
             {% csrf_token %}
 
             <div class="section-label">Nota:</div>
-            <input type="number" name="nota" value="{{ entrega.nota|default_if_none:'' }}" class="form-control"
-                min="0" max="10" step="0.1"
-                style="width:120px; padding:6px;">
-
+            <input type="number" name="nota" value="{{ entrega.nota|default_if_none:'' }}"
+                min="0" max="10" step="0.1" class="form-control" style="width:120px;">
 
             <div class="section-label" style="margin-top:15px;">Comentário:</div>
             <textarea name="comentario_professor" rows="4" class="form-control"

@@ -20,14 +20,10 @@ def dashboard_aluno(request):
             "message": "Perfil de aluno não encontrado. Contate a secretaria."
         })
     
-    # Turmas do aluno
     matriculas = Matricula.objects.filter(aluno=aluno, status_matricula=True)
     turmas = [matricula.turma for matricula in matriculas]
-    
-    # Todas as atividades do aluno
     todas_atividades = Atividade.objects.filter(turma__in=turmas)
     
-    # Calcular status das atividades
     atividades_com_status = []
     for atividade in todas_atividades:
         entrega = AtividadeEntregue.objects.filter(
@@ -48,27 +44,21 @@ def dashboard_aluno(request):
             'entrega': entrega
         })
     
-    # Estatísticas
     atividades_pendentes = len([a for a in atividades_com_status if a['status'] == 'pendente'])
     atividades_entregues = len([a for a in atividades_com_status if a['status'] == 'entregue'])
     atividades_atrasadas = len([a for a in atividades_com_status if a['status'] == 'atrasado'])
     
-    # Próximas atividades (todas pendentes, não apenas dos próximos 7 dias)
     proximas_atividades = [
         a for a in atividades_com_status 
         if a['status'] == 'pendente'
     ]
+    proximas_atividades = proximas_atividades[:3]
 
-    proximas_atividades = proximas_atividades[:3]  # Limitar a 5 atividades
-
-
-    # Próximos eventos
     proximos_eventos = Evento.objects.filter(
         turma__in=turmas,
         data_inicio__gte=timezone.now()
     ).order_by('data_inicio')[:3]
     
-    # Eventos de hoje
     hoje = timezone.now().date()
     eventos_hoje = Evento.objects.filter(
         turma__in=turmas,
@@ -91,7 +81,6 @@ def dashboard_aluno(request):
 @login_required
 @aluno_required
 def minhas_turmas(request):
-    """Página com lista de todas as turmas do aluno"""
     try:
         aluno = request.user.aluno
     except:
@@ -102,7 +91,6 @@ def minhas_turmas(request):
     matriculas = Matricula.objects.filter(aluno=aluno, status_matricula=True)
     turmas = [matricula.turma for matricula in matriculas]
     
-    # Adicionar informações extras para cada turma
     turmas_com_info = []
     total_pendentes_geral = 0
     total_atividades_geral = 0
@@ -123,7 +111,6 @@ def minhas_turmas(request):
             'total_atividades': total_atividades,
         })
     
-    # Calcular estatísticas gerais
     total_concluidas = total_atividades_geral - total_pendentes_geral
     progresso_geral = f"{total_concluidas}/{total_atividades_geral}" if total_atividades_geral > 0 else "0"
     
@@ -141,10 +128,8 @@ def minhas_turmas(request):
 @login_required
 @aluno_required
 def detalhes_turma(request, turma_id):
-    """Detalhes de uma turma específica"""
     turma = get_object_or_404(Turma, turma_id=turma_id)
     
-    # Verificar se o aluno está matriculado
     matricula = Matricula.objects.filter(
         aluno=request.user.aluno, 
         turma=turma, 
@@ -156,10 +141,8 @@ def detalhes_turma(request, turma_id):
             "message": "Você não está matriculado nesta turma."
         })
     
-    # Atividades da turma
     atividades = Atividade.objects.filter(turma=turma).order_by('-data_entrega')
     
-    # Verificar status de entrega
     atividades_com_status = []
     for atividade in atividades:
         entrega = AtividadeEntregue.objects.filter(
@@ -180,7 +163,6 @@ def detalhes_turma(request, turma_id):
             'entrega': entrega
         })
     
-    # Próximos eventos da turma
     proximos_eventos = Evento.objects.filter(
         turma=turma,
         data_inicio__gte=timezone.now()
@@ -198,7 +180,6 @@ def detalhes_turma(request, turma_id):
 @login_required
 @aluno_required
 def lista_atividades(request):
-    """Lista todas as atividades do aluno"""
     try:
         aluno = request.user.aluno
     except:
@@ -206,16 +187,13 @@ def lista_atividades(request):
             "message": "Perfil de aluno não encontrado."
         })
     
-    # Turmas do aluno
     turma_ids = Matricula.objects.filter(
         aluno=aluno, 
         status_matricula=True
     ).values_list('turma_id', flat=True)
     
-    # Todas as atividades
     atividades = Atividade.objects.filter(turma_id__in=turma_ids).order_by('-data_entrega')
     
-    # Adicionar status
     atividades_com_status = []
     for atividade in atividades:
         entrega = AtividadeEntregue.objects.filter(
@@ -236,7 +214,6 @@ def lista_atividades(request):
             'entrega': entrega
         })
     
-    # Turmas para filtro
     turmas = Turma.objects.filter(turma_id__in=turma_ids)
     
     context = {
@@ -246,6 +223,9 @@ def lista_atividades(request):
     
     return render(request, "aluno/lista_atividades.html", context)
 
+# ======================================================================================
+#                           ENTREGA DE ATIVIDADE — CORRIGIDO
+# ======================================================================================
 @login_required
 @aluno_required
 def entregar_atividade(request, atividade_id):
@@ -269,27 +249,33 @@ def entregar_atividade(request, atividade_id):
     ).first()
 
     if request.method == 'POST':
-        texto = request.POST.get('texto', '').strip()
-        url = request.POST.get('url_arquivo', '').strip()
 
-        # Se já existe, atualiza. Se não, cria a entrega.
+        texto = request.POST.get('texto', '').strip()
+        url = request.POST.get('url_arquivo', '').strip() or None
+
+        # =====================================
+        #  ➤ CRIAR OU ATUALIZAR ENTREGA (FIX)
+        # =====================================
         if entrega:
             entrega.texto = texto
-            entrega.url_arquivo = url if url else None
+            entrega.url_arquivo = url
             entrega.data_entrega = timezone.now()
             entrega.save()
-            print(f"Entrega atualizada: {entrega.id}")
+
+            print("Entrega atualizada. ID:", entrega.pk)
         else:
             entrega = AtividadeEntregue.objects.create(
                 atividade=atividade,
                 matricula=matricula,
                 texto=texto,
-                url_arquivo=url if url else None,
+                url_arquivo=url,
                 data_entrega=timezone.now()
             )
-            print(f"Nova entrega criada: {entrega.id}")
+            print("Nova entrega criada. ID:", entrega.pk)
 
-        # ARQUIVOS MULTIPLOS
+        # =====================================
+        #  ➤ SALVAR ARQUIVOS ENVIADOS
+        # =====================================
         arquivos = request.FILES.getlist('arquivos')
         for arquivo in arquivos:
             obj_arquivo = AtividadeEntregueArquivo.objects.create(
@@ -298,9 +284,8 @@ def entregar_atividade(request, atividade_id):
                 nome_original=arquivo.name
             )
             print("Arquivo salvo:", obj_arquivo.nome_original)
-            print("Caminho completo no servidor:", obj_arquivo.arquivo.path)
+            print("Caminho completo:", obj_arquivo.arquivo.path)
 
-        # Redireciona para a própria página para mostrar os arquivos enviados
         return redirect('aluno:entregar_atividade', atividade_id=atividade.atividade_id)
 
     context = {
@@ -317,19 +302,16 @@ def entregar_atividade(request, atividade_id):
 @login_required
 @aluno_required
 def calendario_aluno(request):
-    """Calendário do aluno"""
     return render(request, "aluno/calendario.html")
 
 @login_required
 @aluno_required
 def solicitacoes_aluno(request):
-    """Página de solicitações do aluno"""
     return render(request, "aluno/solicitacoes.html")
 
 @login_required
 @aluno_required
 def perfil_aluno(request):
-    """Perfil do aluno"""
     try:
         aluno = request.user.aluno
         usuario = request.user
@@ -345,11 +327,9 @@ def perfil_aluno(request):
     
     return render(request, "aluno/perfil.html", context)
 
-# API para eventos do calendário (exclusiva para aluno)
 @login_required
 @aluno_required
 def eventos_aluno_api(request):
-    """API para eventos do calendário do aluno"""
     try:
         aluno = request.user.aluno
         turma_ids = Matricula.objects.filter(
@@ -368,7 +348,7 @@ def eventos_aluno_api(request):
                 'end': evento.data_fim.isoformat() if evento.data_fim else None,
                 'description': evento.descricao,
                 'turma': evento.turma.nome,
-                'color': '#3b82f6',  # Cor padrão para eventos do aluno
+                'color': '#3b82f6',
             })
         
         return JsonResponse(eventos_data, safe=False)

@@ -15,9 +15,11 @@ urlpatterns = [
     path('turma/<int:turma_id>/atividades/<int:atividade_id>/', views.atividade_detalhe, name='atividade_detalhe'),
     path('turma/<int:turma_id>/alunos/', views.listar_alunos_turma, name='listar_alunos_turma'),
     path('turma/<int:turma_id>/boletim/', views.boletim_turma, name='boletim_turma'),
-     path('turma/<int:turma_id>/atividades/<int:atividade_id>/entrega/<int:entrega_id>/',
-         views.atividade_entrega_detalhe,
-         name='atividade_entrega_detalhe'),
+    path('turma/<int:turma_id>/atividades/<int:atividade_id>/entrega/<int:entrega_id>/', views.atividade_entrega_detalhe, name='atividade_entrega_detalhe'),
+    path('turma/<int:turma_id>/atividade/<int:atividade_id>/editar/', views.editar_atividade, name='editar_atividade'),
+    path('turma/<int:turma_id>/atividade/<int:atividade_id>/excluir/', views.excluir_atividade, name='excluir_atividade'),
+
+
 
     # Página principal do calendário do professor
     path('calendario/', calendario_views.calendario_professor, name='calendario'),

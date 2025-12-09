@@ -7,7 +7,16 @@
 <div style="max-width:980px; margin: 1.5rem auto;">
     <div style="background:white; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
         <h2 style="margin:0 0 8px 0; color:#000000; word-wrap: break-word; overflow-wrap: break-word;">{{ atividade.titulo }}</h2>
+        <!-- IMAGEM DA ATIVIDADE -->
+        {% if atividade.arquivo %}
+        <div style="margin: 16px 0;">
+            <img src="{{ atividade.arquivo.url }}" alt="Imagem da atividade"
+                style="max-width:500px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); max-height:940px;">
+        </div>
+        {% endif %}
+
         <p style="color:#666; margin:0 0 16px 0; word-wrap: break-word; overflow-wrap: break-word;">{{ atividade.descricao }}</p>
+
 
         <div style="display:flex; gap:12px; align-items:center; margin-bottom:16px;">
             <div style="padding:8px 12px; background:#f8f9fa; border-radius:6px; color:#333;">Entrega: {{ atividade.data_entrega|date:"d/m/Y H:i" }}</div>
@@ -21,6 +30,26 @@
             <li style="padding:8px 0; border-bottom:1px solid #f0f0f0;"><strong>Total de alunos:</strong> {{ total_alunos }}</li>
             <li style="padding:8px 0; border-bottom:1px solid #f0f0f0;"><strong>Total de entregas:</strong> {{ total_entregues }}</li>
         </ul>
+
+        <!-- BOTÕES DE AÇÃO -->
+        <div style="display:flex; gap:10px; margin-top:10px; margin-bottom:20px;">
+            
+            <!-- Editar -->
+            <a href="{% url 'professor:editar_atividade' turma.turma_id atividade.atividade_id %}"
+            style="padding:8px 14px; background:#164193; color:white; border-radius:6px;
+                    text-decoration:none; font-weight:600;">
+                ✏️ Editar Atividade
+            </a>
+
+            <!-- Excluir -->
+            <a href="{% url 'professor:excluir_atividade' turma.turma_id atividade.atividade_id %}"
+            style="padding:8px 14px; background:#c0392b; color:white; border-radius:6px;
+                    text-decoration:none; font-weight:600;"
+            onclick="return confirm('Tem certeza que deseja excluir esta atividade? Essa ação não pode ser desfeita.');">
+                🗑️ Excluir Atividade
+            </a>
+
+        </div>
 
         <h3 style="color:#333;">Entregas (mais recentes primeiro)</h3>
         {% if entregas_info %}
