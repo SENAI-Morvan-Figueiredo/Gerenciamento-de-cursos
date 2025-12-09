@@ -42,17 +42,102 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td colspan="5" class="text-center py-4">
-                            <i class="fas fa-file-alt fa-2x text-muted mb-2"></i>
-                            <p class="text-muted mb-0">Nenhuma solicitação encontrada.</p>
-                            <a href="{% url 'solicitacao:solicitacaoAdd' %}" class="btn btn-primary btn-sm mt-2">
-                                <i class="fas fa-plus me-1"></i>Criar Primeira Solicitação
-                            </a>
-                        </td>
-                    </tr>
+                    {% if solicitacoes %}
+                        {% for solicitacao in solicitacoes %}
+                        <tr>
+                            <td class="text-center align-middle">
+                                <span class="badge bg-primary fs-6 px-3 py-1">
+                                    {{ solicitacao.get_tipo_display }}
+                                </span>
+                            </td>
+                            <td class="text-center align-middle">
+                                <div class="fw-medium">{{ solicitacao.data_solicitacao|date:"d/m/Y" }}</div>
+                                <div class="text-muted small">{{ solicitacao.data_solicitacao|date:"H:i" }}</div>
+                            </td>
+                            <td class="text-center align-middle">
+                                {% if solicitacao.status == 'pendente' %}
+                                    <span class="badge bg-warning fs-6 px-3 py-1">Pendente</span>
+                                {% elif solicitacao.status == 'aceito' %}
+                                    <span class="badge bg-success fs-6 px-3 py-1">Aceito</span>
+                                {% elif solicitacao.status == 'negado' %}
+                                    <span class="badge bg-danger fs-6 px-3 py-1">Negado</span>
+                                {% else %}
+                                    <span class="badge bg-secondary fs-6 px-3 py-1">{{ solicitacao.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle">
+                                <div class="text-truncate text-center" style="max-width: 250px;" 
+                                    title="{{ solicitacao.justificativa }}">
+                                    {{ solicitacao.justificativa|truncatechars:80 }}
+                                </div>
+                            </td>
+                            <td class="text-center align-middle">
+                                <div class="d-flex justify-content-center">
+                                    <button type="button" class="btn btn-outline-primary btn-sm btn-detalhes"
+                                            data-solicitacao-id="{{ solicitacao.solicitacao_id }}"
+                                            data-tipo="{{ solicitacao.get_tipo_display }}"
+                                            data-data="{{ solicitacao.data_solicitacao|date:'d/m/Y H:i' }}"
+                                            data-status="{{ solicitacao.status }}"
+                                            data-justificativa="{{ solicitacao.justificativa }}">
+                                        <i class="fas fa-eye fs-5"></i>
+                                    </button>
+                                    {% if solicitacao.status == 'pendente' %}
+                                    <a href="#" class="btn btn-outline-warning btn-sm ms-2">
+                                        <i class="fas fa-edit fs-5"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                <i class="fas fa-file-alt fa-2x text-muted mb-2"></i>
+                                <p class="text-muted mb-0">Nenhuma solicitação encontrada.</p>
+                                <a href="{% url 'solicitacao:solicitacaoAdd' %}" class="btn btn-primary btn-sm mt-2">
+                                    <i class="fas fa-plus me-1"></i>Criar Primeira Solicitação
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Dinâmico (apenas um) -->
+<div class="modal fade" id="modalDetalhesSolicitacao" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalhes da Solicitação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <strong>Tipo:</strong>
+                    <span id="modalTipo" class="badge bg-primary ms-2 fs-6"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Data de Criação:</strong>
+                    <p id="modalData" class="fs-5"></p>
+                </div>
+                <div class="mb-3">
+                    <strong>Status:</strong>
+                    <div class="mt-1">
+                        <span id="modalStatus" class="badge fs-6"></span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <strong>Justificativa:</strong>
+                    <p id="modalJustificativa" class="mt-2 p-2 bg-light rounded"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+            </div>
         </div>
     </div>
 </div>
@@ -105,4 +190,79 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Seleciona todos os botões de detalhes
+    const botoesDetalhes = document.querySelectorAll('.btn-detalhes');
+    const modal = new bootstrap.Modal(document.getElementById('modalDetalhesSolicitacao'));
+    
+    // Mapeamento de status para classes CSS
+    const statusClasses = {
+        'pendente': 'bg-warning',
+        'aceito': 'bg-success', 
+        'negado': 'bg-danger'
+    };
+    
+    // Adiciona evento de clique para cada botão
+    botoesDetalhes.forEach(botao => {
+        botao.addEventListener('click', function() {
+            // Pega os dados do botão clicado
+            const tipo = this.getAttribute('data-tipo');
+            const data = this.getAttribute('data-data');
+            const status = this.getAttribute('data-status');
+            const justificativa = this.getAttribute('data-justificativa');
+            
+            // Atualiza o conteúdo do modal
+            document.getElementById('modalTipo').textContent = tipo;
+            document.getElementById('modalData').textContent = data;
+            
+            // Configura o status com a classe correta
+            const statusElement = document.getElementById('modalStatus');
+            statusElement.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            statusElement.className = 'badge fs-6 ' + (statusClasses[status] || 'bg-secondary');
+            
+            document.getElementById('modalJustificativa').textContent = justificativa;
+            
+            // Mostra o modal
+            modal.show();
+        });
+    });
+    
+    // Limpa o modal quando fechar (opcional)
+    document.getElementById('modalDetalhesSolicitacao').addEventListener('hidden.bs.modal', function () {
+        document.getElementById('modalTipo').textContent = '';
+        document.getElementById('modalData').textContent = '';
+        document.getElementById('modalStatus').textContent = '';
+        document.getElementById('modalStatus').className = 'badge fs-6';
+        document.getElementById('modalJustificativa').textContent = '';
+    });
+});
+</script>
+
+<style>
+.btn-detalhes {
+    transition: all 0.2s ease;
+}
+
+.btn-detalhes:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.modal-content {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
 {% endblock %}
