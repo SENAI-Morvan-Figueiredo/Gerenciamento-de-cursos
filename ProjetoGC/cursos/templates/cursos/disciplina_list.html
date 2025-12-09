@@ -5,14 +5,16 @@
 <div class="content-header">
     <div class="cursos-header container-search">
         <h1>Disciplinas do Curso: {{ curso.nome }}</h1>
-    </div>
-</div>
 
-<div class="card-actions" style="margin-top: 2rem; justify-content: flex-start; max-width: 200px;">
-    <a href="{% url 'curso_list' %}" class="btn btn-style3">
-        <i data-lucide="arrow-left"></i>
-        Voltar para Cursos
-    </a>
+        <div class="card-actions" style="margin-top: 2rem; justify-content: flex-start; max-width: 210px; " >
+            <a href="{% url 'curso_list' %}" class="btn btn-style3">
+                <i data-lucide="arrow-left"></i>
+                Voltar para Cursos
+            </a>
+        </div>
+    
+    </div>
+
 </div>
 
 <div class="cards-container">

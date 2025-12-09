@@ -285,7 +285,7 @@ svg {
 
 /* --- BARRA DE PESQUISA --- */
 .container-search {
-    width: max-content;
+    width: 90%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -343,7 +343,7 @@ svg {
 /* mudar o sistema de grids para algo mais absoluto,
  assim podendo colocar o botão de adicionar ao lado dos cards */
 .cards-container {
-    min-height: 380px;
+    min-height: 300px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.8rem;
