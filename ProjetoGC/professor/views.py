@@ -197,7 +197,7 @@ def atividade_detalhe(request, turma_id, atividade_id):
         'entregas_info': entregas_info,
     }
 
-    return render(request, 'Professor/atividade_detalhe.html', context)
+    return render(request, 'professor/atividade_detalhe.html', context)
 
 
 @login_required
